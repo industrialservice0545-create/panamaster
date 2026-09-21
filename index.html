@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Панамастер — ремонт промышленного оборудования и ЧПУ в Москве | Гарантия 3 месяца</title>
+    <meta name="description" content="Оперативная диагностика и ремонт промышленного оборудования, ЧПУ, частотных преобразователей и сервоприводов в Москве и МО. Выезд на объект, запуск после ремонта, гарантия 3 месяца. Тел: +7 926 883-09-39.">
+    <meta name="keywords" content="ремонт промышленного оборудования, ремонт ЧПУ, ремонт частотных преобразователей, ремонт сервоприводов, ремонт ПЛК, диагностика станков, Москва, Московская область, Panamaster, Панамастер">
+    <meta name="robots" content="index, follow">
+    <meta name="geo.region" content="RU-MOW">
+    <meta name="geo.placename" content="Москва">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Панамастер — ремонт промышленного оборудования и ЧПУ">
+    <meta property="og:description" content="Диагностика и ремонт электроники станков, ЧПУ, приводов. Москва и МО. Гарантия 3 месяца.">
+    <meta property="og:url" content="https://panamaster.ru/">
+    <meta property="og:locale" content="ru_RU">
+
+    <style>
+        :root {
+            --accent: #E64B1E;
+            --accent-hover: #C93D14;
+            --text: #1a1a1a;
+            --muted: #666;
+            --line: #eaeaea;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text); background: #ffffff; line-height: 1.6; font-weight: 400;
+        }
+
+        a { color: inherit; text-decoration: none; transition: color 0.2s ease; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+        header { padding: 28px 0; border-bottom: 1px solid var(--line); }
+        .header-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .logo { font-size: 20px; font-weight: 600; letter-spacing: 0.5px; }
+        .logo span { font-weight: 300; color: var(--muted); }
+        .header-phone { font-size: 18px; font-weight: 500; }
+        .header-phone:hover { color: var(--accent); }
+
+        .hero { padding: 110px 0 90px; }
+        .hero h1 {
+            font-size: clamp(32px, 5vw, 56px); font-weight: 300;
+            line-height: 1.2; max-width: 900px; letter-spacing: -0.02em;
+        }
+        .hero h1 strong { font-weight: 500; }
+        .hero-sub {
+            margin-top: 28px; font-size: 18px; color: #555; max-width: 640px;
+            padding-left: 20px; border-left: 2px solid var(--accent);
+        }
+
+        section { padding: 80px 0; border-top: 1px solid var(--line); }
+        .section-label {
+            font-size: 13px; text-transform: uppercase; letter-spacing: 2px;
+            color: var(--muted); margin-bottom: 28px; font-weight: 500;
+        }
+        h2 {
+            font-size: clamp(24px, 3vw, 36px); font-weight: 300;
+            margin-bottom: 32px; letter-spacing: -0.01em;
+        }
+        p { max-width: 760px; color: #444; margin-bottom: 20px; }
+
+        /* Услуги */
+        .service {
+            margin-top: 56px;
+            padding-top: 40px;
+            border-top: 1px solid var(--line);
+        }
+        .service:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+        .service h3 {
+            font-size: clamp(20px, 2.2vw, 26px);
+            font-weight: 500;
+            margin-bottom: 20px;
+            letter-spacing: -0.01em;
+        }
+
+        .service ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px 40px;
+        }
+
+        .service li {
+            padding-left: 20px;
+            position: relative;
+            color: #444;
+            font-size: 15.5px;
+        }
+
+        .service li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 11px;
+            width: 8px;
+            height: 2px;
+            background: #ccc;
+        }
+
+        .service li strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        /* Контакты */
+        .contacts-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 48px; margin-top: 48px;
+        }
+        .contact-block h3 {
+            font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--muted); margin-bottom: 16px; font-weight: 500;
+        }
+        .contact-block p { font-size: 16px; color: var(--text); margin-bottom: 8px; max-width: none; }
+        .contact-block .muted { color: var(--muted); font-size: 15px; }
+        .contact-block a { color: var(--accent); font-weight: 500; }
+        .contact-block a:hover { color: var(--accent-hover); }
+
+        footer {
+            padding: 44px 0; border-top: 1px solid var(--line);
+            font-size: 14px; color: #888;
+        }
+        .footer-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+
+        .sr-only {
+            position: absolute; width: 1px; height: 1px;
+            padding: 0; margin: -1px; overflow: hidden;
+            clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+        }
+
+        @media (max-width: 600px) {
+            .hero { padding: 80px 0 60px; }
+            section { padding: 60px 0; }
+            .header-phone { font-size: 16px; }
+            .service ul { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Панамастер",
+      "alternateName": "Panamaster",
+      "description": "Сервисная компания по ремонту и настройке электроники станков и промышленного оборудования. Диагностика, ремонт ЧПУ, частотных преобразователей, сервоприводов, ПЛК. Москва и Московская область.",
+      "url": "https://panamaster.ru/",
+      "telephone": "+7-926-883-09-39",
+      "priceRange": "по запросу",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "улица Искры, дом 31, к1, 1 подъезд, офис 103А",
+        "addressLocality": "Москва",
+        "addressRegion": "Москва",
+        "postalCode": "127550",
+        "addressCountry": "RU"
+      },
+      "areaServed": [
+        { "@type": "City", "name": "Москва" },
+        { "@type": "AdministrativeArea", "name": "Московская область" }
+      ],
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+          "opens": "09:00",
+          "closes": "19:00"
+        }
+      ],
+      "makesOffer": [
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Аварийная диагностика и локализация неисправностей" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Компонентный ремонт силовой электроники и приводов" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Ремонт систем ЧПУ, ПЛК и интерфейсов HMI" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Пусконаладка, настройка и программирование" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Модернизация и замена устаревших приводов" } }
+      ],
+      "slogan": "Оперативная диагностика и ремонт промышленного оборудования с запуском после ремонта и гарантией 3 месяца"
+    }
+    </script>
+</head>
+<body>
+
+<header>
+    <div class="container header-inner">
+        <div class="logo">ПАНАМАСТЕР <span>| Сервис промышленного оборудования</span></div>
+        <a href="tel:+79268830939" class="header-phone" itemprop="telephone">+7 926 883-09-39</a>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="container">
+        <h1>
+            <strong>Оперативная диагностика и ремонт</strong><br>
+            промышленного оборудования
+        </h1>
+        <p class="hero-sub">
+            С запуском после ремонта и гарантией 3 месяца.
+            Работаем с электроникой станков и оборудованием из любой отрасли.
+        </p>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <div class="section-label">О компании</div>
+        <h2>Сервисная компания «Панамастер»</h2>
+        <p>
+            Специализируемся на ремонте и настройке электроники станков,
+            промышленного оборудования и автоматики. Выполняем диагностику,
+            восстановление и пусконаладку на объекте заказчика или в собственной мастерской.
+        </p>
+        <p>
+            География работ: Москва и Московская область.
+            Выезды в другие регионы — по договорённости.
+        </p>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <div class="section-label">Услуги</div>
+        <h2>Что мы делаем</h2>
+
+        <article class="service">
+            <h3>1. Аварийная диагностика и локализация неисправностей</h3>
+            <ul>
+                <li><strong>Выездная диагностика на объекте заказчика</strong> — поиск причин останова станочного парка, упаковочных и технологических линий в Москве и МО.</li>
+                <li><strong>Лабораторный анализ компонентной базы</strong> — осциллографический и мультиметрический контроль плат управления, силовых цепей и модулей питания без электрических схем завода-изготовителя.</li>
+                <li><strong>Считывание и расшифровка кодов ошибок</strong> — аппаратная диагностика систем ЧПУ, ПЛК, контроллеров и приводов (Siemens, Danfoss, Rexroth Indramat, Beckhoff, Fanuc, Omron).</li>
+            </ul>
+        </article>
+
+        <article class="service">
+            <h3>2. Компонентный ремонт силовой электроники и приводов</h3>
+            <ul>
+                <li><strong>Ремонт частотных преобразователей (ПЧ)</strong> — замена силовых ключей IGBT, драйверов управления, конденсаторов фильтра, плат силового питания и интерфейсных модулей.</li>
+                <li><strong>Ремонт серводрайверов и сервоусилителей</strong> — устранение перегрева, ошибок по току, восстановление цепей обратной связи (резольверов, энкодеров).</li>
+                <li><strong>Ремонт промышленных источников питания и УПП</strong> — восстановление импульсных блоков питания, устройств плавного пуска и блоков торможения.</li>
+            </ul>
+        </article>
+
+        <article class="service">
+            <h3>3. Ремонт систем ЧПУ, ПЛК и интерфейсов (HMI)</h3>
+            <ul>
+                <li><strong>Ремонт и настройка программируемых логических контроллеров (ПЛК / PLC)</strong> — замена дискретных/аналоговых модулей ввода-вывода, устранение сбоев внутренней шины.</li>
+                <li><strong>Ремонт сенсорных панелей оператора (HMI)</strong> — замена тачскринов, дисплеев, восстановление разъёмов связи (RS-485, Profibus, Ethernet) и цепей подсветки.</li>
+                <li><strong>Ремонт контроллеров ЧПУ станков</strong> — восстановление плат управления осями, шпиндельных модулей и электронных штурвалов.</li>
+            </ul>
+        </article>
+
+        <article class="service">
+            <h3>4. Пусконаладка, настройка и программирование</h3>
+            <ul>
+                <li><strong>Параметрирование частотников и сервоприводов</strong> — настройка векторного управления, регуляторов, обратной связи и режимов торможения под конкретную механическую нагрузку.</li>
+                <li><strong>Пусконаладка оборудования после ремонта</strong> — запуск технологических линий под рабочей нагрузкой с контролем токовых характеристик и температурных режимов.</li>
+                <li><strong>Резервирование и снятие дампов ПО</strong> — резервное копирование прошивок, проектов ПЛК и параметров приводов для предотвращения потерь данных при авариях.</li>
+            </ul>
+        </article>
+
+        <article class="service">
+            <h3>5. Модернизация</h3>
+            <ul>
+                <li><strong>Замена устаревших и снятых с производства приводов</strong> — подбор, адаптация и монтаж современных аналогов с сохранением логики работы оборудования.</li>
+            </ul>
+        </article>
+
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <div class="section-label">Контакты</div>
+        <h2>Как с нами связаться</h2>
+        <div class="contacts-grid" itemscope itemtype="https://schema.org/LocalBusiness">
+            <div class="contact-block">
+                <h3>Телефон</h3>
+                <p><a href="tel:+79268830939" itemprop="telephone">+7 926 883-09-39</a></p>
+            </div>
+            <div class="contact-block">
+                <h3>Адрес мастерской</h3>
+                <p itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                    <span itemprop="addressLocality">Москва</span>,
+                    <span itemprop="streetAddress">улица Искры, дом 31, к1</span>
+                </p>
+                <p class="muted">1 подъезд, офис 103А</p>
+            </div>
+            <div class="contact-block">
+                <h3>Режим работы</h3>
+                <p>Пн–Пт: 09:00 — 19:00</p>
+                <p class="muted">Сб, Вс — выходной</p>
+            </div>
+            <div class="contact-block">
+                <h3>География</h3>
+                <p>Москва и Московская область</p>
+                <p class="muted">Другие регионы — по договорённости</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container footer-inner">
+        <div>© Панамастер, 2026</div>
+        <div>Ремонт и настройка промышленного оборудования</div>
+    </div>
+</footer>
+
+<div class="sr-only">
+    Панамастер — сервисная компания по ремонту промышленного оборудования в Москве и Московской области.
+    Услуги: аварийная диагностика, ремонт силовой электроники, ремонт ЧПУ, ПЛК, HMI, сервоприводов,
+    частотных преобразователей, пусконаладка, модернизация. Работаем с оборудованием Siemens,
+    Danfoss, Rexroth Indramat, Beckhoff, Fanuc, Omron. Телефон: +7 926 883-09-39. Адрес: Москва,
+    улица Искры, 31к1, офис 103А. Режим работы: пн–пт 09:00–19:00. Гарантия на ремонт — 3 месяца.
+    Запуск оборудования после ремонта. Выезд на объект по Москве и МО, в другие регионы — по договорённости.
+</div>
+
+</body>
+</html>
