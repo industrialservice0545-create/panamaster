@@ -1,0 +1,48 @@
+---
+description: Стек, HTML/CSS/JS-конвенции и бюджеты PanaMaster
+alwaysApply: true
+---
+
+# PanaMaster
+
+## Стек (разрешено)
+
+HTML5, CSS3, vanilla JS (ES6+, только интерактив), PHP 8.x (`poll.php`), MySQL 8 при необходимости, Git, GitHub Actions, Cloudflare Worker (прокси Telegram API).
+
+## Стек (запрещено)
+
+React, Vue, Angular, Svelte, Bootstrap, Tailwind, Bulma, Foundation, jQuery, Lodash, Moment, Axios, Webpack, Vite, Rollup, Parcel, Sass, Less, Stylus, Node.js/Python/Docker на проде, внешние CDN, Google Fonts и любые внешние шрифты.
+
+## CSS (обязательно)
+
+- `clamp()` — адаптивная типографика
+- `auto-fit` / `auto-fill` + `minmax()` — сетки
+- `@container`, `prefers-color-scheme`, `var()` для токенов в `:root`
+- Системные шрифты: `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif` (без подключения файлов шрифтов)
+- `will-change` / `transform`, `aspect-ratio`, `contain`, `content-visibility: auto`
+- Touch target 44×44px, логические свойства (`margin-inline`, `padding-block`, `border-inline-start`)
+- BEM-lite: `.block`, `.block__element`, `.block--modifier`
+- Запрещено: `!important`, inline `style`, ID для стилей (ID только для JS-хуков)
+- Mobile-first; один breakpoint: `@media (min-width: 768px)` — если нельзя обойтись современными приёмами
+
+## HTML
+
+- `<!DOCTYPE html>`, `<html lang="ru">`, `<head>`, `<body>`
+- `<meta charset="utf-8">`, `<meta name="viewport" content="width=device-width, initial-scale=1">`
+- Семантика: `header`, `nav`, `main`, `section`, `article`, `aside`, `footer`
+- Один `h1`; иерархия h1 → h2 → h3 без пропусков
+- `<button>` — действия, `<a>` — ссылки; `target="_blank"` только с `rel="noopener"`
+- У `img`: `alt`, `width`, `height`, `loading="lazy"`, `decoding="async"`
+- У полей форм — `<label>`
+
+## JavaScript
+
+Только vanilla ES6+, `'use strict'`, `addEventListener`, `querySelector` / `querySelectorAll`. Без inline-обработчиков.
+
+Разрешено: мобильное меню, плавный скролл, фильтры кейсов.
+
+Запрещено: тяжёлые анимации на JS, DOM-правки без `requestAnimationFrame`, синхронный `XMLHttpRequest`.
+
+## Бюджеты
+
+HTML ≤ 100 КБ, CSS ≤ 30 КБ, JS ≤ 20 КБ, изображение ≤ 100 КБ (WebP), страница итого ≤ 500 КБ.

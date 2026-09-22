@@ -1,0 +1,26 @@
+# Динамические данные и логи бота
+bot/queue/**
+bot/logs/**
+bot/state/**
+bot/backups/**
+bot/dictionaries/**
+
+# Ресурсы и медиа
+assets/img/**
+images/**
+*.webp
+*.png
+*.jpg
+*.svg
+
+# Служебные файлы
+.git/
+node_modules/**
+.scripts/
+*.log
+*.tar.gz
+*.sql
+.DS_Store
+
+# Кэш Cursor
+.cursor/cache/

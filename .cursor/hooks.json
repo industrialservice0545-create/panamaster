@@ -1,0 +1,10 @@
+{
+  "hooks": {
+    "preToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "command": "./.cursor/hooks/check-protected.sh"
+      }
+    ]
+  }
+}
