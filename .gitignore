@@ -1,0 +1,13 @@
+.DS_Store
+*.log
+bot/logs/
+bot/state/
+bot/queue/
+bot/backups/
+bot/dictionaries/
+
+# Бэкапы и временные файлы
+*.backup
+*.wip
+*.bak
+imajes/
