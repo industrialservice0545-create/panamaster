@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="100%" height="100%" aria-label="Logo Panamaster">
+  <style>
+    .bg {
+      fill: #ffffff;
+    }
+    .brand-title {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 64px;
+      font-weight: 100;
+      letter-spacing: 0.18em;
+      fill: #1a1a1a;
+      text-anchor: middle;
+    }
+    .brand-subtitle {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 17.5px;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+      fill: #666666;
+      text-anchor: middle;
+    }
+  </style>
+
+  <!-- Чистый белый фон -->
+  <rect width="100%" height="100%" class="bg" />
+
+  <!-- Логотип по центру: Основное название -->
+  <text x="400" y="195" class="brand-title">PANAMASTER</text>
+
+  <!-- Подстрочник ЗАГЛАВНЫМИ БУКВАМИ, подгонка строго по ширине верхнего слова PANAMASTER -->
+  <text x="400" y="240" class="brand-subtitle" textLength="488" lengthAdjust="spacingAndGlyphs">СЕРВИС ПРОМЫШЛЕННОГО ОБОРУДОВАНИЯ</text>
+</svg>
+
