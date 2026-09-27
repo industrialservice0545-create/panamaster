@@ -1,6 +1,6 @@
 'use strict';
 
-const COUNTER_ID = 113092843;
+const COUNTER_ID = 113105780;
 
 // Яндекс Метрика
 (function () {
