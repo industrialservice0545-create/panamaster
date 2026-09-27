@@ -9,6 +9,9 @@ SITE = 'https://panamaster.ru'
 INDUSTRIES = [
     {
         'slug': 'printing', 'name': 'Типографии и полиграфия',
+        'photo': {'src': '/assets/img/industries/printing.webp', 'w': 1248, 'h': 832,
+                  'alt': 'Рулонная печатная машина в цеху типографии'},
+        'example_link': '/cases/codimag-viva-340.html',
         'desc': 'Ремонт печатных машин и электроники типографий: выезд за 24 часа по Москве и МО, диагностика 1 рабочий день, пусконаладка, гарантия 3 месяца.',
         'lead': [
             'Ремонтируем электронику печатного оборудования: блоки управления, приводы и сервосистемы офсетных и флексографских машин. Выезжаем в типографию в течение 24 часов, диагностика — 1 рабочий день.',
@@ -167,6 +170,8 @@ def main():
         lead = '\n'.join(f'                        <p>{esc(p)}</p>' for p in ind['lead'])
         downtime = '\n'.join(f'                <p>{esc(p)}</p>' for p in ind['downtime'])
         example = f'\n                <p>{esc(ind["example"])}</p>' if ind['example'] else ''
+        if ind.get('example_link'):
+            example += f'\n                <p><a class="related-card__link" href="{ind["example_link"]}">Подробнее о ремонте CODIMAG VIVA 340</a></p>'
         equip = '\n'.join(f'                <article class="related-card"><h3>{esc(e)}</h3></article>' for e in ind['equipment'])
         faq = '\n'.join(f'''                <article>
                     <h3>{esc(q)}</h3>

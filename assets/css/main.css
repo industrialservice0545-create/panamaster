@@ -1009,3 +1009,8 @@ main { padding-block-end: var(--space-xl); }
 .contact-item:focus-visible .contact-item__icon--mail { color: #ea4335; border-color: #ea4335; }
 
 .data-table--contacts td { vertical-align: middle; padding-block: 8px; }
+
+/* Сетка карточек кейсов: одна карточка не растягивается на всю ширину */
+.related-grid--cases { grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
+
+.related-card .case-photo img { aspect-ratio: 3 / 2; object-fit: cover; }
