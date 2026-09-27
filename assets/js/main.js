@@ -60,6 +60,11 @@ document.querySelectorAll('[data-mail]').forEach(function (el) {
     el.textContent = email;
     el.classList.remove('email-protected');
   }
+  const text = el.querySelector('[data-mail-text]');
+  if (text) {
+    text.textContent = email;
+    text.classList.remove('email-protected');
+  }
 });
 
 // Цели: звонок, мессенджеры, почта

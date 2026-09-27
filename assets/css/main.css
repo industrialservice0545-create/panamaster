@@ -975,3 +975,37 @@ main { padding-block-end: var(--space-xl); }
 }
 
 .map [class*="ground-pane"] { filter: grayscale(1); }
+
+/* Контакты со значками: при наведении значок становится цветным */
+.contact-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--grid-gap);
+    color: var(--text);
+}
+
+.contact-item__icon {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    color: var(--muted);
+    transition: color var(--transition), border-color var(--transition);
+}
+
+.contact-item__icon svg { width: 20px; height: 20px; }
+
+.contact-item:hover .contact-item__icon--phone,
+.contact-item:focus-visible .contact-item__icon--phone { color: #34a853; border-color: #34a853; }
+.contact-item:hover .contact-item__icon--tg,
+.contact-item:focus-visible .contact-item__icon--tg { color: #26a5e4; border-color: #26a5e4; }
+.contact-item:hover .contact-item__icon--wa,
+.contact-item:focus-visible .contact-item__icon--wa { color: #25d366; border-color: #25d366; }
+.contact-item:hover .contact-item__icon--mail,
+.contact-item:focus-visible .contact-item__icon--mail { color: #ea4335; border-color: #ea4335; }
+
+.data-table--contacts td { vertical-align: middle; padding-block: 8px; }
