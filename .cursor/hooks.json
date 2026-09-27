@@ -1,8 +1,9 @@
 {
+  "version": 1,
   "hooks": {
     "preToolUse": [
       {
-        "matcher": "Write|Edit",
+        "matcher": "Write|Edit|Delete",
         "command": "./.cursor/hooks/check-protected.sh"
       }
     ]
