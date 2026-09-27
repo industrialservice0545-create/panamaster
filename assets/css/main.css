@@ -1014,3 +1014,6 @@ main { padding-block-end: var(--space-xl); }
 .related-grid--cases { grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
 
 .related-card .case-photo img { aspect-ratio: 3 / 2; object-fit: cover; }
+
+/* Сетка в 3 колонки (отрасли на главной, 3×3) */
+.related-grid--3 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
