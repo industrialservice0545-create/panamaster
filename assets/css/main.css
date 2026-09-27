@@ -955,3 +955,13 @@ main { padding-block-end: var(--space-xl); }
         height: 11px;
     }
 }
+
+/* Согласие под формой заявки */
+.cta-form__consent {
+    margin-block-start: 8px;
+    color: var(--muted);
+    font-size: var(--fs-small);
+    line-height: var(--lh-body);
+}
+
+.cta-form__consent a { color: var(--text); }
