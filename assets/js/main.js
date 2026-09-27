@@ -11,7 +11,7 @@ const COUNTER_ID = 113105780;
 
   const script = document.createElement('script');
   script.async = true;
-  script.src = 'https://mc.yandex.ru/metrika/tag.js';
+  script.src = 'https://mc.yandex.ru/metrika/tag.js?id=' + COUNTER_ID;
   document.head.appendChild(script);
 
   window.ym(COUNTER_ID, 'init', {
@@ -19,7 +19,8 @@ const COUNTER_ID = 113105780;
     webvisor: true,
     clickmap: true,
     trackLinks: true,
-    accurateTrackBounce: true
+    accurateTrackBounce: true,
+    ecommerce: 'dataLayer'
   });
 })();
 
