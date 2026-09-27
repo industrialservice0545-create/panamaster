@@ -1,0 +1,22 @@
+# Panamaster — закрываем служебные файлы от интернета.
+# Только mod_alias (RedirectMatch) и IfModule — без Options/Require,
+# чтобы не получить 500 при ограниченном AllowOverride на хостинге.
+
+# Скрытые файлы и папки: .cursor/, .github/, .gitignore, .cursorignore (кроме .well-known)
+RedirectMatch 404 ^/\.(?!well-known/)
+
+# Бот: логи, словари, состояние. webhook.php оставлен доступным для Telegram.
+RedirectMatch 404 ^/bot/(?!webhook\.php$)
+
+# Исходники: прокси Worker, шаблоны генерации, данные кейсов
+RedirectMatch 404 ^/(cloudflare|assets/templates|assets/data)/
+
+# Служебные расширения
+RedirectMatch 404 \.(log|md|mdc|sh|jsonc|yml|yaml|bak|backup|wip)$
+
+# test.html пишет бот при тесте деплоя — страница работает, но не индексируется
+<IfModule mod_headers.c>
+    <Files "test.html">
+        Header set X-Robots-Tag "noindex, nofollow"
+    </Files>
+</IfModule>

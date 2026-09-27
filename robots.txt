@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /bot/
+Disallow: /assets/templates/
+Disallow: /assets/data/
+
+Sitemap: https://panamaster.ru/sitemap.xml
