@@ -8,6 +8,10 @@
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://panamaster.ru/cases/codimag-viva-340.html">
     <link rel="stylesheet" href="/assets/css/main.css">
+    <script src="/assets/js/main.js" defer></script>
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
     <meta property="og:type" content="article">
     <meta property="og:title" content="CODIMAG VIVA 340: смещение рапорта, Москва — Панамастер">
@@ -88,8 +92,10 @@
                 <p class="case-cta__sub">Оставьте телефон — перезвоним и скажем, когда сможем выехать.</p>
             </div>
             <div class="case-cta__action">
-            <form class="cta-form" action="#" method="post">
-                <label class="cta-form__label" for="case-phone">Получите оперативно консультацию</label>
+            <form class="cta-form" action="/send.php" method="post">
+                <input type="hidden" name="page" value="CODIMAG VIVA 340 (кейс)">
+                <input type="text" name="website" hidden tabindex="-1" autocomplete="off">
+                <label class="cta-form__label" for="case-phone">Телефон для обратного звонка</label>
                 <div class="cta-form__row">
                     <input id="case-phone"
                            type="tel"
@@ -137,7 +143,6 @@
                             <tr><td>Отрасль</td><td>Типография</td></tr>
                             <tr><td>Контроллер</td><td>Serad MCS 32</td></tr>
                             <tr><td>Сервоприводы</td><td>Parker HPD5N</td></tr>
-                            <tr><td>Срок ремонта</td><td>Оперативно</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -195,7 +200,7 @@
                 </article>
                 <article>
                     <h3>Как быстро можете выехать на похожий останов?</h3>
-                    <p>По Москве и Московской области — в течение 24 часов. В другие регионы — по договорённости.</p>
+                    <p>По Москве и Московской области — в течение 24 часов.</p>
                 </article>
             </div>
         </section>
@@ -277,45 +282,6 @@
     </div>
 </footer>
 
-<script>
-    var menuToggle = document.querySelector('.site-header__toggle');
-    var siteNav = document.querySelector('.site-header__nav');
-    if (menuToggle && siteNav) {
-        menuToggle.addEventListener('click', function () {
-            var open = siteNav.classList.toggle('is-open');
-            menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        });
-    }
-
-    function fitLogo() {
-        var logoTitle = document.querySelector('.logo-title');
-        var logoSub = document.querySelector('.logo-sub');
-        if (!logoTitle || !logoSub) return;
-        var width = logoTitle.getComputedTextLength();
-        if (!width) return;
-        logoSub.setAttribute('textLength', String(width));
-    }
-    fitLogo();
-    window.addEventListener('load', fitLogo);
-
-    document.querySelectorAll('[data-mail]').forEach(function (el) {
-        var email = 'info@panamaster.ru';
-        if (el.tagName !== 'A') return;
-        el.href = 'mailto:' + email;
-        if (el.classList.contains('email-protected')) {
-            el.textContent = email;
-            el.classList.remove('email-protected');
-        }
-    });
-
-    var form = document.querySelector('.cta-form');
-    if (form) {
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-        });
-    }
-</script>
-
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -344,15 +310,6 @@
       "mainEntityOfPage": { "@type": "WebPage", "@id": "https://panamaster.ru/cases/codimag-viva-340.html" }
     },
     {
-      "@type": "HowTo",
-      "name": "Возврат CODIMAG VIVA 340 в работу",
-      "step": [
-        { "@type": "HowToStep", "position": 1, "name": "Диагностика", "text": "Выявили смещение рапорта и зависимость дефекта от скорости. Проверили контроллер и сервосистему." },
-        { "@type": "HowToStep", "position": 2, "name": "Ремонт контроллера", "text": "Отремонтировали контроллер Serad MCS 32 и вернули управление печатной секцией." },
-        { "@type": "HowToStep", "position": 3, "name": "Пусконаладка", "text": "Перенастроили сервосистему на приводах Parker HPD5N и проверили печать на рабочих скоростях, включая максимальную." }
-      ]
-    },
-    {
       "@type": "FAQPage",
       "mainEntity": [
         {
@@ -373,7 +330,7 @@
         {
           "@type": "Question",
           "name": "Как быстро можете выехать на похожий останов?",
-          "acceptedAnswer": { "@type": "Answer", "text": "По Москве и Московской области — в течение 24 часов. В другие регионы — по договорённости." }
+          "acceptedAnswer": { "@type": "Answer", "text": "По Москве и Московской области — в течение 24 часов." }
         }
       ]
     }
