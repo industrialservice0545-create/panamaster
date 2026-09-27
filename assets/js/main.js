@@ -16,6 +16,8 @@ const COUNTER_ID = 113105780;
 
   window.ym(COUNTER_ID, 'init', {
     ssr: true,
+    referrer: document.referrer,
+    url: window.location.href,
     webvisor: true,
     clickmap: true,
     trackLinks: true,
