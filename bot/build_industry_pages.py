@@ -66,6 +66,8 @@ INDUSTRIES = [
     },
     {
         'slug': 'food', 'name': 'Пищевое производство',
+        'photo': {'src': '/assets/img/industries/food.webp', 'w': 1360, 'h': 752,
+                  'alt': 'Линия пищевого производства: конвейер, установка с панелью управления и дежа'},
         'desc': 'Ремонт оборудования пищевых производств: упаковочные линии, пароконвектоматы, санпропускники. Выезд за 24 часа по Москве и МО, гарантия 3 месяца.',
         'lead': [
             'Ремонтируем электронику оборудования пищевых производств: упаковочных линий, пароконвектоматов, санпропускников, приводов. Выезжаем в течение 24 часов по Москве и Московской области.',
@@ -170,6 +172,14 @@ def main():
                     <h3>{esc(q)}</h3>
                     <p>{esc(a)}</p>
                 </article>''' for q, a in ind['faq'])
+        ph = ind.get('photo')
+        hero_open = '\n            <div class="case-hero__inner">' if ph else ''
+        hero_photo = (f'''
+                <figure class="case-photo case-hero__photo">
+                    <img src="{ph['src']}" alt="{esc(ph['alt'])}" width="{ph['w']}" height="{ph['h']}" decoding="async" fetchpriority="high">
+                </figure>
+            </div>''') if ph else ''
+        og_image = f"{SITE}{ph['src']}" if ph else f"{SITE}/assets/img/cases/codimag-viva-340/photo-2.jpg"
         links = '\n'.join(f'                <a href="/services/industry-{o["slug"]}.html">{esc(o["name"])}</a>' for o in others)
         ld = {
             '@context': 'https://schema.org',
@@ -203,7 +213,7 @@ def main():
     <meta property="og:title" content="{esc(title)}">
     <meta property="og:description" content="{esc(ind["desc"])}">
     <meta property="og:url" content="{url}">
-    <meta property="og:image" content="{SITE}/assets/img/cases/codimag-viva-340/photo-2.jpg">
+    <meta property="og:image" content="{og_image}">
     <meta property="og:locale" content="ru_RU">
     <meta property="og:site_name" content="Панамастер">
 </head>
@@ -224,7 +234,7 @@ def main():
 <main>
     <div class="container">
 
-        <section class="case-hero">
+        <section class="case-hero">{hero_open}
             <div class="case-hero__content">
                 <p class="case-hero__meta">Отрасль · Москва и Московская область</p>
                 <h1>{esc(h1)}</h1>
@@ -235,7 +245,7 @@ def main():
                     <a href="tel:+79268830939" class="btn btn--primary">Позвонить: +7 926 883-09-39</a>
                     <a href="#zayavka" class="btn btn--ghost">Оставить заявку</a>
                 </div>
-            </div>
+            </div>{hero_photo}
         </section>
 
 {facts}
