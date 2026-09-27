@@ -115,3 +115,47 @@ if (/[?&]sent=1/.test(window.location.search)) {
     setFormStatus(form, 'Заявка отправлена. Перезвоним в рабочее время: пн–пт, 09:00–19:00.');
   });
 }
+
+// Карта на странице контактов: ч/б подложка (CSS), оранжевая метка. Грузится, когда блок близко к экрану.
+const mapEl = document.getElementById('map');
+if (mapEl) {
+  const MAPS_KEY = 'c0c181c8-1669-4349-9f4e-2e5717b72076';
+
+  const initMap = function () {
+    const center = [Number(mapEl.dataset.lat), Number(mapEl.dataset.lon)];
+    const map = new window.ymaps.Map(mapEl, {
+      center: center,
+      zoom: 16,
+      controls: ['zoomControl']
+    });
+    map.behaviors.disable('scrollZoom');
+    map.geoObjects.add(new window.ymaps.Placemark(center, {
+      iconCaption: 'Панамастер',
+      balloonContentHeader: 'Панамастер — сервис промышленного оборудования',
+      balloonContentBody: 'Москва, улица Искры, дом 31, корпус 1, 1 подъезд, офис 103А<br>+7 926 883-09-39'
+    }, {
+      preset: 'islands#dotIcon',
+      iconColor: '#FFA933'
+    }));
+  };
+
+  const loadMap = function () {
+    const script = document.createElement('script');
+    script.src = 'https://api-maps.yandex.ru/2.1/?apikey=' + MAPS_KEY + '&lang=ru_RU';
+    script.async = true;
+    script.onload = function () { window.ymaps.ready(initMap); };
+    document.head.appendChild(script);
+  };
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) {
+        observer.disconnect();
+        loadMap();
+      }
+    }, { rootMargin: '300px' });
+    observer.observe(mapEl);
+  } else {
+    loadMap();
+  }
+}
