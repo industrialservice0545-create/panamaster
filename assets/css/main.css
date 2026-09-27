@@ -965,3 +965,14 @@ main { padding-block-end: var(--space-xl); }
 }
 
 .cta-form__consent a { color: var(--text); }
+
+/* Карта на странице контактов — ч/б, тонкая рамка (как erco.com) */
+.map {
+    margin-block-start: var(--space-lg);
+    min-block-size: 420px;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-bg-soft);
+    filter: grayscale(1);
+}
+
+.map > * { display: block; }
