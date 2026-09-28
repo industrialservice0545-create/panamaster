@@ -18,8 +18,51 @@
     "lat": null,
     "lon": null,
     "photos": [
-      {"file": "photo-1.webp", "w": 864, "h": 1152, "alt": "Офсетная машина CODIMAG VIVA 340 в цехе"},
-      {"file": "photo-2.webp", "w": 1000, "h": 750, "alt": "Шкаф управления печатной машины после ремонта"}
+      {
+        "file": "photo-1.webp",
+        "w": 864,
+        "h": 1152,
+        "alt": "Офсетная машина CODIMAG VIVA 340 в цехе"
+      },
+      {
+        "file": "photo-2.webp",
+        "w": 1000,
+        "h": 750,
+        "alt": "Шкаф управления печатной машины после ремонта"
+      }
     ]
+  },
+  {
+    "slug": "cms-br5-302",
+    "date": "2026-09-28",
+    "industry": "plastics",
+    "equipment_type": "termoformovachnaya-mashina",
+    "brand": "CMS",
+    "model": "BR/5 302",
+    "rack": "B&R Industrial Automation",
+    "servo": "Acopos",
+    "headline": "Устранены последствия короткого замыкания",
+    "defect": "После хлопка в шкафу управления, машина не запускалась",
+    "solution": "Компонентный ремонт сервосистемы Acopos, ремонт силовых блоков тэнов PMF RES8CHEX, настройка стойки CMS",
+    "result": "Машина работает в штатном режиме.",
+    "repair_days": null,
+    "area": null,
+    "lat": null,
+    "lon": null,
+    "photos": [
+      {
+        "file": "photo-1.webp",
+        "w": 597,
+        "h": 398,
+        "alt": "Термоформовачная машина CMS BR/5 302"
+      },
+      {
+        "file": "photo-2.webp",
+        "w": 1200,
+        "h": 800,
+        "alt": "Шкаф управления CMS BR/5 302 после ремонта"
+      }
+    ],
+    "request_id": "20260928-172401-1958544230"
   }
 ]
