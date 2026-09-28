@@ -353,7 +353,9 @@ function handle_text(int $chat, string $text, array $msg): void
                 return $st;
             }
             $st['data']['photos'][$step] = $name;
-            return advance($chat, $st);
+            send($chat, 'Фото получено. Если выбрали не то — просто отправьте другое фото, оно заменит это.',
+                [[['text' => 'Дальше', 'callback_data' => 'next']], [['text' => 'Отменить заявку', 'callback_data' => 'cancel']]]);
+            return $st;
         }
         if ($step === 'type') {
             $st['data']['type_query'] = $text;
@@ -376,10 +378,13 @@ function handle_text(int $chat, string $text, array $msg): void
 
 function advance(int $chat, array $st): array
 {
-    $next = next_step($st['step']);
+    $next = !empty($st['back_to_confirm']) ? null : next_step($st['step']);
+    unset($st['back_to_confirm']);
     if ($next === null) {
         $st['step'] = 'confirm';
         send($chat, summary($st['data']), [[['text' => 'Опубликовать', 'callback_data' => 'publish']],
+            [['text' => 'Заменить фото оборудования', 'callback_data' => 'rephoto:photo1']],
+            [['text' => 'Заменить фото шкафа', 'callback_data' => 'rephoto:photo2']],
             [['text' => 'Отменить заявку', 'callback_data' => 'cancel']]]);
         return $st;
     }
@@ -403,7 +408,21 @@ function handle_callback(int $chat, string $data, string $cb_id): void
         }
         $step = $st['step'];
         if ($data === 'skip' && (STEPS[$step][1] ?? false)) {
+            if ($step === 'photo2' && !empty($st['back_to_confirm'])) {
+                unset($st['data']['photos']['photo2']);
+            }
             return advance($chat, $st);
+        }
+        if ($data === 'next' && in_array($step, ['photo1', 'photo2'], true) && !empty($st['data']['photos'][$step])) {
+            return advance($chat, $st);
+        }
+        if ($step === 'confirm' && str_starts_with($data, 'rephoto:')) {
+            $target = substr($data, 8) === 'photo2' ? 'photo2' : 'photo1';
+            $st['step'] = $target;
+            $st['back_to_confirm'] = true;
+            send($chat, $target === 'photo1' ? 'Отправьте новое фото общего плана оборудования.' : 'Отправьте новое фото шкафа управления.',
+                $target === 'photo2' ? [[['text' => 'Без фото шкафа', 'callback_data' => 'skip']]] : null);
+            return $st;
         }
         if ($step === 'industry' && str_starts_with($data, 'ind:')) {
             $ind = industries()[(int) substr($data, 4)] ?? null;

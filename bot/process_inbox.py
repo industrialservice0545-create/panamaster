@@ -59,11 +59,13 @@ def style_photo(src, dst):
     s = ImageChops.multiply(s, keep)
     out = Image.merge('HSV', (h, s, v)).convert('RGB')
     os.makedirs(os.path.dirname(dst), exist_ok=True)
-    for q in (85, 75, 65, 55, 45):
-        out.save(dst, 'WEBP', quality=q, method=6)
-        if os.path.getsize(dst) <= MAX_BYTES:
-            break
-    return out.size
+    for size in (out.size, (1000, 667), (900, 600)):
+        img = out if size == out.size else out.resize(size, Image.LANCZOS)
+        for q in (85, 75, 65, 55, 45):
+            img.save(dst, 'WEBP', quality=q, method=6)
+            if os.path.getsize(dst) <= MAX_BYTES:
+                return img.size
+    return img.size
 
 
 def load_json(rel):
