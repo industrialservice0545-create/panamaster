@@ -112,10 +112,10 @@ class GeneratedPagesTests(unittest.TestCase):
         for slug in self.pages:
             self.assertTrue(os.path.exists(os.path.join(ROOT, f'services/industry-{slug}.html')))
 
-    def test_titles_max_60_and_unique(self):
+    def test_titles_50_to_60_and_unique(self):
         titles = [re.search(r'<title>(.*?)</title>', p).group(1) for p in self.pages.values()]
         for t in titles:
-            self.assertLessEqual(len(html.unescape(t)), 60, t)
+            self.assertTrue(50 <= len(html.unescape(t)) <= 60, f'{len(html.unescape(t))}: {t}')
         self.assertEqual(len(titles), len(set(titles)))
 
     def test_canonical_matches_url(self):
@@ -191,6 +191,33 @@ class SiteRulesTests(unittest.TestCase):
         r = read('robots.txt')
         self.assertIn('Disallow: /bot/', r)
         self.assertIn('Sitemap: https://panamaster.ru/sitemap.xml', r)
+
+
+class SitemapTests(unittest.TestCase):
+    """sitemap.xml и llms.txt (bot/build_sitemap.py)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.sitemap = read('sitemap.xml')
+        cls.locs = re.findall(r'<loc>(.*?)</loc>', cls.sitemap)
+
+    def test_sitemap_contains_all_indexable_pages(self):
+        for p in indexable_pages():
+            url = 'https://panamaster.ru/' if p == 'index.html' else f'https://panamaster.ru/{p}'
+            self.assertIn(url, self.locs, p)
+
+    def test_sitemap_excludes_service_pages(self):
+        for bad in ['privacy.html', 'consent.html', 'test.html', 'all-services.html']:
+            self.assertFalse(any(l.endswith(bad) for l in self.locs), bad)
+
+    def test_sitemap_urls_unique_with_lastmod(self):
+        self.assertEqual(len(self.locs), len(set(self.locs)))
+        self.assertEqual(len(re.findall(r'<lastmod>\d{4}-\d{2}-\d{2}</lastmod>', self.sitemap)), len(self.locs))
+
+    def test_llms_txt_has_facts_and_links(self):
+        t = read('llms.txt')
+        for fact in ['+7 926 883-09-39', 'гарантия 3 месяца'.capitalize()[:8], '24 часов', 'https://panamaster.ru/cases.html']:
+            self.assertIn(fact, t)
 
 
 if __name__ == '__main__':
