@@ -245,6 +245,11 @@ INDUSTRIES = [
 ]
 
 
+_DICT = json.load(open(os.path.join(ROOT, 'bot', 'dictionaries', 'entities.json'), encoding='utf-8'))
+TYPE_SLUGS = {t['name']: t['slug'] for t in _DICT['equipment_catalog']}
+HUB_TYPES = set(json.load(open(os.path.join(ROOT, 'bot', 'content', 'hubs.json'), encoding='utf-8'))['types'])
+
+
 def esc(s):
     return html.escape(s, quote=True)
 
@@ -271,7 +276,10 @@ def main():
         example = f'\n                <p>{esc(ind["example"])}</p>' if ind['example'] else ''
         if ind.get('example_link'):
             example += f'\n                <p><a class="related-card__link" href="{ind["example_link"]}">Подробнее о ремонте CODIMAG VIVA 340</a></p>'
-        equip = '\n'.join(f'                <article class="related-card"><h3>{esc(e)}</h3></article>' for e in ind['equipment'])
+        equip = '\n'.join(
+            f'                <article class="related-card"><h3><a href="/services/type-{TYPE_SLUGS[e]}.html">{esc(e)}</a></h3></article>'
+            if TYPE_SLUGS.get(e) in HUB_TYPES and os.path.exists(os.path.join(ROOT, 'services', f'type-{TYPE_SLUGS[e]}.html'))
+            else f'                <article class="related-card"><h3>{esc(e)}</h3></article>' for e in ind['equipment'])
         faq = '\n'.join(f'''                <article>
                     <h3>{esc(q)}</h3>
                     <p>{esc(a)}</p>

@@ -220,6 +220,37 @@ class CasePagesTests(unittest.TestCase):
                 self.assertNotIn(field, c)
 
 
+class HubPagesTests(unittest.TestCase):
+    """Посадочные бренда и вида оборудования (bot/content/hubs.json)."""
+
+    def test_hub_pages_meta(self):
+        for p in glob.glob('services/brand-*.html', root_dir=ROOT) + glob.glob('services/type-*.html', root_dir=ROOT):
+            s = read(p)
+            t = html.unescape(re.search(r'<title>(.*?)</title>', s).group(1))
+            d = html.unescape(re.search(r'name="description" content="([^"]*)"', s).group(1))
+            with self.subTest(p):
+                self.assertTrue(50 <= len(t) <= 60, t)
+                self.assertTrue(140 <= len(d) <= 160, d)
+                self.assertEqual(s.count('<h1'), 1)
+
+    def test_case_links_to_its_hubs(self):
+        cms = read('cases/cms-br5-302.html')
+        self.assertIn('/services/brand-cms.html', cms)
+        self.assertIn('/services/type-thermoformer.html', cms)
+        self.assertIn('/cases/cms-br5-302.html', read('services/brand-cms.html'))
+        self.assertIn('/services/brand-cms.html', read('services/type-thermoformer.html'))
+        self.assertIn('/services/type-thermoformer.html', read('services/brand-cms.html'))
+
+    def test_hub_content_overlap(self):
+        a, b = read('services/brand-cms.html'), read('services/type-thermoformer.html')
+        def sh(s):
+            s = s[s.index('<h1'):s.index('<section class="case-cta"')]
+            w = re.sub(r'<[^>]+>', ' ', s).lower().split()
+            return {' '.join(w[i:i + 5]) for i in range(len(w) - 4)}
+        x, y = sh(a), sh(b)
+        self.assertLess(len(x & y) / min(len(x), len(y)), 0.30)
+
+
 class SitemapTests(unittest.TestCase):
     """sitemap.xml и llms.txt (bot/build_sitemap.py)."""
 

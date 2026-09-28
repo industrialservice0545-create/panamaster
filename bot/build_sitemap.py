@@ -78,6 +78,7 @@ def meta(rel):
 
 def build_llms(rels):
     industries = [r for r in rels if r.startswith('services/industry-')]
+    hubs = [r for r in rels if r.startswith(('services/brand-', 'services/type-'))]
     cases = [r for r in rels if r.startswith('cases/')]
     line = lambda r: '- [{0}]({1}): {2}'.format(*meta(r)[:1], url_of(r), meta(r)[1])
     return f'''# Панамастер
@@ -102,6 +103,10 @@ def build_llms(rels):
 ## Отрасли
 
 {chr(10).join(line(r) for r in industries)}
+
+## Производители и виды оборудования
+
+{chr(10).join(line(r) for r in hubs)}
 
 ## Кейсы
 

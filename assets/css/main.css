@@ -1017,3 +1017,9 @@ main { padding-block-end: var(--space-xl); }
 
 /* Сетка в 3 колонки (отрасли на главной, 3×3) */
 .related-grid--3 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+
+/* Посадочные страницы брендов и видов оборудования */
+.hub-subtitle { margin-block: var(--space-md) 8px; font-size: var(--fs-h3); line-height: var(--lh-heading); font-weight: var(--fw); }
+.hub-list { display: grid; gap: 10px; max-width: var(--measure); padding-inline-start: 1.2em; font-size: var(--fs-body); line-height: var(--lh-body); }
+.hub-list li::marker { color: var(--accent); }
+.related-card__photo { display: block; }

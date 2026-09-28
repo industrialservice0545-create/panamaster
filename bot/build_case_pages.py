@@ -55,6 +55,17 @@ def load():
     return cases, industries, types
 
 
+def load_hubs():
+    return json.loads(read('bot/content/hubs.json'))
+
+
+def brand_slug(brand, hubs):
+    for slug, b in hubs['brands'].items():
+        if brand.strip().upper() in [m.upper() for m in b['match']]:
+            return slug
+    return None
+
+
 def ru_date(iso):
     y, m, dd = iso.split('-')
     return f'{int(dd)} {MONTHS[int(m) - 1]} {y}'
@@ -159,9 +170,11 @@ def card(c, industries):
     img = ''
     if ph:
         img = f'''
-                    <figure class="case-photo">
-                        <img src="/assets/img/cases/{c["slug"]}/{ph["file"]}" alt="{esc(ph["alt"])}" width="{ph["w"]}" height="{ph["h"]}" loading="lazy" decoding="async">
-                    </figure>'''
+                    <a class="related-card__photo" href="/cases/{c["slug"]}.html" tabindex="-1" aria-hidden="true">
+                        <figure class="case-photo">
+                            <img src="/assets/img/cases/{c["slug"]}/{ph["file"]}" alt="{esc(ph["alt"])}" width="{ph["w"]}" height="{ph["h"]}" loading="lazy" decoding="async">
+                        </figure>
+                    </a>'''
     days = repair_days_text(c)
     time_line = f'\n                    <p class="related-card__time">{days}</p>' if days else ''
     return f'''<article class="related-card">{img}
@@ -251,7 +264,37 @@ def render_case(c, cases, industries, types, parts):
             </div>
         </section>
 '''
-    tags = [f'<a href="/services/industry-{c["industry"]}.html">Ремонт оборудования: {esc(ind_name.lower())}</a>']
+    hubs = load_hubs()
+    b_slug = brand_slug(c['brand'], hubs)
+    tags = []
+    if b_slug:
+        tags.append(f'<a href="/services/brand-{b_slug}.html">Сервисный центр {esc(hubs["brands"][b_slug]["name"])}</a>')
+    if c['equipment_type'] in hubs['types']:
+        tags.append(f'<a href="/services/type-{c["equipment_type"]}.html">Ремонт: {esc(type_name.lower())}</a>')
+    tags.append(f'<a href="/services/industry-{c["industry"]}.html">Ремонт оборудования: {esc(ind_name.lower())}</a>')
+    model = hubs['models'].get(c['slug'])
+    model_html = ''
+    if model:
+        paras = '\n'.join(f'                <p>{esc(p)}</p>' for p in model['about'])
+        fails = '\n'.join(f'                <li>{esc(f)}</li>' for f in model['failures'])
+        brand_link = f' Подробнее о ремонте оборудования производителя — на странице <a href="/services/brand-{b_slug}.html">сервисного центра {esc(hubs["brands"][b_slug]["name"])}</a>.' if b_slug else ''
+        model_html = f'''
+        <section class="case-block">
+            <p class="section-label">Специализация</p>
+            <h2>Ремонт {esc(name)}</h2>
+            <div class="case-summary">
+                <p>Ремонтируем электронику {esc(name)} и других машин этой серии: выезд в течение 24 часов по Москве и Московской области, диагностика — 1 рабочий день, гарантия — 3 месяца.{brand_link}</p>
+            </div>
+            <h3 class="hub-subtitle">{esc(model["about_title"])}</h3>
+            <div class="case-summary">
+{paras}
+            </div>
+            <h3 class="hub-subtitle">{esc(model["failures_title"])}</h3>
+            <ul class="hub-list">
+{fails}
+            </ul>
+        </section>
+'''
 
     ld = {'@context': 'https://schema.org', '@graph': [
         {'@type': 'BreadcrumbList', 'itemListElement': [
@@ -348,6 +391,7 @@ def render_case(c, cases, industries, types, parts):
             </div>
         </section>
 
+{model_html}
         <section class="case-block">
             <p class="section-label">Вопросы</p>
             <h2>Коротко для решения</h2>
@@ -447,6 +491,157 @@ def render_cases_list(page_cases, n, total, industries, parts):
 '''
 
 
+def render_hub(kind, slug, h, cases, industries, types, parts):
+    """Посадочная бренда (kind='brand') или вида оборудования (kind='type')."""
+    header, footer, cta = parts
+    hubs = load_hubs()
+    rel = f'services/{kind}-{slug}.html'
+    url = f'{SITE}/{rel}'
+    if kind == 'brand':
+        own = [c for c in cases if brand_slug(c['brand'], hubs) == slug]
+    else:
+        own = [c for c in cases if c['equipment_type'] == slug]
+    og = f'{SITE}{photo_url(own[0], len(own[0]["photos"]) - 1)}' if own and own[0]['photos'] else f'{SITE}/assets/img/industries/plastics.webp'
+    lead = '\n'.join(f'                        <p>{esc(p)}</p>' for p in h['lead'])
+    about = '\n'.join(f'                <p>{esc(p)}</p>' for p in h['about'])
+    lines = '\n'.join(f'                <article class="related-card"><h3>{esc(a)}</h3><p>{esc(b)}</p></article>' for a, b in h['lines'])
+    elec = '\n'.join(f'                <li>{esc(e)}</li>' for e in h['electronics'])
+    faq = h['faq']
+    faq_html = '\n'.join(f"""                <article>
+                    <h3>{esc(q)}</h3>
+                    <p>{esc(a)}</p>
+                </article>""" for q, a in faq)
+    cases_html = ''
+    if own:
+        cards = '\n                '.join(card(c, industries) for c in own[:6])
+        cases_html = f"""
+        <section class="case-block">
+            <p class="section-label">Примеры работ</p>
+            <h2>Выполненные ремонты</h2>
+            <div class="related-grid related-grid--cases">
+                {cards}
+            </div>
+        </section>
+"""
+    brands_html = ''
+    if kind == 'type' and h.get('brands_text'):
+        brand_links = ''.join(f' <a href="/services/brand-{b}.html">Сервисный центр {esc(v["name"])}</a>'
+                              for b, v in hubs['brands'].items()
+                              if any(brand_slug(c['brand'], hubs) == b for c in own))
+        brands_html = f"""
+        <section class="case-block">
+            <p class="section-label">Производители</p>
+            <h2>{esc(h["brands_title"])}</h2>
+            <div class="case-summary"><p>{esc(h["brands_text"])}</p></div>{f'<div class="services-tags">{brand_links}</div>' if brand_links else ''}
+        </section>
+"""
+    links = []
+    if kind == 'brand':
+        for t in sorted({c['equipment_type'] for c in own}):
+            if t in hubs['types']:
+                links.append(f'<a href="/services/type-{t}.html">Ремонт: {esc(types.get(t, t).lower())}</a>')
+        for i in sorted({c['industry'] for c in own}):
+            links.append(f'<a href="/services/industry-{i}.html">{esc(industries.get(i, i))}</a>')
+    else:
+        for i in h.get('industries', []):
+            links.append(f'<a href="/services/industry-{i}.html">{esc(industries.get(i, i))}</a>')
+    crumb = h['name'] if kind == 'brand' else h['name']
+    ld = {'@context': 'https://schema.org', '@graph': [
+        {'@type': 'BreadcrumbList', 'itemListElement': [
+            {'@type': 'ListItem', 'position': 1, 'name': 'Главная', 'item': f'{SITE}/'},
+            {'@type': 'ListItem', 'position': 2, 'name': 'Услуги', 'item': f'{SITE}/#uslugi'},
+            {'@type': 'ListItem', 'position': 3, 'name': crumb, 'item': url}]},
+        {'@type': 'Service', 'name': h['h1'], 'serviceType': 'Ремонт промышленного оборудования', 'url': url,
+         'areaServed': [{'@type': 'City', 'name': 'Москва'}, {'@type': 'AdministrativeArea', 'name': 'Московская область'}],
+         'provider': {'@type': 'ProfessionalService', 'name': 'Панамастер', 'url': f'{SITE}/', 'telephone': '+7-926-883-09-39'}},
+        {'@type': 'FAQPage', 'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in faq]}]}
+    page_cta = cta.replace('value="Главная"', f'value="{esc(h["h1"])}"').replace('home-phone', f'{kind}-phone')
+    html_ = head(h['title'], h['desc'], url, 'website', og) + f"""
+{menu(header, None)}
+
+<nav class="breadcrumbs" aria-label="Хлебные крошки">
+    <div class="container">
+        <a href="/">Главная</a>
+        <span class="breadcrumbs__sep">→</span>
+        <a href="/#uslugi">Услуги</a>
+        <span class="breadcrumbs__sep">→</span>
+        <span aria-current="page">{esc(crumb)}</span>
+    </div>
+</nav>
+
+<main>
+    <div class="container">
+
+        <section class="case-hero">
+            <div class="case-hero__content">
+                <p class="case-hero__meta">{"Производитель" if kind == "brand" else "Вид оборудования"} · Москва и Московская область</p>
+                <h1>{esc(h["h1"])}</h1>
+                <div class="case-summary">
+{lead}
+                </div>
+                <div class="bottom-cta">
+                    <a href="tel:+79268830939" class="btn btn--primary">Позвонить: +7 926 883-09-39</a>
+                    <a href="#zayavka" class="btn btn--ghost">Оставить заявку</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="case-block">
+            <p class="section-label">{esc(h["about_title"])}</p>
+            <div class="case-summary">
+{about}
+            </div>
+        </section>
+
+        <section class="case-block">
+            <p class="section-label">Оборудование</p>
+            <h2>{esc(h["lines_title"])}</h2>
+            <div class="related-grid related-grid--3">
+{lines}
+            </div>
+        </section>
+
+        <section class="case-block">
+            <p class="section-label">Неисправности</p>
+            <h2>{esc(h["electronics_title"])}</h2>
+            <ul class="hub-list">
+{elec}
+            </ul>
+        </section>
+{brands_html}{cases_html}
+{page_cta}
+
+        <section class="case-block">
+            <p class="section-label">Вопросы</p>
+            <h2>Коротко для решения</h2>
+            <div class="faq">
+{faq_html}
+            </div>
+        </section>
+
+        <section class="case-block case-services">
+            <h2 class="section-label">Связанные направления</h2>
+            <div class="services-tags">
+                {" ".join(links)}
+            </div>
+        </section>
+
+    </div>
+</main>
+
+{footer}
+
+<script type="application/ld+json">
+{json.dumps(ld, ensure_ascii=False, indent=2)}
+</script>
+
+</body>
+</html>
+"""
+    write(rel, html_)
+    return rel
+
+
 def replace_block(text, block):
     a = text.index('<!-- CASES_START -->')
     b = text.index('<!-- CASES_END -->') + len('<!-- CASES_END -->')
@@ -489,6 +684,14 @@ def build():
     while os.path.exists(os.path.join(ROOT, f'cases-{n}.html')):   # лишние страницы пагинации
         os.remove(os.path.join(ROOT, f'cases-{n}.html'))
         n += 1
+
+    hubs = load_hubs()
+    for slug, h in hubs['brands'].items():
+        if any(brand_slug(c['brand'], hubs) == slug for c in cases):
+            written.append(render_hub('brand', slug, h, cases, industries, types, parts))
+    for slug, h in hubs['types'].items():
+        if any(c['equipment_type'] == slug for c in cases):
+            written.append(render_hub('type', slug, h, cases, industries, types, parts))
 
     write('index.html', replace_block(read('index.html'), cases_block(cases[:HOME_CASES], industries, 'Последние ремонты')))
     written.append('index.html')
