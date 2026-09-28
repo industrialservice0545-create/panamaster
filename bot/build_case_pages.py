@@ -650,19 +650,21 @@ def render_map(cases, industries, parts):
     """«Карта работ»: метки кейсов с координатами (округлены до ~1 км), ссылки на кейсы."""
     header, footer, cta = parts
     pts = [c for c in cases if c.get('lat') and c.get('lon')]
-    points = [{'lat': c['lat'], 'lon': c['lon'], 'title': f'{c["brand"]} {c["model"]}: {c["headline"]}',
-               'area': c.get('area') or '', 'url': f'/cases/{c["slug"]}.html'} for c in pts]
+    # только координаты: на карте нет сведений об оборудовании (решение владельца 28.09.2026)
+    points = [{'lat': c['lat'], 'lon': c['lon']} for c in pts]
     areas = sorted({c.get('area') for c in pts if c.get('area')})
     title = 'Карта работ: ремонты оборудования в Москве и МО — Панамастер'
     if len(title) > 60:
         title = 'Карта работ по ремонту оборудования — Панамастер'
-    desc = fit(f'Карта выполненных ремонтов промышленного оборудования Панамастер в Москве и Московской области: {len(pts)} объектов. Выезд за 24 часа, гарантия 3 месяца.', 140, 160)
+    n = len(pts)
+    word = 'объект' if n % 10 == 1 and n % 100 != 11 else 'объекта' if n % 10 in (2, 3, 4) and n % 100 not in (12, 13, 14) else 'объектов'
+    desc = fit(f'Карта выполненных ремонтов промышленного оборудования Панамастер в Москве и Московской области: {n} {word}. Выезд за 24 часа, гарантия 3 месяца.', 140, 160)
     cards = '\n                '.join(card(c, industries) for c in pts)
     ld = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
         {'@type': 'ListItem', 'position': 1, 'name': 'Главная', 'item': f'{SITE}/'},
         {'@type': 'ListItem', 'position': 2, 'name': 'Примеры работ', 'item': f'{SITE}/cases.html'},
         {'@type': 'ListItem', 'position': 3, 'name': 'Карта работ', 'item': f'{SITE}/map.html'}]}
-    area_text = f' Районы и города: {", ".join(areas)}.' if areas else ''
+    area_text = ''
     return head(title, desc, f'{SITE}/map.html', 'website', f'{SITE}/assets/img/industries/metalworking.webp') + f"""
 {menu(header, '/cases.html')}
 
@@ -683,7 +685,7 @@ def render_map(cases, industries, parts):
             <div class="case-hero__content">
                 <h1>Карта работ</h1>
                 <div class="case-summary">
-                    <p>Где мы ремонтировали оборудование: {len(pts)} {"объект" if len(pts) == 1 else "объекта" if len(pts) in (2, 3, 4) else "объектов"} в Москве и Московской области.{esc(area_text)} Метка стоит с точностью до района — адреса клиентов мы не публикуем.</p>
+                    <p>Где мы ремонтировали оборудование: {len(pts)} {"объект" if len(pts) == 1 else "объекта" if len(pts) in (2, 3, 4) else "объектов"} в Москве и Московской области.{esc(area_text)} Каждая точка — место, где мы восстановили работу оборудования.</p>
                 </div>
             </div>
             <div class="map map--works" id="works-map" role="region" aria-label="Карта выполненных ремонтов"
@@ -691,9 +693,8 @@ def render_map(cases, industries, parts):
         </section>
 
         <section class="case-block">
-            <p class="section-label">Ремонты на карте</p>
-            <div class="related-grid related-grid--cases">
-                {cards}
+            <div class="bottom-cta">
+                <a href="/cases.html" class="btn btn--ghost">Примеры работ</a>
             </div>
         </section>
 

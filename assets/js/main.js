@@ -168,7 +168,7 @@ if (mapEl) {
   }
 }
 
-// «Карта работ»: метки кейсов, ч/б подложка, оранжевые метки со ссылкой на кейс
+// «Карта работ»: только точки мест работ, без сведений об оборудовании; ч/б подложка, оранжевые метки
 const worksMap = document.getElementById('works-map');
 if (worksMap) {
   const points = JSON.parse(worksMap.dataset.points || '[]');
@@ -180,11 +180,8 @@ if (worksMap) {
       const map = new window.ymaps.Map(worksMap, { center: [55.75, 37.62], zoom: 9, controls: ['zoomControl'] });
       map.behaviors.disable('scrollZoom');
       points.forEach(function (p) {
-        map.geoObjects.add(new window.ymaps.Placemark([p.lat, p.lon], {
-          hintContent: p.title,
-          balloonContentHeader: p.title,
-          balloonContentBody: (p.area ? p.area + '<br>' : '') + '<a href="' + p.url + '">Читать кейс</a>'
-        }, { preset: 'islands#dotIcon', iconColor: '#FFA933' }));
+        map.geoObjects.add(new window.ymaps.Placemark([p.lat, p.lon], {},
+          { preset: 'islands#dotIcon', iconColor: '#FFA933', hasBalloon: false, hasHint: false }));
       });
       if (points.length > 1) {
         map.setBounds(map.geoObjects.getBounds(), { checkZoomRange: true, zoomMargin: 40 });

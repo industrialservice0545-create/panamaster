@@ -46,9 +46,9 @@
     "solution": "Компонентный ремонт сервосистемы Acopos, ремонт силовых блоков тэнов PMF RES8CHEX, настройка стойки CMS.",
     "result": "Машина работает в штатном режиме.",
     "repair_days": null,
-    "area": null,
-    "lat": null,
-    "lon": null,
+    "area": "Москва, район Печатники",
+    "lat": 55.708902,
+    "lon": 37.721058,
     "photos": [
       {
         "file": "photo-1.webp",
