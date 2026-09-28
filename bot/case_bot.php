@@ -21,7 +21,7 @@ const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const STATE_TTL = 24 * 3600;
 const SUGGEST = 6;
 
-$CFG = require (getenv('CASEBOT_CONFIG') ?: dirname(__DIR__, 3) . '/bot-config.php');
+$CFG = require (getenv('CASEBOT_CONFIG') ?: (getenv('HOME') ?: '/home/u550586') . '/panamaster.ru/bot-config.php');
 $DICT = json_decode((string) file_get_contents($CFG['repo_dir'] . '/bot/dictionaries/entities.json'), true);
 @mkdir($CFG['data_dir'] . '/state', 0700, true);
 
