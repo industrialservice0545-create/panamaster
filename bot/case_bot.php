@@ -14,6 +14,7 @@
 //           'dry_run' => false];
 
 declare(strict_types=1);
+ini_set('serialize_precision', '-1');
 
 const TEXT_MIN = 30;
 const TEXT_MAX = 500;
@@ -158,7 +159,7 @@ const STEPS = [
     'headline' => ['Суть в 3–7 словах для заголовка. Например: «устранено смещение рапорта».', false],
     'result'   => ['Результат после ремонта одной фразой. Например: «Линия работает в штатном режиме».', true],
     'days'     => ['Срок ремонта в рабочих днях (числом). Покажем на сайте, только если ремонт был быстрым — до 5 дней.', true],
-    'address'  => ['Адрес объекта: город, улица, дом. На сайте покажем только район или город, на карте — метку с точностью до километра.', true],
+    'address'  => ['Адрес объекта: город, улица, дом. В крупном городе метка встанет по адресу, в области — на населённый пункт. Название клиента на сайте не показываем.', true],
     'photo1'   => ['Фото: общий план оборудования.', false],
     'photo2'   => ['Фото: шкаф управления.', true],
 ];
@@ -281,26 +282,38 @@ function ya_geocode(string $query, string $kind = ''): ?array
     return $obj ? ['pos' => $obj['Point']['pos'], 'text' => $obj['metaDataProperty']['GeocoderMetaData']['text'] ?? ''] : null;
 }
 
-/** Публичная точка: координаты, округлённые до 0,01° (~1 км), и «Москва, Район» / «Город». */
+const BIG_CITIES = ['Москва', 'Санкт-Петербург', 'Новосибирск', 'Екатеринбург', 'Казань', 'Нижний Новгород',
+    'Красноярск', 'Челябинск', 'Самара', 'Уфа', 'Ростов-на-Дону', 'Краснодар', 'Омск', 'Воронеж', 'Пермь', 'Волгоград'];
+
+/** Точка на карте (решение владельца 28.09.2026): в крупном городе — по точному адресу,
+ *  в области — центр населённого пункта. Подпись: «Москва, район» или название населённого пункта. */
 function public_location(string $address): array
 {
+    $none = ['area' => null, 'lat' => null, 'lon' => null];
     $hit = ya_geocode($address);
     if (!$hit) {
-        return ['area' => null, 'lat' => null, 'lon' => null];
+        return $none;
     }
     [$lon, $lat] = array_map('floatval', explode(' ', $hit['pos']));
-    $area = null;
-    $district = ya_geocode("$lon,$lat", 'district');
-    $parts = $district ? array_map('trim', explode(',', $district['text'])) : [];
-    if (in_array('Москва', $parts, true)) {
-        $last = end($parts);
-        $area = str_contains($last, 'район') || str_contains($last, 'поселение') ? "Москва, $last" : 'Москва';
-    } else {
-        $loc = ya_geocode("$lon,$lat", 'locality');
-        $lp = $loc ? array_map('trim', explode(',', $loc['text'])) : [];
-        $area = $lp ? end($lp) : null;
+    $loc = ya_geocode("$lon,$lat", 'locality');
+    $lp = $loc ? array_map('trim', explode(',', $loc['text'])) : [];
+    $city = $lp ? end($lp) : null;
+    if ($city && in_array($city, BIG_CITIES, true)) {
+        $district = ya_geocode("$lon,$lat", 'district');
+        $dp = $district ? array_map('trim', explode(',', $district['text'])) : [];
+        $last = $dp ? end($dp) : '';
+        $area = (str_contains($last, 'район') || str_contains($last, 'поселение')) ? "$city, $last" : $city;
+        return ['area' => $area, 'lat' => round($lat, 6), 'lon' => round($lon, 6)];
     }
-    return ['area' => $area, 'lat' => round($lat, 2), 'lon' => round($lon, 2)];
+    if ($city && $loc) {
+        [$clon, $clat] = array_map('floatval', explode(' ', $loc['pos']));
+        $center = ya_geocode(implode(', ', $lp));        // центр населённого пункта
+        if ($center) {
+            [$clon, $clat] = array_map('floatval', explode(' ', $center['pos']));
+        }
+        return ['area' => $city, 'lat' => round($clat, 6), 'lon' => round($clon, 6)];
+    }
+    return $none;
 }
 
 // ---------- публикация заявки ----------
@@ -421,7 +434,7 @@ function handle_text(int $chat, string $text, array $msg): void
                         [[['text' => 'Пропустить', 'callback_data' => 'skip']]]);
                     return $st;
                 }
-                send($chat, 'Адрес найден: ' . $hit['text'] . '. На сайте будет только район или город.');
+                send($chat, 'Адрес найден: ' . $hit['text'] . '.');
             }
         }
         $st['data'][$step] = $text;
