@@ -35,6 +35,19 @@ def slugify(text):
     return re.sub(r'-{2,}', '-', s).strip('-')[:80].strip('-')
 
 
+def lower_first(text):
+    """Заголовок идёт после «Бренд Модель:» — первая буква строчная, если это не аббревиатура."""
+    if len(text) > 1 and text[0].isupper() and not text[1].isupper():
+        return text[0].lower() + text[1:]
+    return text
+
+
+def sentence(text):
+    """Пробелы и точка в конце."""
+    text = ' '.join(text.split())
+    return text if text.endswith(('.', '!', '?')) else text + '.'
+
+
 def style_photo(src, dst):
     """Кадр 3:2, 1200×800, монохром с сохранением тёплых тонов, WebP ≤100 КБ. Возвращает (w, h)."""
     im = ImageOps.exif_transpose(Image.open(src)).convert('RGB')
@@ -121,8 +134,8 @@ def process():
             'slug': slug, 'date': req['date'], 'industry': req['industry'], 'equipment_type': type_slug,
             'brand': req['brand'].strip(), 'model': re.sub(r'\s+', ' ', req['model']).strip(),
             'rack': req.get('rack'), 'servo': req.get('servo'),
-            'headline': req['headline'].strip().rstrip('.'),
-            'defect': req['defect'].strip(), 'solution': req['solution'].strip(),
+            'headline': lower_first(req['headline'].strip().rstrip('.')),
+            'defect': sentence(req['defect']), 'solution': sentence(req['solution']),
             'result': (req.get('result') or 'Оборудование работает в штатном режиме, дефект устранён.').strip(),
             'repair_days': req.get('repair_days'), 'area': None, 'lat': None, 'lon': None,
             'photos': photos, 'request_id': req.get('id'),
