@@ -10,7 +10,7 @@ RedirectMatch 404 ^/bot/(?!webhook\.php$)
 
 # Исходники: прокси Worker, шаблоны генерации, данные кейсов, тесты
 RedirectMatch 404 ^/(cloudflare|assets/templates|assets/data)/
-RedirectMatch 404 ^/tests/
+RedirectMatch 404 ^/(tests|inbox)/
 
 # Служебные расширения
 RedirectMatch 404 \.(log|md|mdc|sh|jsonc|yml|yaml|bak|backup|wip)$

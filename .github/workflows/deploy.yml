@@ -1,14 +1,70 @@
-name: Deploy to Masterhost
+name: Build and deploy to Masterhost
+
+# push в main:
+#   build  — если в inbox/ есть заявки бота: фото в стиле сайта, страницы, sitemap, тесты, коммит [skip ci]
+#   deploy — SSH на Masterhost: git reset --hard origin/main
+#   notify — переобход новых страниц в Яндекс Вебмастере и отчёт в Telegram
+#
+# Секреты: SSH_HOST, SSH_USER, SSH_PRIVATE_KEY (были),
+#          TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, YANDEX_OAUTH_TOKEN (для отчёта и переобхода).
 
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+concurrency:
+  group: deploy
+  cancel-in-progress: false
 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      report: ${{ steps.pages.outputs.report }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check inbox
+        id: inbox
+        run: |
+          if ls inbox/*/request.json >/dev/null 2>&1; then echo "has=1" >> "$GITHUB_OUTPUT"; else echo "has=0" >> "$GITHUB_OUTPUT"; fi
+
+      - uses: actions/setup-python@v5
+        if: steps.inbox.outputs.has == '1'
+        with:
+          python-version: '3.12'
+
+      - name: Build case pages
+        id: pages
+        if: steps.inbox.outputs.has == '1'
+        run: |
+          pip install --quiet pillow
+          python3 bot/process_inbox.py
+          python3 bot/build_industry_pages.py
+          python3 bot/build_case_pages.py
+          python3 bot/build_sitemap.py
+          python3 -m unittest discover -s tests/unit
+          echo "report=$(python3 -c 'import json;print(json.dumps(json.load(open("inbox_report.json")),ensure_ascii=False))')" >> "$GITHUB_OUTPUT"
+
+      - name: Commit pages
+        if: steps.inbox.outputs.has == '1'
+        run: |
+          git config user.name "Case Bot"
+          git config user.email "bot@panamaster.ru"
+          git add -A assets cases cases.html index.html services sitemap.xml llms.txt bot/dictionaries inbox
+          SLUGS=$(python3 -c 'import json;print(", ".join(x["slug"] for x in json.load(open("inbox_report.json"))))')
+          git commit -m "case: $SLUGS [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -22,3 +78,68 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             echo "✓ Deploy finished at $(date)"
+
+  notify:
+    needs: [build, deploy]
+    if: always() && needs.build.outputs.report != '' && needs.build.outputs.report != '[]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recrawl and report
+        env:
+          REPORT: ${{ needs.build.outputs.report }}
+          DEPLOY: ${{ needs.deploy.result }}
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          YA_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, time, urllib.request
+          report = json.loads(os.environ['REPORT'])
+          ok = os.environ['DEPLOY'] == 'success'
+          site = 'https://panamaster.ru'
+          wm = 'https://api.webmaster.yandex.net/v4/user/391894548/hosts/https:panamaster.ru:443/recrawl/queue'
+
+          def post(url, data, headers):
+              req = urllib.request.Request(url, data=json.dumps(data).encode(), headers={'Content-Type': 'application/json', **headers})
+              try:
+                  return urllib.request.urlopen(req, timeout=20).status
+              except Exception as e:
+                  return str(e)[:60]
+
+          lines = []
+          if ok:
+              time.sleep(20)
+          for r in report:
+              url = f"{site}/cases/{r['slug']}.html"
+              live = recrawl = '—'
+              if ok:
+                  try:
+                      live = urllib.request.urlopen(url, timeout=20).status
+                  except Exception as e:
+                      live = str(e)[:40]
+                  if os.environ.get('YA_TOKEN'):
+                      recrawl = post(wm, {'url': url}, {'Authorization': 'OAuth ' + os.environ['YA_TOKEN']})
+              extra = f"\nНовый вид оборудования: {r['new_type']}" if r.get('new_type') else ''
+              lines.append(f"{r['title']}\n{url}\nФото: {r['photos']}. Страница: {live}. Переобход в Яндексе: {recrawl}{extra}")
+          head = '✅ Кейс опубликован' if ok else '⚠️ Страницы собраны, но деплой не прошёл — проверю'
+          text = head + '\n\n' + '\n\n'.join(lines) + '\n\nОбновлены: Примеры работ, главная, страница отрасли, sitemap.'
+          chat = os.environ.get('TG_CHAT') or (report[0].get('chat_id') if report else None)
+          if os.environ.get('TG_TOKEN') and chat:
+              print(post(f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage", {'chat_id': chat, 'text': text}, {}))
+          print(text)
+          EOF
+
+  notify-failure:
+    needs: [build]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report build failure
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ] && curl -s -X POST "https://api.telegram.org/bot$TG_TOKEN/sendMessage" \
+            --data-urlencode "chat_id=$TG_CHAT" \
+            --data-urlencode "text=❌ Кейс не опубликован: сборка или тесты не прошли. Сайт не изменился. Подробности: $RUN" || true

@@ -184,7 +184,7 @@ class SiteRulesTests(unittest.TestCase):
 
     def test_htaccess_hides_service_paths(self):
         h = read('.htaccess')
-        for rule in ['^/\\.(?!well-known/)', '^/bot/', 'assets/templates', '^/tests/']:
+        for rule in ['^/\\.(?!well-known/)', '^/bot/', 'assets/templates', '^/(tests|inbox)/']:
             self.assertIn(rule, h)
 
     def test_robots_txt(self):
