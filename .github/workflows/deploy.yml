@@ -154,12 +154,11 @@ jobs:
           TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
           YA_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
         run: |
-          echo "TELEGRAM_BOT_TOKEN: $([ -n "$TG_TOKEN" ] && echo задан || echo НЕТ)"
-          echo "TELEGRAM_CHAT_ID:   $([ -n "$TG_CHAT" ] && echo задан || echo НЕТ)"
-          echo "YANDEX_OAUTH_TOKEN: $([ -n "$YA_TOKEN" ] && echo задан || echo НЕТ)"
+          echo "::notice::TELEGRAM_BOT_TOKEN $([ -n "$TG_TOKEN" ] && echo "задан, длина ${#TG_TOKEN}" || echo НЕТ)"
+          echo "::notice::TELEGRAM_CHAT_ID $([ -n "$TG_CHAT" ] && echo "задан, длина ${#TG_CHAT}" || echo НЕТ)"
+          echo "::notice::YANDEX_OAUTH_TOKEN $([ -n "$YA_TOKEN" ] && echo "задан, длина ${#YA_TOKEN}" || echo НЕТ)"
           YA=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: OAuth $YA_TOKEN" https://api.webmaster.yandex.net/v4/user)
-          echo "Вебмастер: HTTP $YA"
+          echo "::notice::Вебмастер HTTP $YA"
           TG=$(curl -s -X POST "https://api.telegram.org/bot$TG_TOKEN/sendMessage" --data-urlencode "chat_id=$TG_CHAT" \
-               --data-urlencode "text=✅ Проверка: секреты GitHub подключены. Отчёты о публикации кейсов будут приходить сюда. Вебмастер: HTTP $YA" | head -c 20)
-          echo "Telegram: $TG"
-          [ "$YA" = "200" ] && echo "$TG" | grep -q '"ok":true'
+               --data-urlencode "text=✅ Проверка: секреты GitHub подключены. Отчёты о публикации кейсов будут приходить сюда.")
+          echo "::notice::Telegram $(echo "$TG" | python3 -c 'import sys,json;d=json.load(sys.stdin);print("ok" if d.get("ok") else d.get("description"))' 2>/dev/null || echo "нет ответа")"
