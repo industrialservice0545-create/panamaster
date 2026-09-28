@@ -14,3 +14,11 @@ bot/backups/
 *.backup
 *.wip
 *.bak
+
+# Тесты: зависимости и отчёты Playwright
+tests/node_modules/
+tests/test-results/
+tests/playwright-report/
+
+# Python
+__pycache__/

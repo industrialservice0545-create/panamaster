@@ -1,0 +1,13 @@
+{
+  "name": "panamaster-tests",
+  "private": true,
+  "description": "Локальные тесты сайта. На сервер не устанавливается.",
+  "scripts": {
+    "test:unit": "cd .. && python3 -m unittest discover -s tests/unit -v",
+    "test:e2e": "playwright test",
+    "test": "npm run test:unit && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}
