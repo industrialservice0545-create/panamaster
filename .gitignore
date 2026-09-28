@@ -22,3 +22,6 @@ tests/playwright-report/
 
 # Python
 __pycache__/
+
+# Локальные разрешения Claude Code (временные)
+.claude/settings.local.json

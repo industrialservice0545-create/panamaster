@@ -372,6 +372,9 @@ def main():
 
 {page_cta}
 
+        <!-- CASES_START -->
+        <!-- CASES_END -->
+
         <section class="case-block">
             <p class="section-label">Вопросы</p>
             <h2>Коротко для решения</h2>
