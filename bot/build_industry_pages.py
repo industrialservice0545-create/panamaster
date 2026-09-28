@@ -283,7 +283,7 @@ def main():
                     <img src="{ph['src']}" alt="{esc(ph['alt'])}" width="{ph['w']}" height="{ph['h']}" decoding="async" fetchpriority="high">
                 </figure>
             </div>''') if ph else ''
-        og_image = f"{SITE}{ph['src']}" if ph else f"{SITE}/assets/img/cases/codimag-viva-340/photo-2.jpg"
+        og_image = f"{SITE}{ph['src']}" if ph else f"{SITE}/assets/img/cases/codimag-viva-340/photo-2.webp"
         links = '\n'.join(f'                <a href="/services/industry-{o["slug"]}.html">{esc(o["name"])}</a>' for o in others)
         ld = {
             '@context': 'https://schema.org',
