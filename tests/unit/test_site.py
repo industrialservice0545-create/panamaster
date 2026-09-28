@@ -193,6 +193,33 @@ class SiteRulesTests(unittest.TestCase):
         self.assertIn('Sitemap: https://panamaster.ru/sitemap.xml', r)
 
 
+class CasePagesTests(unittest.TestCase):
+    """Страницы кейсов из генератора bot/build_case_pages.py."""
+
+    def test_case_titles_and_descriptions(self):
+        for p in glob.glob('cases/*.html', root_dir=ROOT):
+            s = read(p)
+            t = html.unescape(re.search(r'<title>(.*?)</title>', s).group(1))
+            d = html.unescape(re.search(r'name="description" content="([^"]*)"', s).group(1))
+            with self.subTest(p):
+                self.assertTrue(50 <= len(t) <= 60, f'title {len(t)}: {t}')
+                self.assertTrue(140 <= len(d) <= 160, f'description {len(d)}: {d}')
+
+    def test_every_case_in_data_has_page_and_photos(self):
+        for c in json.loads(read('assets/data/cases.json')):
+            with self.subTest(c['slug']):
+                self.assertTrue(os.path.exists(os.path.join(ROOT, 'cases', c['slug'] + '.html')))
+                for ph in c['photos']:
+                    path = os.path.join(ROOT, 'assets/img/cases', c['slug'], ph['file'])
+                    self.assertTrue(os.path.exists(path), path)
+                    self.assertLessEqual(os.path.getsize(path), 100 * 1024)
+
+    def test_no_private_fields_in_public_data(self):
+        for c in json.loads(read('assets/data/cases.json')):
+            for field in ('company', 'address', 'chat_id'):
+                self.assertNotIn(field, c)
+
+
 class SitemapTests(unittest.TestCase):
     """sitemap.xml и llms.txt (bot/build_sitemap.py)."""
 

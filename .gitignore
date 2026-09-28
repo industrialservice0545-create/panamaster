@@ -25,3 +25,6 @@ __pycache__/
 
 # Локальные разрешения Claude Code (временные)
 .claude/settings.local.json
+
+# Отчёт обработки заявок бота (служебный)
+inbox_report.json

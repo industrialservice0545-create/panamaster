@@ -83,11 +83,16 @@ def repair_days_text(c):
 
 
 def title_of(c):
-    base = f'{c["brand"]} {c["model"]}: {c["headline"]}'
-    for t in (f'{base}, Москва — Панамастер', f'{base} — Панамастер', f'{base}'):
-        if len(t) <= 60:
-            return t if len(t) >= 50 or t.endswith('Панамастер') else t
-    return fit(base, 40, 60)
+    """50–60 символов: сначала с сутью ремонта, для длинных моделей — «Ремонт {бренд} {модель}»."""
+    bm = f'{c["brand"]} {c["model"]}'
+    candidates = [f'{bm}: {c["headline"]} — Панамастер', f'{bm}: {c["headline"]}, Москва — Панамастер',
+                  f'{bm}: {c["headline"]}', f'Ремонт {bm} в Москве — Панамастер',
+                  f'Ремонт {bm} — Панамастер', f'Ремонт {bm} в Москве, гарантия 3 месяца']
+    for t in candidates:
+        if 50 <= len(t) <= 60:
+            return t
+    fitting = [t for t in candidates if len(t) <= 60]
+    return max(fitting, key=len) if fitting else fit(f'Ремонт {bm}', 20, 60)
 
 
 def description_of(c):
