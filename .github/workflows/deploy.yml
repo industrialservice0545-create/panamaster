@@ -143,3 +143,23 @@ jobs:
           [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ] && curl -s -X POST "https://api.telegram.org/bot$TG_TOKEN/sendMessage" \
             --data-urlencode "chat_id=$TG_CHAT" \
             --data-urlencode "text=❌ Кейс не опубликован: сборка или тесты не прошли. Сайт не изменился. Подробности: $RUN" || true
+
+  check-secrets:
+    if: contains(github.event.head_commit.message, '[check-secrets]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Telegram and Yandex secrets
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          YA_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
+        run: |
+          echo "TELEGRAM_BOT_TOKEN: $([ -n "$TG_TOKEN" ] && echo задан || echo НЕТ)"
+          echo "TELEGRAM_CHAT_ID:   $([ -n "$TG_CHAT" ] && echo задан || echo НЕТ)"
+          echo "YANDEX_OAUTH_TOKEN: $([ -n "$YA_TOKEN" ] && echo задан || echo НЕТ)"
+          YA=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: OAuth $YA_TOKEN" https://api.webmaster.yandex.net/v4/user)
+          echo "Вебмастер: HTTP $YA"
+          TG=$(curl -s -X POST "https://api.telegram.org/bot$TG_TOKEN/sendMessage" --data-urlencode "chat_id=$TG_CHAT" \
+               --data-urlencode "text=✅ Проверка: секреты GitHub подключены. Отчёты о публикации кейсов будут приходить сюда. Вебмастер: HTTP $YA" | head -c 20)
+          echo "Telegram: $TG"
+          [ "$YA" = "200" ] && echo "$TG" | grep -q '"ok":true'
