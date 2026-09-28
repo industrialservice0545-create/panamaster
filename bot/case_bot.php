@@ -158,7 +158,7 @@ const STEPS = [
     'headline' => ['Суть в 3–7 словах для заголовка. Например: «устранено смещение рапорта».', false],
     'result'   => ['Результат после ремонта одной фразой. Например: «Линия работает в штатном режиме».', true],
     'days'     => ['Срок ремонта в рабочих днях (числом). Покажем на сайте, только если ремонт был быстрым — до 5 дней.', true],
-    'address'  => ['Адрес объекта (на сайте — только район или город):', false],
+    'address'  => ['Адрес объекта: город, улица, дом. На сайте покажем только район или город, на карте — метку с точностью до километра.', true],
     'photo1'   => ['Фото: общий план оборудования.', false],
     'photo2'   => ['Фото: шкаф управления.', true],
 ];
@@ -262,6 +262,47 @@ function download_photo(array $msg, string $dest): ?string
     return null;
 }
 
+// ---------- геокодер: адрес → координаты (~1 км) и район/город ----------
+
+function ya_geocode(string $query, string $kind = ''): ?array
+{
+    global $CFG;
+    if (empty($CFG['geocoder_key']) || !empty($CFG['dry_run'])) {
+        return null;
+    }
+    $url = 'https://geocode-maps.yandex.ru/v1/?' . http_build_query(array_filter([
+        'apikey' => $CFG['geocoder_key'], 'geocode' => $query, 'lang' => 'ru_RU', 'format' => 'json', 'results' => 1, 'kind' => $kind,
+    ]));
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10, CURLOPT_REFERER => 'https://panamaster.ru/']);
+    $res = curl_exec($ch);
+    curl_close($ch);
+    $obj = json_decode((string) $res, true)['response']['GeoObjectCollection']['featureMember'][0]['GeoObject'] ?? null;
+    return $obj ? ['pos' => $obj['Point']['pos'], 'text' => $obj['metaDataProperty']['GeocoderMetaData']['text'] ?? ''] : null;
+}
+
+/** Публичная точка: координаты, округлённые до 0,01° (~1 км), и «Москва, Район» / «Город». */
+function public_location(string $address): array
+{
+    $hit = ya_geocode($address);
+    if (!$hit) {
+        return ['area' => null, 'lat' => null, 'lon' => null];
+    }
+    [$lon, $lat] = array_map('floatval', explode(' ', $hit['pos']));
+    $area = null;
+    $district = ya_geocode("$lon,$lat", 'district');
+    $parts = $district ? array_map('trim', explode(',', $district['text'])) : [];
+    if (in_array('Москва', $parts, true)) {
+        $last = end($parts);
+        $area = str_contains($last, 'район') || str_contains($last, 'поселение') ? "Москва, $last" : 'Москва';
+    } else {
+        $loc = ya_geocode("$lon,$lat", 'locality');
+        $lp = $loc ? array_map('trim', explode(',', $loc['text'])) : [];
+        $area = $lp ? end($lp) : null;
+    }
+    return ['area' => $area, 'lat' => round($lat, 2), 'lon' => round($lon, 2)];
+}
+
 // ---------- публикация заявки ----------
 
 function submit(int $chat, array $d): string
@@ -272,7 +313,7 @@ function submit(int $chat, array $d): string
     $inbox = "{$CFG['repo_dir']}/inbox/$id";
     // приватная часть — только на сервере
     file_put_contents("{$CFG['data_dir']}/private.jsonl", json_encode([
-        'id' => $id, 'company' => $d['company'], 'address' => $d['address'], 'at' => date('c'),
+        'id' => $id, 'company' => $d['company'], 'address' => $d['address'] ?? null, 'at' => date('c'),
     ], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
 
     $public = [
@@ -282,7 +323,7 @@ function submit(int $chat, array $d): string
         'defect' => $d['defect'], 'solution' => $d['solution'], 'headline' => $d['headline'],
         'result' => $d['result'] ?? null, 'repair_days' => isset($d['days']) ? (int) $d['days'] : null,
         'photos' => array_values($d['photos'] ?? []), 'chat_id' => $chat,
-    ];
+    ] + (!empty($d['address']) ? public_location($d['address']) : ['area' => null, 'lat' => null, 'lon' => null]);
     if (!empty($CFG['dry_run'])) {
         @mkdir($inbox, 0755, true);
         file_put_contents("$inbox/request.json", json_encode($public, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -370,6 +411,18 @@ function handle_text(int $chat, string $text, array $msg): void
         if ($err = validate($step, $text)) {
             send($chat, $err);
             return $st;
+        }
+        if ($step === 'address') {
+            global $CFG;
+            if (!empty($CFG['geocoder_key']) && empty($CFG['dry_run'])) {
+                $hit = ya_geocode($text);
+                if (!$hit || !str_starts_with($hit['text'], 'Россия')) {
+                    send($chat, 'Не нашёл такой адрес. Напишите город, улицу и дом, например: «Подольск, ул. Правды, 20». Или нажмите «Пропустить» — кейс опубликуем без метки на карте.',
+                        [[['text' => 'Пропустить', 'callback_data' => 'skip']]]);
+                    return $st;
+                }
+                send($chat, 'Адрес найден: ' . $hit['text'] . '. На сайте будет только район или город.');
+            }
         }
         $st['data'][$step] = $text;
         return advance($chat, $st);

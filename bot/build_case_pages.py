@@ -435,6 +435,10 @@ def render_cases_list(page_cases, n, total, industries, parts):
     if n > 1:
         desc = fit(f'Страница {n}. ' + desc, 140, 160)
     cards = '\n                '.join(card(c, industries) for c in page_cases)
+    global MAP_LINK
+    MAP_LINK = '''
+                <div class="bottom-cta"><a href="/map.html" class="btn btn--ghost">Смотреть на карте</a></div>''' \
+        if os.path.exists(os.path.join(ROOT, 'map.html')) else ''
     nav = ''
     if total > 1:
         prev_ = '' if n == 1 else f'<a href="/{"cases.html" if n == 2 else f"cases-{n - 1}.html"}" class="btn btn--ghost">Назад</a>'
@@ -465,7 +469,7 @@ def render_cases_list(page_cases, n, total, industries, parts):
                 <h1>{"Примеры работ" if n == 1 else f"Примеры работ — страница {n}"}</h1>
                 <div class="case-summary">
                     <p>Реальные ремонты: какое оборудование остановилось, что нашли на диагностике, что сделали и как машина работает после пусконаладки.</p>
-                </div>
+                </div>{MAP_LINK}
             </div>
         </section>
 
@@ -642,6 +646,73 @@ def render_hub(kind, slug, h, cases, industries, types, parts):
     return rel
 
 
+def render_map(cases, industries, parts):
+    """«Карта работ»: метки кейсов с координатами (округлены до ~1 км), ссылки на кейсы."""
+    header, footer, cta = parts
+    pts = [c for c in cases if c.get('lat') and c.get('lon')]
+    points = [{'lat': c['lat'], 'lon': c['lon'], 'title': f'{c["brand"]} {c["model"]}: {c["headline"]}',
+               'area': c.get('area') or '', 'url': f'/cases/{c["slug"]}.html'} for c in pts]
+    areas = sorted({c.get('area') for c in pts if c.get('area')})
+    title = 'Карта работ: ремонты оборудования в Москве и МО — Панамастер'
+    if len(title) > 60:
+        title = 'Карта работ по ремонту оборудования — Панамастер'
+    desc = fit(f'Карта выполненных ремонтов промышленного оборудования Панамастер в Москве и Московской области: {len(pts)} объектов. Выезд за 24 часа, гарантия 3 месяца.', 140, 160)
+    cards = '\n                '.join(card(c, industries) for c in pts)
+    ld = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
+        {'@type': 'ListItem', 'position': 1, 'name': 'Главная', 'item': f'{SITE}/'},
+        {'@type': 'ListItem', 'position': 2, 'name': 'Примеры работ', 'item': f'{SITE}/cases.html'},
+        {'@type': 'ListItem', 'position': 3, 'name': 'Карта работ', 'item': f'{SITE}/map.html'}]}
+    area_text = f' Районы и города: {", ".join(areas)}.' if areas else ''
+    return head(title, desc, f'{SITE}/map.html', 'website', f'{SITE}/assets/img/industries/metalworking.webp') + f"""
+{menu(header, '/cases.html')}
+
+<nav class="breadcrumbs" aria-label="Хлебные крошки">
+    <div class="container">
+        <a href="/">Главная</a>
+        <span class="breadcrumbs__sep">→</span>
+        <a href="/cases.html">Примеры работ</a>
+        <span class="breadcrumbs__sep">→</span>
+        <span aria-current="page">Карта работ</span>
+    </div>
+</nav>
+
+<main>
+    <div class="container">
+
+        <section class="case-hero">
+            <div class="case-hero__content">
+                <h1>Карта работ</h1>
+                <div class="case-summary">
+                    <p>Где мы ремонтировали оборудование: {len(pts)} {"объект" if len(pts) == 1 else "объекта" if len(pts) in (2, 3, 4) else "объектов"} в Москве и Московской области.{esc(area_text)} Метка стоит с точностью до района — адреса клиентов мы не публикуем.</p>
+                </div>
+            </div>
+            <div class="map map--works" id="works-map" role="region" aria-label="Карта выполненных ремонтов"
+                 data-points="{esc(json.dumps(points, ensure_ascii=False))}"></div>
+        </section>
+
+        <section class="case-block">
+            <p class="section-label">Ремонты на карте</p>
+            <div class="related-grid related-grid--cases">
+                {cards}
+            </div>
+        </section>
+
+{cta.replace('value="Главная"', 'value="Карта работ"').replace('home-phone', 'map-phone')}
+
+    </div>
+</main>
+
+{footer}
+
+<script type="application/ld+json">
+{json.dumps(ld, ensure_ascii=False, indent=2)}
+</script>
+
+</body>
+</html>
+"""
+
+
 def replace_block(text, block):
     a = text.index('<!-- CASES_START -->')
     b = text.index('<!-- CASES_END -->') + len('<!-- CASES_END -->')
@@ -674,6 +745,13 @@ def build():
     for c in cases:
         write(f'cases/{c["slug"]}.html', render_case(c, cases, industries, types, parts))
         written.append(f'cases/{c["slug"]}.html')
+
+    if any(c.get('lat') for c in cases):
+        write('map.html', render_map(cases, industries, parts))
+        written.append('map.html')
+
+    elif os.path.exists(os.path.join(ROOT, 'map.html')):
+        os.remove(os.path.join(ROOT, 'map.html'))
 
     pages = max(1, math.ceil(len(cases) / PER_PAGE))
     for n in range(1, pages + 1):

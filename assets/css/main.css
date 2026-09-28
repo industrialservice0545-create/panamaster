@@ -1023,3 +1023,5 @@ main { padding-block-end: var(--space-xl); }
 .hub-list { display: grid; gap: 10px; max-width: var(--measure); padding-inline-start: 1.2em; font-size: var(--fs-body); line-height: var(--lh-body); }
 .hub-list li::marker { color: var(--accent); }
 .related-card__photo { display: block; }
+
+.map--works { margin-block-start: var(--space-md); block-size: clamp(320px, 55vh, 560px); }

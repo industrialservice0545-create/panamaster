@@ -139,7 +139,7 @@ def process():
             'headline': lower_first(req['headline'].strip().rstrip('.')),
             'defect': sentence(req['defect']), 'solution': sentence(req['solution']),
             'result': (req.get('result') or 'Оборудование работает в штатном режиме, дефект устранён.').strip(),
-            'repair_days': req.get('repair_days'), 'area': None, 'lat': None, 'lon': None,
+            'repair_days': req.get('repair_days'), 'area': req.get('area'), 'lat': req.get('lat'), 'lon': req.get('lon'),
             'photos': photos, 'request_id': req.get('id'),
         }
         if not record['result'].endswith(('.', '!')):

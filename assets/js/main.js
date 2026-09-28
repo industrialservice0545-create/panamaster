@@ -167,3 +167,29 @@ if (mapEl) {
     loadMap();
   }
 }
+
+// «Карта работ»: метки кейсов, ч/б подложка, оранжевые метки со ссылкой на кейс
+const worksMap = document.getElementById('works-map');
+if (worksMap) {
+  const points = JSON.parse(worksMap.dataset.points || '[]');
+  const script = document.createElement('script');
+  script.src = 'https://api-maps.yandex.ru/2.1/?apikey=c0c181c8-1669-4349-9f4e-2e5717b72076&lang=ru_RU';
+  script.async = true;
+  script.onload = function () {
+    window.ymaps.ready(function () {
+      const map = new window.ymaps.Map(worksMap, { center: [55.75, 37.62], zoom: 9, controls: ['zoomControl'] });
+      map.behaviors.disable('scrollZoom');
+      points.forEach(function (p) {
+        map.geoObjects.add(new window.ymaps.Placemark([p.lat, p.lon], {
+          hintContent: p.title,
+          balloonContentHeader: p.title,
+          balloonContentBody: (p.area ? p.area + '<br>' : '') + '<a href="' + p.url + '">Читать кейс</a>'
+        }, { preset: 'islands#dotIcon', iconColor: '#FFA933' }));
+      });
+      if (points.length > 1) {
+        map.setBounds(map.geoObjects.getBounds(), { checkZoomRange: true, zoomMargin: 40 });
+      }
+    });
+  };
+  document.head.appendChild(script);
+}
