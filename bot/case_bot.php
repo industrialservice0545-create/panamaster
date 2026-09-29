@@ -528,6 +528,64 @@ function handle_callback(int $chat, string $data, string $cb_id): void
     });
 }
 
+// ---------- журнал заявок ----------
+// Файл ~/panamaster.ru/leads.jsonl (вне www и вне Git), строки JSON. Заявки с формы пишет send.php,
+// оценки заявок и итоги дня по звонкам — этот бот. Опрос по звонкам присылает Mac владельца в 20:00 МСК
+// (кнопки calls:{дата}:{N}). Повторное нажатие — новая строка, при подсчёте действует последняя.
+
+const CALL_SOURCES = ['avito' => 'Авито', 'site' => 'Сайт', 'maps' => 'Яндекс Карты', 'old' => 'Старый клиент', 'other' => 'Другое'];
+const LEAD_MARKS = ['t' => ['target', 'целевая'], 'n' => ['non_target', 'нецелевая'], 's' => ['spam', 'спам']];
+
+function journal(array $row): void
+{
+    global $CFG;
+    $file = $CFG['leads_file'] ?? (getenv('HOME') ?: '/home/u550586') . '/panamaster.ru/leads.jsonl';
+    file_put_contents($file, json_encode(['ts' => date('c')] + $row, JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND | LOCK_EX);
+}
+
+function call_question(int $chat, string $date, int $i, int $n): void
+{
+    $buttons = [];
+    foreach (array_chunk(CALL_SOURCES, 3, true) as $row) {
+        $buttons[] = array_map(fn($key, $name) => ['text' => "✅ $name", 'callback_data' => "call:$date:$i:$n:$key"],
+            array_keys($row), $row);
+    }
+    $buttons[] = [['text' => '❌ Нецелевой', 'callback_data' => "call:$date:$i:$n:non"]];
+    send($chat, "Звонок $i из $n: целевой? Если да — откуда клиент.", $buttons);
+}
+
+// true — кнопка журнала обработана; false — это не журнал, дальше разбирает диалог кейсов
+function handle_journal(int $chat, string $data, string $cb_id): bool
+{
+    $p = explode(':', $data);
+    $date_ok = fn(string $d) => (bool) preg_match('/^\d{4}-\d{2}-\d{2}$/', $d);
+
+    if ($p[0] === 'lead' && count($p) === 3 && isset(LEAD_MARKS[$p[2]]) && preg_match('/^[\d-]{1,30}$/', $p[1])) {
+        [$value, $label] = LEAD_MARKS[$p[2]];
+        tg('answerCallbackQuery', ['callback_query_id' => $cb_id, 'text' => 'Записал']);
+        journal(['type' => 'mark', 'id' => $p[1], 'value' => $value]);
+        send($chat, "Заявка {$p[1]}: $label. Записал в журнал.");
+        return true;
+    }
+    if ($p[0] === 'calls' && count($p) === 3 && $date_ok($p[1]) && ctype_digit($p[2])) {
+        $n = min((int) $p[2], 10);
+        tg('answerCallbackQuery', ['callback_query_id' => $cb_id, 'text' => 'Записал']);
+        journal(['type' => 'calls', 'date' => $p[1], 'count' => $n]);
+        $n === 0 ? send($chat, 'Записал: звонков не было.') : call_question($chat, $p[1], 1, $n);
+        return true;
+    }
+    if ($p[0] === 'call' && count($p) === 5 && $date_ok($p[1]) && ctype_digit($p[2]) && ctype_digit($p[3])
+        && ($p[4] === 'non' || isset(CALL_SOURCES[$p[4]]))) {
+        [$i, $n] = [(int) $p[2], (int) $p[3]];
+        tg('answerCallbackQuery', ['callback_query_id' => $cb_id, 'text' => 'Записал']);
+        journal(['type' => 'call', 'date' => $p[1], 'n' => $i, 'target' => $p[4] !== 'non',
+            'source' => $p[4] === 'non' ? null : $p[4]]);
+        $i < $n ? call_question($chat, $p[1], $i + 1, $n) : send($chat, "Спасибо, итоги дня записаны: звонков — $n.");
+        return true;
+    }
+    return false;
+}
+
 // ---------- главный цикл ----------
 
 function run(array $updates): void
@@ -547,7 +605,9 @@ function run(array $updates): void
         }
         try {
             if ($cb) {
-                handle_callback((int) $chat, (string) $cb['data'], (string) $cb['id']);
+                if (!handle_journal((int) $chat, (string) $cb['data'], (string) $cb['id'])) {
+                    handle_callback((int) $chat, (string) $cb['data'], (string) $cb['id']);
+                }
             } else {
                 handle_text((int) $chat, trim((string) ($msg['text'] ?? $msg['caption'] ?? '')), $msg);
             }

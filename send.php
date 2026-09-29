@@ -1,12 +1,12 @@
 <?php
-// Приём заявок с форм сайта: сообщение в Telegram + письмо на info@panamaster.ru.
+// Приём заявок с форм сайта: запись в журнал заявок, сообщение в Telegram + письмо на info@panamaster.ru.
 // Совместим с PHP 7.2+. Ответ: JSON для fetch, редирект обратно — без JS.
 // Токен бота — в ~/panamaster.ru/lead-config.php (вне www и вне Git):
 //   <?php return array('token' => '...', 'chat_id' => '...', 'proxy' => 'https://....workers.dev');
 
 $to = 'info@panamaster.ru';
 
-function sendTelegram($text)
+function sendTelegram($text, $buttons = null)
 {
     $configFile = dirname(__DIR__) . '/lead-config.php';
     if (!is_file($configFile)) {
@@ -17,7 +17,11 @@ function sendTelegram($text)
         return false;
     }
     $url = rtrim($config['proxy'], '/') . '/bot' . $config['token'] . '/sendMessage';
-    $body = http_build_query(array('chat_id' => $config['chat_id'], 'text' => $text));
+    $params = array('chat_id' => $config['chat_id'], 'text' => $text);
+    if ($buttons !== null) {
+        $params['reply_markup'] = json_encode(array('inline_keyboard' => $buttons), JSON_UNESCAPED_UNICODE);
+    }
+    $body = http_build_query($params);
 
     if (function_exists('curl_init')) {
         $ch = curl_init($url);
@@ -100,8 +104,21 @@ $headers = implode("\r\n", array(
     'Content-Transfer-Encoding: 8bit',
 ));
 
+// Журнал заявок: ~/panamaster.ru/leads.jsonl (вне www и вне Git). Оценку «целевая / нет / спам»
+// владелец ставит кнопкой в Telegram — её записывает bot/case_bot.php.
+$leadId = gmdate('ymd-His', time() + 3 * 3600) . '-' . substr($digits, -4);
+@file_put_contents(dirname(__DIR__) . '/leads.jsonl', json_encode(array(
+    'ts' => date('c'), 'type' => 'lead', 'id' => $leadId, 'source' => 'site_form',
+    'page' => $page, 'phone' => mb_substr($phone, 0, 40), 'comment' => $comment,
+), JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND | LOCK_EX);
+$lines[] = 'Заявка: ' . $leadId;
+
 $text = implode("\n", $lines);
-$telegramSent = sendTelegram($text);
+$telegramSent = sendTelegram($text, array(array(
+    array('text' => '✅ Целевая', 'callback_data' => 'lead:' . $leadId . ':t'),
+    array('text' => '❌ Нецелевая', 'callback_data' => 'lead:' . $leadId . ':n'),
+    array('text' => '🚫 Спам', 'callback_data' => 'lead:' . $leadId . ':s'),
+)));
 $mailSent = mail($to, $subject, $text, $headers, '-fnoreply@panamaster.ru');
 $sent = $telegramSent || $mailSent;
 
