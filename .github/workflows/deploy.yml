@@ -47,6 +47,7 @@ jobs:
           python3 bot/process_inbox.py
           python3 bot/build_industry_pages.py
           python3 bot/build_case_pages.py
+          python3 bot/build_block_pages.py
           python3 bot/build_sitemap.py
           python3 -m unittest discover -s tests/unit
           echo "report=$(python3 -c 'import json;print(json.dumps(json.load(open("inbox_report.json")),ensure_ascii=False))')" >> "$GITHUB_OUTPUT"
@@ -56,7 +57,7 @@ jobs:
         run: |
           git config user.name "Case Bot"
           git config user.email "bot@panamaster.ru"
-          git add -A assets cases cases.html index.html services sitemap.xml llms.txt bot/dictionaries inbox
+          git add -A assets cases cases.html index.html services blocks blocks.html sitemap.xml llms.txt bot/dictionaries inbox
           SLUGS=$(python3 -c 'import json;print(", ".join(x["slug"] for x in json.load(open("inbox_report.json"))))')
           git commit -m "case: $SLUGS [skip ci]"
           git pull --rebase origin main
