@@ -26,7 +26,8 @@ def read(rel):
 def pages():
     """Индексируемые страницы в порядке важности: главная, разделы, отрасли, кейсы."""
     result = []
-    for rel in ['index.html', 'cases.html', 'contacts.html', 'map.html'] + sorted(glob.glob('services/*.html', root_dir=ROOT)) \
+    for rel in ['index.html', 'cases.html', 'contacts.html', 'map.html', 'blocks.html'] + sorted(glob.glob('blocks/*.html', root_dir=ROOT)) \
+            + sorted(glob.glob('services/*.html', root_dir=ROOT)) \
             + sorted(glob.glob('cases/*.html', root_dir=ROOT)):
         if rel in EXCLUDE or not os.path.exists(os.path.join(ROOT, rel)):
             continue
@@ -55,9 +56,9 @@ def lastmod(rel):
 def priority(rel):
     if rel == 'index.html':
         return '1.0'
-    if rel in ('cases.html', 'contacts.html'):
+    if rel in ('cases.html', 'contacts.html', 'blocks.html'):
         return '0.8'
-    if rel.startswith('services/'):
+    if rel.startswith(('services/', 'blocks/')):
         return '0.7'
     return '0.6'
 
@@ -79,6 +80,7 @@ def meta(rel):
 def build_llms(rels):
     industries = [r for r in rels if r.startswith('services/industry-')]
     hubs = [r for r in rels if r.startswith(('services/brand-', 'services/type-'))]
+    blocks = [r for r in rels if r == 'blocks.html' or r.startswith('blocks/')]
     cases = [r for r in rels if r.startswith('cases/')]
     line = lambda r: '- [{0}]({1}): {2}'.format(*meta(r)[:1], url_of(r), meta(r)[1])
     return f'''# Панамастер
@@ -91,6 +93,7 @@ def build_llms(rels):
 - Клиенты: компании и частные клиенты. Договор, любая форма оплаты (безналичный расчёт без НДС, наличные, карта), закрывающие документы.
 - Ремонт: станки с ЧПУ, частотные преобразователи, сервоприводы, ПЛК, панели оператора, источники питания.
 - Мастерская: Москва, ул. Искры, 31к1, офис 103А (приём блоков — по предварительной договорённости). Пн–пт 09:00–19:00.
+- Ремонт снятых блоков (частотники, сервоприводы, ПЛК, панели, стойки ЧПУ): диагностика бесплатно 1–3 дня, ремонт обычно до 3 дней, оплата после проверки блока, приём со всей России транспортной компанией.
 - Телефон, Telegram, WhatsApp: +7 926 883-09-39. Почта: info@panamaster.ru.
 - Исполнитель: ООО «Интел-Сервис», ИНН 7723582307.
 
@@ -103,6 +106,10 @@ def build_llms(rels):
 ## Отрасли
 
 {chr(10).join(line(r) for r in industries)}
+
+## Ремонт блоков в мастерской
+
+{chr(10).join(line(r) for r in blocks)}
 
 ## Производители и виды оборудования
 

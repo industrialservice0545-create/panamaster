@@ -29,8 +29,8 @@ def read(path):
 
 
 def indexable_pages():
-    pages = ['index.html', 'contacts.html', 'cases.html'] + glob.glob('cases/*.html', root_dir=ROOT) \
-        + glob.glob('services/*.html', root_dir=ROOT)
+    pages = ['index.html', 'contacts.html', 'cases.html', 'blocks.html'] + glob.glob('cases/*.html', root_dir=ROOT) \
+        + glob.glob('services/*.html', root_dir=ROOT) + glob.glob('blocks/*.html', root_dir=ROOT)
     return sorted(pages)
 
 
@@ -276,6 +276,64 @@ class SitemapTests(unittest.TestCase):
         t = read('llms.txt')
         for fact in ['+7 926 883-09-39', 'гарантия 3 месяца'.capitalize()[:8], '24 часов', 'https://panamaster.ru/cases.html']:
             self.assertIn(fact, t)
+
+
+class BlockPagesTests(unittest.TestCase):
+    """Раздел «Ремонт блоков в мастерской» (/blocks.html, /blocks/*.html)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.content = json.loads(read('bot/content/blocks.json'))
+        cls.pages = ['blocks.html'] + [f'blocks/{p["slug"]}.html' for p in cls.content['pages']]
+
+    def test_pages_exist_with_meta(self):
+        titles = set()
+        for p in self.pages:
+            s = read(p)
+            t = html.unescape(re.search(r'<title>(.*?)</title>', s).group(1))
+            d = html.unescape(re.search(r'name="description" content="([^"]*)"', s).group(1))
+            with self.subTest(p):
+                self.assertTrue(50 <= len(t) <= 60, t)
+                self.assertTrue(140 <= len(d) <= 160, d)
+                self.assertIn(f'<link rel="canonical" href="https://panamaster.ru/{p}">', s)
+                titles.add(t)
+        self.assertEqual(len(titles), len(self.pages))
+
+    def test_slugs_from_dictionary(self):
+        slugs = {t['slug'] for t in json.loads(read('bot/dictionaries/entities.json'))['equipment_catalog']}
+        for p in self.content['pages']:
+            self.assertIn(p['slug'], slugs)
+
+    def test_confirmed_facts_on_every_page(self):
+        for p in self.pages:
+            s = read(p)
+            with self.subTest(p):
+                for fact in ('Бесплатно, 1–3 дня', 'После проверки блока', '3 месяца', 'Искры, 31к1', 'транспортной компанией'):
+                    self.assertIn(fact, s)
+
+    def test_faq_json_ld_matches_visible_text(self):
+        for p in self.pages:
+            s = read(p)
+            faq = next(g for g in json_ld(s)[0]['@graph'] if g['@type'] == 'FAQPage')
+            for q in faq['mainEntity']:
+                with self.subTest(page=p, q=q['name']):
+                    self.assertIn(html.escape(q['name'], quote=True), s)
+                    self.assertIn(html.escape(q['acceptedAnswer']['text'], quote=True), s)
+
+    def test_bridges_between_directions(self):
+        idx = read('index.html')
+        self.assertGreaterEqual(idx.count('href="/blocks.html"'), 2)
+        for p in self.pages:
+            self.assertIn('Ремонт оборудования с выездом', read(p), p)
+
+    def test_in_sitemap(self):
+        sm = read('sitemap.xml')
+        for p in self.pages:
+            self.assertIn(f'<loc>https://panamaster.ru/{p}</loc>', sm)
+
+    def test_form_marks_direction(self):
+        for p in self.pages:
+            self.assertIn('name="page" value="Ремонт блоков в мастерской', read(p), p)
 
 
 if __name__ == '__main__':

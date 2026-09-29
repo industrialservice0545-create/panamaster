@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://panamaster.ru/</loc>
-    <lastmod>2026-09-28</lastmod>
+    <lastmod>2026-09-29</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
@@ -19,6 +19,31 @@
     <loc>https://panamaster.ru/map.html</loc>
     <lastmod>2026-09-28</lastmod>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/blocks.html</loc>
+    <lastmod>2026-09-29</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/blocks/cnc-controls.html</loc>
+    <lastmod>2026-09-29</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/blocks/drives-servo.html</loc>
+    <lastmod>2026-09-29</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/blocks/frequency-drives.html</loc>
+    <lastmod>2026-09-29</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/blocks/plc.html</loc>
+    <lastmod>2026-09-29</lastmod>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://panamaster.ru/services/brand-cms.html</loc>
