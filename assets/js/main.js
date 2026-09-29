@@ -81,7 +81,11 @@ document.addEventListener('click', function (event) {
   else if (href.indexOf('mailto:') === 0) reachGoal('email_click');
 });
 
-// Форма заявки
+// Форма заявки. Поля скрыты от Вебвизора: телефон и комментарий не попадают в запись сессии.
+document.querySelectorAll('.cta-form input, .cta-form textarea').forEach(function (field) {
+  field.classList.add('ym-hide-content', 'ym-disable-keys');
+});
+
 function setFormStatus(form, text) {
   const label = form.querySelector('.cta-form__label');
   if (label) label.textContent = text;
@@ -124,10 +128,34 @@ if (/[?&]sent=1/.test(window.location.search)) {
   });
 }
 
-// Карта на странице контактов: ч/б подложка (CSS), оранжевая метка. Грузится, когда блок близко к экрану.
+// API Яндекс Карт: грузится, когда блок карты близко к экрану. Ключ ограничивается доменом в кабинете разработчика.
+const MAPS_KEY = 'c0c181c8-1669-4349-9f4e-2e5717b72076';
+
+function whenNearScreen(el, callback) {
+  if (!('IntersectionObserver' in window)) {
+    callback();
+    return;
+  }
+  const observer = new IntersectionObserver(function (entries) {
+    if (entries[0].isIntersecting) {
+      observer.disconnect();
+      callback();
+    }
+  }, { rootMargin: '300px' });
+  observer.observe(el);
+}
+
+function loadMaps(onReady) {
+  const script = document.createElement('script');
+  script.src = 'https://api-maps.yandex.ru/2.1/?apikey=' + MAPS_KEY + '&lang=ru_RU';
+  script.async = true;
+  script.onload = function () { window.ymaps.ready(onReady); };
+  document.head.appendChild(script);
+}
+
+// Карта на странице контактов: ч/б подложка (CSS), оранжевая метка
 const mapEl = document.getElementById('map');
 if (mapEl) {
-  const MAPS_KEY = 'c0c181c8-1669-4349-9f4e-2e5717b72076';
 
   const initMap = function () {
     const center = [Number(mapEl.dataset.lat), Number(mapEl.dataset.lon)];
@@ -147,36 +175,15 @@ if (mapEl) {
     }));
   };
 
-  const loadMap = function () {
-    const script = document.createElement('script');
-    script.src = 'https://api-maps.yandex.ru/2.1/?apikey=' + MAPS_KEY + '&lang=ru_RU';
-    script.async = true;
-    script.onload = function () { window.ymaps.ready(initMap); };
-    document.head.appendChild(script);
-  };
-
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver(function (entries) {
-      if (entries[0].isIntersecting) {
-        observer.disconnect();
-        loadMap();
-      }
-    }, { rootMargin: '300px' });
-    observer.observe(mapEl);
-  } else {
-    loadMap();
-  }
+  whenNearScreen(mapEl, function () { loadMaps(initMap); });
 }
 
 // «Карта работ»: только точки мест работ, без сведений об оборудовании; ч/б подложка, оранжевые метки
 const worksMap = document.getElementById('works-map');
 if (worksMap) {
   const points = JSON.parse(worksMap.dataset.points || '[]');
-  const script = document.createElement('script');
-  script.src = 'https://api-maps.yandex.ru/2.1/?apikey=c0c181c8-1669-4349-9f4e-2e5717b72076&lang=ru_RU';
-  script.async = true;
-  script.onload = function () {
-    window.ymaps.ready(function () {
+  whenNearScreen(worksMap, function () {
+    loadMaps(function () {
       const map = new window.ymaps.Map(worksMap, { center: [55.75, 37.62], zoom: 9, controls: ['zoomControl'] });
       map.behaviors.disable('scrollZoom');
       points.forEach(function (p) {
@@ -187,6 +194,5 @@ if (worksMap) {
         map.setBounds(map.geoObjects.getBounds(), { checkZoomRange: true, zoomMargin: 40 });
       }
     });
-  };
-  document.head.appendChild(script);
+  });
 }

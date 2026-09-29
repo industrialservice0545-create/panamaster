@@ -338,3 +338,24 @@ class BlockPagesTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class JsonLdEscapeTest(unittest.TestCase):
+    """Текст кейса не должен закрывать <script type="application/ld+json">."""
+
+    def test_generators_escape_script_close(self):
+        for name in ('build_industry_pages', 'build_case_pages', 'build_block_pages'):
+            spec = importlib.util.spec_from_file_location(name, os.path.join(ROOT, 'bot', name + '.py'))
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            out = mod.ld_json({'name': '</script><script>alert(1)</script> & co'})
+            self.assertNotIn('<', out, name)
+            self.assertEqual(json.loads(out)['name'], '</script><script>alert(1)</script> & co', name)
+
+    def test_built_pages_have_no_raw_lt_in_json_ld(self):
+        for path in glob.glob(os.path.join(ROOT, '**', '*.html'), recursive=True):
+            if '/assets/templates/' in path or '/tests/' in path:
+                continue
+            text = open(path, encoding='utf-8').read()
+            for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>', text, re.S):
+                self.assertNotIn('<', block, path)

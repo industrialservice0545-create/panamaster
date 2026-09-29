@@ -250,6 +250,12 @@ TYPE_SLUGS = {t['name']: t['slug'] for t in _DICT['equipment_catalog']}
 HUB_TYPES = set(json.load(open(os.path.join(ROOT, 'bot', 'content', 'hubs.json'), encoding='utf-8'))['types'])
 
 
+def ld_json(data):
+    """JSON-LD для <script>: символы <, >, & заменяем на \\u-коды, чтобы текст кейса не закрыл тег script."""
+    return (json.dumps(data, ensure_ascii=False, indent=2)
+            .replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026'))
+
+
 def esc(s):
     return html.escape(s, quote=True)
 
@@ -404,7 +410,7 @@ def main():
 {footer}
 
 <script type="application/ld+json">
-{json.dumps(ld, ensure_ascii=False, indent=2)}
+{ld_json(ld)}
 </script>
 
 </body>

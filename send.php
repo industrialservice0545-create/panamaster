@@ -58,7 +58,8 @@ function respond($ok, $message)
     $back = '/';
     if (!empty($_SERVER['HTTP_REFERER'])) {
         $path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
-        if (is_string($path) && preg_match('~^/[A-Za-z0-9/_.-]*$~', $path)) {
+        // «//host» браузер считает другим доменом — такой путь не принимаем
+        if (is_string($path) && preg_match('~^/(?!/)[A-Za-z0-9/_.-]*$~', $path)) {
             $back = $path;
         }
     }
@@ -70,9 +71,67 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respond(false, 'Метод не поддерживается');
 }
 
+// Заявки только с нашего сайта: браузер ставит Origin на POST с чужих страниц
+if (!empty($_SERVER['HTTP_ORIGIN'])) {
+    $originHost = parse_url($_SERVER['HTTP_ORIGIN'], PHP_URL_HOST);
+    if (!in_array($originHost, array('panamaster.ru', 'www.panamaster.ru'), true)) {
+        respond(false, 'Отправьте заявку с сайта panamaster.ru');
+    }
+}
+
 // Ловушка для ботов: поле скрыто от людей
 if (!empty($_POST['website'])) {
     respond(true, 'Заявка отправлена');
+}
+
+// Не больше 3 заявок за 10 минут с одного IP и 50 за сутки всего — защита от заливки спамом.
+// Счётчики — в ~/panamaster.ru/lead-rate/ (вне www).
+function rateLimited($ip)
+{
+    $dir = dirname(__DIR__) . '/lead-rate';
+    if (!is_dir($dir) && !@mkdir($dir, 0700)) {
+        return false; // нет папки — не теряем настоящие заявки
+    }
+    $now = time();
+    $rules = array(
+        'ip-' . md5($ip) => array(600, 3),
+        'all-' . gmdate('Ymd', $now + 3 * 3600) => array(86400, 50),
+    );
+    foreach ($rules as $name => $rule) {
+        $file = $dir . '/' . $name;
+        $fh = @fopen($file, 'c+');
+        if (!$fh) {
+            continue;
+        }
+        flock($fh, LOCK_EX);
+        $times = array_filter(array_map('intval', explode(',', (string) stream_get_contents($fh))),
+            function ($t) use ($now, $rule) { return $t > $now - $rule[0]; });
+        $over = count($times) >= $rule[1];
+        if (!$over) {
+            $times[] = $now;
+            ftruncate($fh, 0);
+            rewind($fh);
+            fwrite($fh, implode(',', $times));
+        }
+        flock($fh, LOCK_UN);
+        fclose($fh);
+        if ($over) {
+            return true;
+        }
+    }
+    // Старые счётчики чистим изредка
+    if (mt_rand(1, 50) === 1) {
+        foreach ((array) glob($dir . '/*') as $f) {
+            if (is_file($f) && filemtime($f) < $now - 86400) {
+                @unlink($f);
+            }
+        }
+    }
+    return false;
+}
+
+if (rateLimited(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '')) {
+    respond(false, 'Слишком много заявок подряд. Позвоните: +7 926 883-09-39');
 }
 
 $phone = isset($_POST['phone']) ? trim((string) $_POST['phone']) : '';

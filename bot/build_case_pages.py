@@ -30,6 +30,12 @@ MONTHS = ['января', 'февраля', 'марта', 'апреля', 'ма�
           'августа', 'сентября', 'октября', 'ноября', 'декабря']
 
 
+def ld_json(data):
+    """JSON-LD для <script>: символы <, >, & заменяем на \\u-коды, чтобы текст кейса не закрыл тег script."""
+    return (json.dumps(data, ensure_ascii=False, indent=2)
+            .replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026'))
+
+
 def esc(s):
     return html.escape(str(s), quote=True)
 
@@ -417,7 +423,7 @@ def render_case(c, cases, industries, types, parts):
 {footer}
 
 <script type="application/ld+json">
-{json.dumps(ld, ensure_ascii=False, indent=2)}
+{ld_json(ld)}
 </script>
 
 </body>
@@ -487,7 +493,7 @@ def render_cases_list(page_cases, n, total, industries, parts):
 {footer}
 
 <script type="application/ld+json">
-{json.dumps(ld, ensure_ascii=False, indent=2)}
+{ld_json(ld)}
 </script>
 
 </body>
@@ -636,7 +642,7 @@ def render_hub(kind, slug, h, cases, industries, types, parts):
 {footer}
 
 <script type="application/ld+json">
-{json.dumps(ld, ensure_ascii=False, indent=2)}
+{ld_json(ld)}
 </script>
 
 </body>
@@ -706,7 +712,7 @@ def render_map(cases, industries, parts):
 {footer}
 
 <script type="application/ld+json">
-{json.dumps(ld, ensure_ascii=False, indent=2)}
+{ld_json(ld)}
 </script>
 
 </body>

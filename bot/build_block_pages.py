@@ -18,6 +18,12 @@ CONTENT = json.load(open(os.path.join(ROOT, 'bot', 'content', 'blocks.json'), en
 HUB_NAME = 'Ремонт блоков в мастерской'
 
 
+def ld_json(data):
+    """JSON-LD для <script>: символы <, >, & заменяем на \\u-коды, чтобы текст кейса не закрыл тег script."""
+    return (json.dumps(data, ensure_ascii=False, indent=2)
+            .replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026'))
+
+
 def esc(s):
     return html.escape(s, quote=True)
 
@@ -166,7 +172,7 @@ def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, fo
 {footer}
 
 <script type="application/ld+json">
-{json.dumps(ld, ensure_ascii=False, indent=2)}
+{ld_json(ld)}
 </script>
 
 </body>
