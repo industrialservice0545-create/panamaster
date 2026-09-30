@@ -375,8 +375,17 @@ function handle_text(int $chat, string $text, array $msg): void
         return;
     }
     if ($text === '/help') {
-        send($chat, "/add_case — новый кейс\n/cancel — отменить\n/status — где я в анкете");
+        send($chat, "/add_case — новый кейс\n/cancel — отменить\n/status — где я в анкете\n«8/10» или «оценка 8» — оценка работы системы за день");
         return;
+    }
+    // Оценка дня из вечернего статуса: «10/10», «Владелец-система 10/10», «оценка 8, комментарий»
+    if (preg_match('~(?:^|\D)(\d{1,2})\s*/\s*10(?!\d)~u', $text, $m) || preg_match('~^\s*оценк\S*\D{0,5}(\d{1,2})(?!\d)~ui', $text, $m)) {
+        $score = (int) $m[1];
+        if ($score <= 10) {
+            journal(['type' => 'rating', 'date' => gmdate('Y-m-d', time() + 3 * 3600), 'score' => $score, 'comment' => mb_substr($text, 0, 300)]);
+            send($chat, "Спасибо! Оценка $score/10 записана.");
+            return;
+        }
     }
     with_state($chat, function (array $st) use ($chat, $text, $msg) {
         if (!$st) {
