@@ -60,6 +60,10 @@ def caption(case):
         f"Похожая поломка? Напишите модель и дефект: {PHONE}\n"
         f"<a href=\"{e(url)}\">Подробнее о ремонте на сайте</a>",
     ]
+    if case.get('format') == 'block':
+        parts[-1] = (f"Похожий блок? Привезите его в мастерскую или отправьте транспортной компанией — "
+                     f"диагностика бесплатно. Пишите: {PHONE}\n"
+                     f"<a href=\"{e(url)}\">Подробнее о ремонте на сайте</a>")
     text = '\n\n'.join(parts)
     if len(text) > CAPTION_MAX:
         sys.exit(f'Подпись {len(text)} символов, лимит Telegram {CAPTION_MAX}')
