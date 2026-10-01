@@ -1,5 +1,8 @@
 """Обработка заявок бота: inbox/{id}/request.json + фото → assets/data/cases.json + фото кейса.
 
+Формат кейса (format): machine — ремонт станка/линии на объекте (по умолчанию), block — ремонт блока в мастерской
+(кейс показывается на страницах /blocks/ своего вида, бренда и модели). photo_alts — подписи к фото по порядку.
+
 Для каждой заявки:
   - новый вид оборудования (equipment_type_new) добавляется в справочник;
   - slug «бренд-модель» (при занятости — с -2, -3…);
@@ -130,10 +133,13 @@ def process():
             if not os.path.exists(src):
                 continue
             w, h = style_photo(src, os.path.join(ROOT, 'assets', 'img', 'cases', slug, f'photo-{i}.webp'))
-            alt = f'{type_names.get(type_slug, "Оборудование")} {name}' if i == 1 else f'Шкаф управления {name} после ремонта'
+            alts = req.get('photo_alts') or []
+            alt = alts[i - 1] if i <= len(alts) and alts[i - 1] else (
+                f'{type_names.get(type_slug, "Оборудование")} {name}' if i == 1 else f'Шкаф управления {name} после ремонта')
             photos.append({'file': f'photo-{i}.webp', 'w': w, 'h': h, 'alt': alt})
         record = {
             'slug': slug, 'date': req['date'], 'industry': req['industry'], 'equipment_type': type_slug,
+            'format': req.get('format') if req.get('format') in ('machine', 'block') else 'machine',
             'brand': req['brand'].strip(), 'model': re.sub(r'\s+', ' ', req['model']).strip(),
             'rack': req.get('rack'), 'servo': req.get('servo'),
             'headline': lower_first(req['headline'].strip().rstrip('.')),

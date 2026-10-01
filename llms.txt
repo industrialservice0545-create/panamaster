@@ -38,6 +38,8 @@
 - [Ремонт промышленной электроники в Москве](https://panamaster.ru/blocks.html): Компонентный ремонт частотников, сервоприводов, ПЛК, панелей и стоек ЧПУ в мастерской в Москве. Диагностика блока в мастерской бесплатно, оплата после проверки.
 - [Ремонт стоек ЧПУ Fanuc, Sinumerik, Heidenhain](https://panamaster.ru/blocks/cnc-controls.html): Ремонт стоек ЧПУ Fanuc, Sinumerik, Heidenhain, Mitsubishi в мастерской в Москве или с выездом на станок. Диагностика в мастерской бесплатно, гарантия 3 мес.
 - [Ремонт промышленных сервоприводов в Москве](https://panamaster.ru/blocks/drives-servo.html): Ремонт сервоусилителей и серводвигателей Siemens, Fanuc, Rexroth, B&R, Yaskawa в мастерской в Москве. Диагностика в мастерской бесплатно, оплата после проверки.
+- [Ремонт сервоприводов Rexroth Indramat в Москве](https://panamaster.ru/blocks/drives-servo/rexroth.html): Ремонт сервоприводов Rexroth Indramat ECODRIVE в мастерской в Москве, настройка стойки станка. Диагностика в мастерской бесплатно, гарантия 3 месяца.
+- [Ремонт Rexroth Indramat ECODRIVE DKC в Москве](https://panamaster.ru/blocks/drives-servo/rexroth/ecodrive-dkc.html): Ремонт сервоприводов Rexroth Indramat ECODRIVE DKC в мастерской в Москве: плата управления, силовая часть, настройка стойки станка. Гарантия 3 месяца.
 - [Ремонт частотных преобразователей в Москве](https://panamaster.ru/blocks/frequency-drives.html): Ремонт частотных преобразователей Siemens, ABB, Danfoss, Schneider и других в мастерской в Москве. Диагностика в мастерской бесплатно, гарантия 3 месяца.
 - [Ремонт ПЛК и панелей оператора в Москве](https://panamaster.ru/blocks/plc.html): Ремонт ПЛК Siemens, Allen-Bradley, Omron, Mitsubishi, Овен и панелей оператора в мастерской в Москве. Диагностика в мастерской бесплатно, гарантия 3 месяца.
 
@@ -50,3 +52,4 @@
 
 - [CMS BR/5 302: устранены последствия короткого замыкания](https://panamaster.ru/cases/cms-br5-302.html): CMS BR/5 302: устранены последствия короткого замыкания. Компонентный ремонт сервосистемы Acopos, ремонт силовых блоков Выезд за 24 часа, гарантия 3 месяца.
 - [CODIMAG VIVA 340: устранено смещение рапорта](https://panamaster.ru/cases/codimag-viva-340.html): CODIMAG VIVA 340: устранено смещение рапорта. Мы провели диагностику и выявили неисправность контроллера Serad MCS 32. Выезд за 24 часа, гарантия 3 месяца.
+- [Ремонт Rexroth Indramat ECODRIVE DKCXX.3-040-7-FW, Москва](https://panamaster.ru/cases/rexroth-indramat-ecodrive-dkcxx3-040-7-fw.html): Rexroth Indramat ECODRIVE DKCXX.3-040-7-FW: стойка ЧПУ не видела сервопривод. Выполнили компонентный ремонт платы Ремонт блока в мастерской, гарантия 3 месяца.

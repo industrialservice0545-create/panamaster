@@ -72,8 +72,16 @@ def brand_slug(brand, hubs):
     return None
 
 
+MONTHS_NOM = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль',
+              'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь']
+
+
 def ru_date(iso):
-    y, m, dd = iso.split('-')
+    """«27 сентября 2026»; если известен только месяц (2026-06) — «июнь 2026», день не выдумываем."""
+    parts = iso.split('-')
+    if len(parts) == 2:
+        return f'{MONTHS_NOM[int(parts[1]) - 1]} {parts[0]}'
+    y, m, dd = parts
     return f'{int(dd)} {MONTHS[int(m) - 1]} {y}'
 
 
@@ -104,7 +112,8 @@ def title_of(c):
     bm = f'{c["brand"]} {c["model"]}'
     candidates = [f'{bm}: {c["headline"]} — Панамастер', f'{bm}: {c["headline"]}, Москва — Панамастер',
                   f'{bm}: {c["headline"]}', f'Ремонт {bm} в Москве — Панамастер',
-                  f'Ремонт {bm} — Панамастер', f'Ремонт {bm} в Москве, гарантия 3 месяца']
+                  f'Ремонт {bm} — Панамастер', f'Ремонт {bm} в Москве, гарантия 3 месяца',
+                  f'Ремонт {bm}, Москва']
     for t in candidates:
         if 50 <= len(t) <= 60:
             return t
@@ -114,7 +123,12 @@ def title_of(c):
 
 def description_of(c):
     days = repair_days_text(c)
-    tail = f' Ремонт за {days}, гарантия 3 месяца.' if days else ' Выезд за 24 часа, гарантия 3 месяца.'
+    if days:
+        tail = f' Ремонт за {days}, гарантия 3 месяца.'
+    elif c.get('format') == 'block':
+        tail = ' Ремонт блока в мастерской, гарантия 3 месяца.'
+    else:
+        tail = ' Выезд за 24 часа, гарантия 3 месяца.'
     body = f'{c["brand"]} {c["model"]}: {c["headline"]}. {first_sentence(c["solution"])}'
     text = fit(body, 60, 160 - len(tail)) + tail
     if len(text) < 140:
@@ -206,8 +220,29 @@ def related_cases(c, cases):
     return picked[:3]
 
 
+def block_page_links(c):
+    """Страницы раздела ремонта блоков (/blocks/), к которым относится кейс формата block: вид → бренд → модель."""
+    path = os.path.join(ROOT, 'bot', 'content', 'blocks.json')
+    links = []
+    for p in json.load(open(path, encoding='utf-8'))['pages']:
+        if p['slug'] != c['equipment_type']:
+            continue
+        links.append((f'/blocks/{p["slug"]}.html', f'Ремонт блоков: {p["name"].lower()}'))
+        for b in p.get('brand_pages', []):
+            if not any(m.lower() in c['brand'].lower() for m in b['match']):
+                continue
+            links.append((f'/blocks/{p["slug"]}/{b["slug"]}.html', b['h1']))
+            for m in b.get('models', []):
+                if m['match'].lower() in c['model'].lower():
+                    links.append((f'/blocks/{p["slug"]}/{b["slug"]}/{m["slug"]}.html', m['h1']))
+    return links
+
+
 def render_case(c, cases, industries, types, parts):
     header, footer, cta = parts
+    visit_fact = ('<p class="fact__label">Мастерская</p>\n                <p class="fact__value">Москва, ул. Искры, 31к1</p>'
+                  if c.get('format') == 'block' else
+                  '<p class="fact__label">Выезд</p>\n                <p class="fact__value">По Москве и МО</p>')
     url = f'{SITE}/cases/{c["slug"]}.html'
     title, desc = title_of(c), description_of(c)
     name = f'{c["brand"]} {c["model"]}'
@@ -251,6 +286,10 @@ def render_case(c, cases, industries, types, parts):
            ('Какая гарантия на этот ремонт?', '3 месяца с момента пусконаладки.'),
            ('Как оформляется работа?', 'Официальный договор, любая форма оплаты и полный комплект закрывающих документов.'),
            ('Как быстро можете выехать на похожую поломку?', 'По Москве и Московской области — в течение 24 часов. В другие регионы — по договорённости.')]
+    if c.get('format') == 'block':
+        faq[-1] = ('Можно привезти похожий блок в ремонт?',
+                   'Да. Блоки принимаем в мастерской на ул. Искры, 31к1, по договорённости, из регионов — транспортной компанией. '
+                   'Диагностика блока, привезённого в мастерскую, бесплатная.')
     if days:
         faq.insert(1, ('Сколько занял ремонт?', f'{days[0].upper()}{days[1:]} с момента диагностики до пусконаладки.'))
     faq_html = '\n'.join(f'''                <article>
@@ -277,7 +316,10 @@ def render_case(c, cases, industries, types, parts):
         tags.append(f'<a href="/services/brand-{b_slug}.html">Сервисный центр {esc(hubs["brands"][b_slug]["name"])}</a>')
     if c['equipment_type'] in hubs['types']:
         tags.append(f'<a href="/services/type-{c["equipment_type"]}.html">Ремонт: {esc(type_name.lower())}</a>')
-    tags.append(f'<a href="/services/industry-{c["industry"]}.html">Ремонт оборудования: {esc(ind_name.lower())}</a>')
+    block_links = block_page_links(c) if c.get('format') == 'block' else []
+    tags.extend(f'<a href="{href}">{esc(text)}</a>' for href, text in block_links)
+    if os.path.exists(os.path.join(ROOT, 'services', f'industry-{c["industry"]}.html')):
+        tags.append(f'<a href="/services/industry-{c["industry"]}.html">Ремонт оборудования: {esc(ind_name.lower())}</a>')
     model = hubs['models'].get(c['slug'])
     model_html = ''
     if model:
@@ -318,6 +360,10 @@ def render_case(c, cases, industries, types, parts):
 
     page_cta = cta.replace('value="Главная"', f'value="{esc(name)} (кейс)"').replace('home-phone', 'case-phone') \
         .replace('<h2>Остановилась линия?</h2>', '<h2>Похожая поломка?</h2>')
+    if c.get('format') == 'block':
+        page_cta = (page_cta.replace('Оставьте телефон — перезвоним и скажем, когда сможем выехать.',
+                                     'Оставьте телефон — перезвоним, скажем, берёмся ли за ремонт, и договоримся о приёме блока.')
+                    .replace('Отправьте нам модель и дефект', 'Пришлите фото шильдика и описание неисправности'))
     return head(title, desc, url, 'article', og) + f'''
 {menu(header, '/cases.html')}
 
@@ -374,8 +420,7 @@ def render_case(c, cases, industries, types, parts):
                 <p class="fact__value">Договор, любая форма оплаты</p>
             </div>
             <div class="fact">
-                <p class="fact__label">Выезд</p>
-                <p class="fact__value">По Москве и МО</p>
+                {visit_fact}
             </div>
             <div class="fact">
                 <p class="fact__label">Гарантия</p>

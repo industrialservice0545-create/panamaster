@@ -64,5 +64,39 @@
       }
     ],
     "request_id": "20260928-172401-1958544230"
+  },
+  {
+    "slug": "rexroth-indramat-ecodrive-dkcxx3-040-7-fw",
+    "date": "2026-06",
+    "industry": "machinery",
+    "equipment_type": "drives-servo",
+    "format": "block",
+    "brand": "Rexroth Indramat",
+    "model": "ECODRIVE DKCXX.3-040-7-FW",
+    "rack": null,
+    "servo": null,
+    "headline": "стойка ЧПУ не видела сервопривод",
+    "defect": "Сервопривод Rexroth Indramat серии ECODRIVE выдавал ошибку сервосистемы: стойка ЧПУ станка не идентифицировала привод. Блок привезли в мастерскую.",
+    "solution": "Выполнили компонентный ремонт платы управления сервопривода и настроили стойку станка на работу с приводом.",
+    "result": "Стойка определяет сервопривод, станок работает в штатном режиме.",
+    "repair_days": null,
+    "area": null,
+    "lat": null,
+    "lon": null,
+    "photos": [
+      {
+        "file": "photo-1.webp",
+        "w": 1000,
+        "h": 667,
+        "alt": "Плата управления сервопривода Rexroth Indramat ECODRIVE DKC"
+      },
+      {
+        "file": "photo-2.webp",
+        "w": 1200,
+        "h": 800,
+        "alt": "Модуль памяти сервопривода Rexroth Indramat ECODRIVE DKC"
+      }
+    ],
+    "request_id": "260601-rexroth-dkc"
   }
 ]

@@ -26,7 +26,7 @@ def read(rel):
 def pages():
     """Индексируемые страницы в порядке важности: главная, разделы, отрасли, кейсы."""
     result = []
-    for rel in ['index.html', 'cases.html', 'contacts.html', 'map.html', 'blocks.html'] + sorted(glob.glob('blocks/*.html', root_dir=ROOT)) \
+    for rel in ['index.html', 'cases.html', 'contacts.html', 'map.html', 'blocks.html'] + sorted(glob.glob('blocks/**/*.html', root_dir=ROOT, recursive=True)) \
             + sorted(glob.glob('services/*.html', root_dir=ROOT)) \
             + sorted(glob.glob('cases/*.html', root_dir=ROOT)):
         if rel in EXCLUDE or not os.path.exists(os.path.join(ROOT, rel)):

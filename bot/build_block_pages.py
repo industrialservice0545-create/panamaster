@@ -8,6 +8,7 @@
 Запуск из корня репозитория:  python3 bot/build_block_pages.py
 """
 import html
+import sys
 import json
 import os
 import re
@@ -15,6 +16,20 @@ import re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = 'https://panamaster.ru'
 CONTENT = json.load(open(os.path.join(ROOT, 'bot', 'content', 'blocks.json'), encoding='utf-8'))
+
+sys.path.insert(0, os.path.join(ROOT, 'bot'))
+import build_case_pages as cases_gen   # карточки кейсов — та же разметка, что на главной и в отраслях
+
+
+def block_cases(type_slug, brand=None, model=None):
+    """Кейсы формата «блок» для страницы вида / бренда / модели, свежие сверху."""
+    cases, industries, _ = cases_gen.load()
+    own = [c for c in cases if c.get('format') == 'block' and c['equipment_type'] == type_slug]
+    if brand:
+        own = [c for c in own if any(m.lower() in c['brand'].lower() for m in brand['match'])]
+    if model:
+        own = [c for c in own if model['match'].lower() in c['model'].lower()]
+    return own, industries
 HUB_NAME = 'Ремонт блоков в мастерской'
 
 
@@ -87,7 +102,8 @@ BRIDGE = '''        <section class="case-block">
         </section>'''
 
 
-def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, footer, cta, org, form_page, form_id):
+def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, footer, cta, org, form_page, form_id,
+              cases_html='<!-- CASES_START -->\n        <!-- CASES_END -->'):
     crumbs_html = '\n'.join(
         (f'        <a href="{href}">{esc(name)}</a>\n        <span class="breadcrumbs__sep">→</span>' if href
          else f'        <span aria-current="page">{esc(name)}</span>') for name, href in crumbs)
@@ -159,8 +175,7 @@ def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, fo
 
 {page_cta}
 
-        <!-- CASES_START -->
-        <!-- CASES_END -->
+        {cases_html}
 
 {faq_html(faq)}
 
@@ -216,7 +231,7 @@ def type_body(p):
             </div>
         </section>
 
-{steps_html()}
+{brand_links_html(p)}{steps_html()}
 
         <section class="case-block case-services">
             <h2 class="section-label">Другие блоки</h2>
@@ -225,6 +240,71 @@ def type_body(p):
 {others}
             </div>
         </section>'''
+
+
+def brand_links_html(p):
+    if not p.get('brand_pages'):
+        return ''
+    links = '\n'.join(f'                <a href="/blocks/{p["slug"]}/{b["slug"]}.html">{esc(b["h1"])}</a>'
+                      for b in p['brand_pages'])
+    return f'''        <section class="case-block case-services">
+            <h2 class="section-label">Ремонт по брендам</h2>
+            <div class="services-tags">
+{links}
+            </div>
+        </section>
+
+'''
+
+
+def up_links(items):
+    links = '\n'.join(f'                <a href="{href}">{esc(name)}</a>' for href, name in items)
+    return f'''        <section class="case-block case-services">
+            <h2 class="section-label">Смотрите также</h2>
+            <div class="services-tags">
+{links}
+            </div>
+        </section>'''
+
+
+def faults_html(faults):
+    items = '\n'.join(f'                <li>{esc(f)}</li>' for f in faults)
+    return f'''        <section class="case-block">
+            <p class="section-label">Неисправности</p>
+            <h2>С чем приносят в ремонт</h2>
+            <ul class="hub-list">
+{items}
+            </ul>
+        </section>'''
+
+
+def brand_body(p, b):
+    series = '\n'.join(f'''                <article class="related-card">
+                    <h3>{esc(k)}</h3>
+                    <p>{esc(v)}</p>
+                </article>''' for k, v in b['series'])
+    models = [(f'/blocks/{p["slug"]}/{b["slug"]}/{m["slug"]}.html', m['h1']) for m in b.get('models', [])]
+    return f'''        <section class="case-block">
+            <p class="section-label">Серии</p>
+            <h2>Что ремонтируем у {esc(b["name"])}</h2>
+            <div class="related-grid related-grid--3">
+{series}
+            </div>
+        </section>
+
+{faults_html(b["faults"])}
+
+{steps_html()}
+
+{up_links(models + [(f'/blocks/{p["slug"]}.html', p['h1']), ('/blocks.html', 'Все виды блоков')])}'''
+
+
+def model_body(p, b, m):
+    return f'''{faults_html(m["faults"])}
+
+{steps_html()}
+
+{up_links([(f'/blocks/{p["slug"]}/{b["slug"]}.html', b['h1']), (f'/blocks/{p["slug"]}.html', p['h1']), ('/blocks.html', 'Все виды блоков')])}'''
 
 
 def hub_body():
@@ -259,12 +339,35 @@ def build():
         meta='Мастерская · Москва и вся Россия', h1=hub['h1'], lead=hub['lead'], body=hub_body(),
         faq=hub['faq'] + CONTENT['common_faq'], form_page=HUB_NAME, form_id='blocks-phone', **common)}
     for p in CONTENT['pages']:
+        own, industries = block_cases(p['slug'])
         pages[f'blocks/{p["slug"]}.html'] = page_html(
             url=f'{SITE}/blocks/{p["slug"]}.html', title=p['title'], desc=p['desc'],
             crumbs=[('Главная', '/'), (HUB_NAME, '/blocks.html'), (p['name'], None)],
             meta='Ремонт в мастерской · Москва и вся Россия', h1=p['h1'], lead=p['lead'], body=type_body(p),
             faq=p['faq'] + CONTENT['common_faq'], form_page=f'{HUB_NAME}: {p["name"]}',
-            form_id=f'blocks-{p["slug"]}-phone', **common)
+            form_id=f'blocks-{p["slug"]}-phone',
+            cases_html=cases_gen.cases_block(own[:6], industries, 'Отремонтированные блоки', more=False), **common)
+        type_crumbs = [('Главная', '/'), (HUB_NAME, '/blocks.html'), (p['name'], f'/blocks/{p["slug"]}.html')]
+        for b in p.get('brand_pages', []):
+            os.makedirs(os.path.join(ROOT, 'blocks', p['slug'], b['slug']), exist_ok=True)
+            own, industries = block_cases(p['slug'], b)
+            pages[f'blocks/{p["slug"]}/{b["slug"]}.html'] = page_html(
+                url=f'{SITE}/blocks/{p["slug"]}/{b["slug"]}.html', title=b['title'], desc=b['desc'],
+                crumbs=type_crumbs + [(b['name'], None)],
+                meta='Ремонт в мастерской · Москва и вся Россия', h1=b['h1'], lead=b['lead'], body=brand_body(p, b),
+                faq=b['faq'] + CONTENT['common_faq'], form_page=f'{HUB_NAME}: {p["name"]}: {b["name"]}',
+                form_id=f'blocks-{p["slug"]}-{b["slug"]}-phone',
+                cases_html=cases_gen.cases_block(own[:6], industries, f'Ремонты {b["name"]}', more=False), **common)
+            for m in b.get('models', []):
+                own, industries = block_cases(p['slug'], b, m)
+                pages[f'blocks/{p["slug"]}/{b["slug"]}/{m["slug"]}.html'] = page_html(
+                    url=f'{SITE}/blocks/{p["slug"]}/{b["slug"]}/{m["slug"]}.html', title=m['title'], desc=m['desc'],
+                    crumbs=type_crumbs + [(b['name'], f'/blocks/{p["slug"]}/{b["slug"]}.html'), (m['name'], None)],
+                    meta='Ремонт в мастерской · Москва и вся Россия', h1=m['h1'], lead=m['lead'], body=model_body(p, b, m),
+                    faq=m['faq'] + CONTENT['common_faq'], form_page=f'{HUB_NAME}: {b["name"]} {m["name"]}',
+                    form_id=f'blocks-{b["slug"]}-{m["slug"]}-phone',
+                    cases_html=cases_gen.cases_block(own[:6], industries, f'Ремонты {b["name"]} {m["name"]}', more=False),
+                    **common)
     for rel, s in pages.items():
         with open(os.path.join(ROOT, rel), 'w', encoding='utf-8') as f:
             f.write(s)
