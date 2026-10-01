@@ -11,6 +11,16 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://panamaster.ru/cases-machines.html</loc>
+    <lastmod>2026-10-01</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/cases-blocks.html</loc>
+    <lastmod>2026-10-01</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://panamaster.ru/contacts.html</loc>
     <lastmod>2026-09-28</lastmod>
     <priority>0.8</priority>

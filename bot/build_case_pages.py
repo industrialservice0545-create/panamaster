@@ -476,13 +476,34 @@ def render_case(c, cases, industries, types, parts):
 '''
 
 
-def render_cases_list(page_cases, n, total, industries, parts):
+LIST_KINDS = {   # фильтр «Примеры работ»: все / ремонт на объекте / ремонт блоков в мастерской
+    'all': {'base': 'cases', 'label': 'Все примеры', 'h1': 'Примеры работ',
+            'title': 'Примеры работ по ремонту оборудования — Панамастер',
+            'desc': 'Примеры ремонта промышленного оборудования Панамастер: что сломалось, что сделали и результат. Выезд за 24 часа по Москве и МО, гарантия 3 месяца.',
+            'lead': 'Реальные ремонты: какое оборудование остановилось, что нашли на диагностике, что сделали и как машина работает после пусконаладки.'},
+    'machine': {'base': 'cases-machines', 'label': 'Ремонт станков и линий на объекте', 'h1': 'Ремонт станков и линий на объекте',
+                'title': 'Ремонт станков и линий на объекте: примеры — Панамастер',
+                'desc': 'Примеры выездного ремонта станков и линий: что остановилось, что нашли на диагностике, что сделали. Выезд за 24 часа по Москве и МО, гарантия 3 месяца.',
+                'lead': 'Выезжаем на производство, находим неисправность на месте и запускаем станок или линию.'},
+    'block': {'base': 'cases-blocks', 'label': 'Ремонт блоков в мастерской', 'h1': 'Ремонт блоков в мастерской',
+              'title': 'Ремонт электронных блоков в мастерской: примеры — Панамастер',
+              'desc': 'Примеры компонентного ремонта блоков в мастерской: сервоприводы, частотники, платы управления. Диагностика в мастерской бесплатно, гарантия 3 месяца.',
+              'lead': 'Блоки, которые привезли или прислали к нам в мастерскую: модель, неисправность и что сделали на уровне компонентов.'},
+}
+
+
+def list_rel(kind, n):
+    base = LIST_KINDS[kind]['base']
+    return f'{base}.html' if n == 1 else f'{base}-{n}.html'
+
+
+def render_cases_list(page_cases, n, total, industries, parts, kind='all', kinds=('all',)):
     header, footer, cta = parts
-    rel = 'cases.html' if n == 1 else f'cases-{n}.html'
+    k = LIST_KINDS[kind]
+    rel = list_rel(kind, n)
     url = f'{SITE}/{rel}'
-    title = 'Примеры работ по ремонту оборудования — Панамастер' if n == 1 else \
-        f'Примеры работ по ремонту оборудования, стр. {n} — Панамастер'
-    desc = 'Примеры ремонта промышленного оборудования Панамастер: что сломалось, что сделали и результат. Выезд за 24 часа по Москве и МО, гарантия 3 месяца.'
+    title = k['title'] if n == 1 else k['title'].replace(' — Панамастер', f', стр. {n} — Панамастер')
+    desc = k['desc']
     if n > 1:
         desc = fit(f'Страница {n}. ' + desc, 140, 160)
     cards = '\n                '.join(card(c, industries) for c in page_cases)
@@ -492,8 +513,8 @@ def render_cases_list(page_cases, n, total, industries, parts):
         if os.path.exists(os.path.join(ROOT, 'map.html')) else ''
     nav = ''
     if total > 1:
-        prev_ = '' if n == 1 else f'<a href="/{"cases.html" if n == 2 else f"cases-{n - 1}.html"}" class="btn btn--ghost">Назад</a>'
-        next_ = '' if n == total else f'<a href="/cases-{n + 1}.html" class="btn btn--ghost">Вперёд</a>'
+        prev_ = '' if n == 1 else f'<a href="/{list_rel(kind, n - 1)}" class="btn btn--ghost">Назад</a>'
+        next_ = '' if n == total else f'<a href="/{list_rel(kind, n + 1)}" class="btn btn--ghost">Вперёд</a>'
         nav = f'\n            <div class="bottom-cta">{prev_}{next_}</div>'
     ld = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
         {'@type': 'ListItem', 'position': 1, 'name': 'Главная', 'item': f'{SITE}/'},
@@ -501,6 +522,23 @@ def render_cases_list(page_cases, n, total, industries, parts):
     og = f'{SITE}{photo_url(page_cases[0], len(page_cases[0]["photos"]) - 1)}' if page_cases and page_cases[0]['photos'] \
         else f'{SITE}/assets/img/industries/printing.webp'
     list_cta = cta.replace('value="Главная"', 'value="Примеры работ"').replace('home-phone', 'cases-phone')
+    filters = ''
+    if len(kinds) > 1:
+        current = ' aria-current="page"'
+        tags = '\n'.join(
+            f'                <a href="/{list_rel(x, 1)}"{current if x == kind else ""}>{esc(LIST_KINDS[x]["label"])}</a>'
+            for x in kinds)
+        filters = f'''
+
+        <section class="case-block case-services">
+            <h2 class="section-label">Что вас интересует</h2>
+            <div class="services-tags">
+{tags}
+            </div>
+        </section>'''
+    crumb_tail = ('        <span aria-current="page">Примеры работ</span>' if kind == 'all' else
+                  f'        <a href="/cases.html">Примеры работ</a>\n        <span class="breadcrumbs__sep">→</span>\n'
+                  f'        <span aria-current="page">{esc(k["label"])}</span>')
     return head(title, desc, url, 'website', og) + f'''
 {menu(header, '/cases.html')}
 
@@ -508,7 +546,7 @@ def render_cases_list(page_cases, n, total, industries, parts):
     <div class="container">
         <a href="/">Главная</a>
         <span class="breadcrumbs__sep">→</span>
-        <span aria-current="page">Примеры работ</span>
+{crumb_tail}
     </div>
 </nav>
 
@@ -517,12 +555,12 @@ def render_cases_list(page_cases, n, total, industries, parts):
 
         <section class="case-hero">
             <div class="case-hero__content">
-                <h1>{"Примеры работ" if n == 1 else f"Примеры работ — страница {n}"}</h1>
+                <h1>{k["h1"] if n == 1 else f"{k['h1']} — страница {n}"}</h1>
                 <div class="case-summary">
-                    <p>Реальные ремонты: какое оборудование остановилось, что нашли на диагностике, что сделали и как машина работает после пусконаладки.</p>
-                </div>{MAP_LINK}
+                    <p>{esc(k["lead"])}</p>
+                </div>{MAP_LINK if kind == 'all' else ''}
             </div>
-        </section>
+        </section>{filters}
 
         <section class="case-block">
             <div class="related-grid related-grid--cases">
@@ -805,15 +843,21 @@ def build():
     elif os.path.exists(os.path.join(ROOT, 'map.html')):
         os.remove(os.path.join(ROOT, 'map.html'))
 
-    pages = max(1, math.ceil(len(cases) / PER_PAGE))
-    for n in range(1, pages + 1):
-        rel = 'cases.html' if n == 1 else f'cases-{n}.html'
-        write(rel, render_cases_list(cases[(n - 1) * PER_PAGE:n * PER_PAGE], n, pages, industries, parts))
-        written.append(rel)
-    n = pages + 1
-    while os.path.exists(os.path.join(ROOT, f'cases-{n}.html')):   # лишние страницы пагинации
-        os.remove(os.path.join(ROOT, f'cases-{n}.html'))
-        n += 1
+    by_kind = {'all': cases,
+               'machine': [c for c in cases if c.get('format', 'machine') == 'machine'],
+               'block': [c for c in cases if c.get('format') == 'block']}
+    kinds = ('all', 'machine', 'block') if by_kind['machine'] and by_kind['block'] else ('all',)
+    for kind in ('all', 'machine', 'block'):
+        own = by_kind[kind] if kind in kinds else []
+        pages = math.ceil(len(own) / PER_PAGE) if kind != 'all' else max(1, math.ceil(len(own) / PER_PAGE))
+        for n in range(1, pages + 1):
+            rel = list_rel(kind, n)
+            write(rel, render_cases_list(own[(n - 1) * PER_PAGE:n * PER_PAGE], n, pages, industries, parts, kind, kinds))
+            written.append(rel)
+        n = pages + 1
+        while os.path.exists(os.path.join(ROOT, list_rel(kind, n))):   # лишние страницы пагинации и пустые фильтры
+            os.remove(os.path.join(ROOT, list_rel(kind, n)))
+            n += 1
 
     hubs = load_hubs()
     for slug, h in hubs['brands'].items():

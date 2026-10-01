@@ -201,8 +201,13 @@ def type_body(p):
                     <p>{esc(v)}</p>
                 </article>''' for k, v in p['what'])
     faults = '\n'.join(f'                <li>{esc(f)}</li>' for f in p['faults'])
+    def brand_title(name):
+        for b in p.get('brand_pages', []):
+            if any(m.lower() in name.lower() for m in b['match']):
+                return f'<a href="/blocks/{p["slug"]}/{b["slug"]}.html">{esc(name)}</a>'
+        return esc(name)
     brands = '\n'.join(f'''                <article class="related-card">
-                    <h3>{esc(k)}</h3>
+                    <h3>{brand_title(k)}</h3>
                     <p>{esc(v)}</p>
                 </article>''' for k, v in p['brands'])
     others = '\n'.join(f'                <a href="/blocks/{o["slug"]}.html">{esc(o["name"])}</a>'
