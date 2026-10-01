@@ -308,8 +308,16 @@ class BlockPagesTests(unittest.TestCase):
         for p in self.pages:
             s = read(p)
             with self.subTest(p):
-                for fact in ('Бесплатно, 1–3 дня', 'После проверки блока', '3 месяца', 'Искры, 31к1', 'транспортной компанией'):
+                for fact in ('Бесплатно в мастерской, 1–3 дня', 'После проверки блока', '3 месяца', 'Искры, 31к1', 'транспортной компанией'):
                     self.assertIn(fact, s)
+
+    def test_free_diagnostics_only_with_workshop_condition(self):
+        # Решение владельца 01.10.2026: бесплатна только диагностика блока, привезённого в мастерскую; выезд платный
+        for p in self.pages:
+            text = re.sub(r'<[^>]+>', ' ', read(p))
+            for m in re.finditer(r'[^.!?\n]*[Бб]есплатн[^.!?\n]*', text):
+                with self.subTest(page=p, phrase=m.group(0).strip()[:80]):
+                    self.assertRegex(m.group(0), r'мастерск|привез')
 
     def test_faq_json_ld_matches_visible_text(self):
         for p in self.pages:
