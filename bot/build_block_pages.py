@@ -118,7 +118,7 @@ BRIDGE = '''        <section class="case-block">
 def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, footer, cta, org, form_page, form_id,
               cases_html='<!-- CASES_START -->\n        <!-- CASES_END -->', facts_block=None, bridge=None,
               service_type='Ремонт промышленной электроники', faq_title='Коротко о ремонте блоков',
-              min_price=cases_gen.PRICE_BLOCK):
+              min_price=cases_gen.PRICE_BLOCK, main_entity=None):
     crumbs_html = '\n'.join(
         (f'        <a href="{href}">{esc(name)}</a>\n        <span class="breadcrumbs__sep">→</span>' if href
          else f'        <span aria-current="page">{esc(name)}</span>') for name, href in crumbs)
@@ -126,7 +126,7 @@ def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, fo
         {'@type': 'BreadcrumbList', 'itemListElement': [
             {'@type': 'ListItem', 'position': i + 1, 'name': name, 'item': SITE + (href or url[len(SITE):])}
             for i, (name, href) in enumerate(crumbs)]},
-        {'@type': 'Service', 'name': h1, 'serviceType': service_type,
+        main_entity or {'@type': 'Service', 'name': h1, 'serviceType': service_type,
          'areaServed': [{'@type': 'City', 'name': 'Москва'}, {'@type': 'Country', 'name': 'Россия'}],
          'provider': org, 'url': url,
          'offers': {'@type': 'Offer', 'priceCurrency': 'RUB',
@@ -394,52 +394,59 @@ SERVICES = load_content('services.json')
 
 
 def service_body(sp):
-    when = '\n'.join(f'                <li>{esc(x)}</li>' for x in sp['when'])
-    what = '\n'.join(f'''                <article class="related-card">
+    """Тело посадочной из services.json. Разделы «Признаки / Услуга / Порядок работ / Выбор» —
+    подписи и заголовки из JSON; steps, repair и отзывы (reviews: true) — необязательные."""
+    def card(item):
+        k, v, href = (list(item) + [None])[:3]
+        link = f'\n                    <a class="related-card__link" href="{href}">Подробнее</a>' if href else ''
+        return f'''                <article class="related-card">
                     <h3>{esc(k)}</h3>
-                    <p>{esc(v)}</p>
-                </article>''' for k, v in sp['what'])
-    steps = '\n'.join(f'                <li><strong>{esc(k)}</strong><span>{esc(v)}</span></li>' for k, v in sp['steps'])
-    repair = '\n'.join(f'                <p>{esc(x)}</p>' for x in sp['repair'])
+                    <p>{esc(v)}</p>{link}
+                </article>'''
+    when = '\n'.join(f'                <li>{esc(x)}</li>' for x in sp['when'])
+    what = '\n'.join(card(x) for x in sp['what'])
     links = '\n'.join(f'                <a href="{href}">{esc(name)}</a>' for href, name in sp['links'])
-    return f'''        <section class="case-block">
-            <p class="section-label">Признаки</p>
+    parts = [f'''        <section class="case-block">
+            <p class="section-label">{esc(sp.get("when_label", "Признаки"))}</p>
             <h2>{esc(sp["when_title"])}</h2>
             <ul class="hub-list">
 {when}
             </ul>
-        </section>
-
-        <section class="case-block">
-            <p class="section-label">Услуга</p>
+        </section>''', f'''        <section class="case-block">
+            <p class="section-label">{esc(sp.get("what_label", "Услуга"))}</p>
             <h2>{esc(sp["what_title"])}</h2>
             <div class="related-grid related-grid--3">
 {what}
             </div>
-        </section>
-
-        <section class="case-block">
+        </section>''']
+    if sp.get('steps'):
+        steps = '\n'.join(f'                <li><strong>{esc(k)}</strong><span>{esc(v)}</span></li>' for k, v in sp['steps'])
+        parts.append(f'''        <section class="case-block">
             <p class="section-label">Порядок работ</p>
             <h2>{esc(sp["steps_title"])}</h2>
             <ol class="steps-list">
 {steps}
             </ol>
-        </section>
-
-        <section class="case-block">
-            <p class="section-label">Выбор</p>
+        </section>''')
+    if sp.get('repair'):
+        repair = '\n'.join(f'                <p>{esc(x)}</p>' for x in sp['repair'])
+        parts.append(f'''        <section class="case-block">
+            <p class="section-label">{esc(sp.get("repair_label", "Выбор"))}</p>
             <h2>{esc(sp["repair_title"])}</h2>
             <div class="case-summary">
 {repair}
             </div>
-        </section>
-
-        <section class="case-block case-services">
+        </section>''')
+    if sp.get('reviews'):
+        import build_reviews
+        parts.append('        ' + build_reviews.block(json.load(open(build_reviews.DATA, encoding='utf-8')), about_link=False))
+    parts.append(f'''        <section class="case-block case-services">
             <h2 class="section-label">Смотрите также</h2>
             <div class="services-tags">
 {links}
             </div>
-        </section>'''
+        </section>''')
+    return '\n\n'.join(parts)
 
 
 def service_facts(sp):
@@ -457,8 +464,12 @@ def build_service_pages(common):
         cta = common['cta'].replace('<h2>Сняли блок?</h2>', f'<h2>{esc(sp["cta_title"])}</h2>').replace(
             'Оставьте телефон — перезвоним, скажем, берёмся ли за ремонт, и договоримся о приёме блока.',
             esc(sp['cta_text']))
-        pages[f'services/{sp["slug"]}.html'] = page_html(
-            url=f'{SITE}/services/{sp["slug"]}.html', title=sp['title'], desc=sp['desc'],
+        rel = sp.get('path', f'services/{sp["slug"]}.html')
+        url = f'{SITE}/{rel}'
+        about = {'@type': 'AboutPage', 'name': sp['h1'], 'url': url, 'about': common['org']} \
+            if sp.get('kind') == 'about' else None
+        pages[rel] = page_html(
+            url=url, title=sp['title'], desc=sp['desc'], main_entity=about,
             crumbs=[('Главная', '/'), (sp['name'], None)], meta=sp['meta'], h1=sp['h1'], lead=sp['lead'],
             body=service_body(sp), faq=sp['faq'], form_page=sp['name'], form_id=f'service-{sp["slug"]}-phone',
             facts_block=service_facts(sp), bridge='', service_type=sp['name'], faq_title=sp['faq_title'],

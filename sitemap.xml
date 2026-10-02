@@ -26,6 +26,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://panamaster.ru/about.html</loc>
+    <lastmod>2026-10-02</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://panamaster.ru/map.html</loc>
     <lastmod>2026-10-02</lastmod>
     <priority>0.6</priority>

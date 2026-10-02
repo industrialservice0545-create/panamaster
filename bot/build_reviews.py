@@ -41,8 +41,9 @@ def refresh(d):
         f.write('\n')
 
 
-def block(d):
+def block(d, about_link=True):
     n = d['reviews_count']
+    about = '\n                <a href="/about.html" class="btn btn--ghost">О компании</a>' if about_link else ''
     cards = '\n'.join(f'''                <article class="related-card">
                     <p class="related-card__meta">{esc(q["topic"])} · {esc(q["date"])}</p>
                     <p>«{esc(q["text"])}»</p>
@@ -56,7 +57,7 @@ def block(d):
 {cards}
             </div>
             <div class="bottom-cta">
-                <a href="{d["url"]}" class="btn btn--ghost" target="_blank" rel="noopener">Все отзывы на Яндекс Картах</a>
+                <a href="{d["url"]}" class="btn btn--ghost" target="_blank" rel="noopener">Все отзывы на Яндекс Картах</a>{about}
             </div>
         </section>
         <!-- REVIEWS_END -->'''
