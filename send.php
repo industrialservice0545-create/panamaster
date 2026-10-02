@@ -143,6 +143,43 @@ if (strlen($digits) < 10 || strlen($digits) > 12) {
 $page = isset($_POST['page']) ? mb_substr(trim((string) $_POST['page']), 0, 200) : '';
 $comment = isset($_POST['comment']) ? mb_substr(trim((string) $_POST['comment']), 0, 1000) : '';
 
+// Ключ формы ставит assets/js/main.js после действий человека на странице. Без верного ключа заявку
+// не шлём в Telegram и на почту, а только пишем в журнал как подозрительную — реальная заявка не потеряется.
+function formKeyValid($key)
+{
+    if (!preg_match('~^(\d{9,11})\.(\d{1,7})$~', (string) $key, $m)) {
+        return false;
+    }
+    $t = (int) $m[1];
+    if ($t > time() + 60 || $t < time() - 6 * 3600 || time() - $t < 2) {
+        return false;
+    }
+    $src = 'pm' . $t;
+    $h = 7;
+    for ($i = 0; $i < strlen($src); $i++) {
+        $h = ($h * 31 + ord($src[$i])) % 1000003;
+    }
+    return (int) $m[2] === $h;
+}
+
+if (!formKeyValid(isset($_POST['pm_key']) ? $_POST['pm_key'] : '')) {
+    @file_put_contents(dirname(__DIR__) . '/leads.jsonl', json_encode(array(
+        'ts' => date('c'), 'type' => 'lead_suspect', 'reason' => 'no_js_key', 'source' => 'site_form',
+        'page' => $page, 'phone' => mb_substr($phone, 0, 40), 'comment' => $comment,
+        'ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '',
+    ), JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND | LOCK_EX);
+    respond(true, 'Заявка отправлена');
+}
+
+// Признаки бота у заявок, прошедших проверку: показываем владельцу, но не блокируем
+$botSigns = array();
+if (empty($_SERVER['HTTP_ORIGIN'])) {
+    $botSigns[] = 'нет Origin';
+}
+if (stripos(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : '', 'ru') === false) {
+    $botSigns[] = 'язык браузера не русский';
+}
+
 $lines = array(
     'Новая заявка с сайта panamaster.ru',
     '',
@@ -154,6 +191,9 @@ if ($comment !== '') {
 }
 $lines[] = 'Время (МСК): ' . gmdate('d.m.Y H:i', time() + 3 * 3600);
 $lines[] = 'IP: ' . (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '—');
+if ($botSigns) {
+    $lines[] = '⚠️ Возможен спам: ' . implode(', ', $botSigns);
+}
 
 $subject = '=?UTF-8?B?' . base64_encode('Заявка с сайта: ' . $digits) . '?=';
 $headers = implode("\r\n", array(

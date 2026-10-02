@@ -30,6 +30,18 @@ MONTHS = ['января', 'февраля', 'марта', 'апреля', 'ма�
           'августа', 'сентября', 'октября', 'ноября', 'декабря']
 
 
+WA_PHOTO = 'https://wa.me/79268830939?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9D%D1%83%D0%B6%D0%B5%D0%BD%20%D1%80%D0%B5%D0%BC%D0%BE%D0%BD%D1%82.%0A%D0%9E%D0%B1%D0%BE%D1%80%D1%83%D0%B4%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20/%20%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C%20%D0%B1%D0%BB%D0%BE%D0%BA%D0%B0%3A%20%0A%D0%A7%D1%82%D0%BE%20%D1%81%D0%BB%D1%83%D1%87%D0%B8%D0%BB%D0%BE%D1%81%D1%8C%3A%20%0A%D0%9F%D1%80%D0%B8%D0%BA%D0%BB%D0%B0%D0%B4%D1%8B%D0%B2%D0%B0%D1%8E%20%D1%84%D0%BE%D1%82%D0%BE%20%D1%88%D0%B8%D0%BB%D1%8C%D0%B4%D0%B8%D0%BA%D0%B0%20%D0%B8%20%D1%8D%D0%BA%D1%80%D0%B0%D0%BD%D0%B0%20%D1%81%20%D0%BE%D1%88%D0%B8%D0%B1%D0%BA%D0%BE%D0%B9.'
+PHOTO_CTA = '''                    <p class="messengers__lead">Пришлите фото шильдика и экрана с ошибкой — скажем, берёмся ли за ремонт</p>
+                    <div class="messengers">
+                        <a href="https://t.me/+79268830939" class="messengers__link messengers__link--tg" aria-label="Telegram" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+                        </a>
+                        <a href="https://wa.me/79268830939?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9D%D1%83%D0%B6%D0%B5%D0%BD%20%D1%80%D0%B5%D0%BC%D0%BE%D0%BD%D1%82.%0A%D0%9E%D0%B1%D0%BE%D1%80%D1%83%D0%B4%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%20/%20%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C%20%D0%B1%D0%BB%D0%BE%D0%BA%D0%B0%3A%20%0A%D0%A7%D1%82%D0%BE%20%D1%81%D0%BB%D1%83%D1%87%D0%B8%D0%BB%D0%BE%D1%81%D1%8C%3A%20%0A%D0%9F%D1%80%D0%B8%D0%BA%D0%BB%D0%B0%D0%B4%D1%8B%D0%B2%D0%B0%D1%8E%20%D1%84%D0%BE%D1%82%D0%BE%20%D1%88%D0%B8%D0%BB%D1%8C%D0%B4%D0%B8%D0%BA%D0%B0%20%D0%B8%20%D1%8D%D0%BA%D1%80%D0%B0%D0%BD%D0%B0%20%D1%81%20%D0%BE%D1%88%D0%B8%D0%B1%D0%BA%D0%BE%D0%B9." class="messengers__link messengers__link--wa" aria-label="WhatsApp" target="_blank" rel="noopener">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.6 6.32A7.85 7.85 0 0 0 12.05 4a7.94 7.94 0 0 0-6.9 11.9L4 20l4.2-1.1a7.93 7.93 0 0 0 11.4-7.1 7.86 7.86 0 0 0-2-4.48zM12.05 18.5a6.6 6.6 0 0 1-3.36-.92l-.24-.14-2.5.65.67-2.43-.16-.25a6.59 6.59 0 1 1 5.59 3.09zm3.6-4.93c-.2-.1-1.17-.58-1.35-.64s-.31-.1-.45.1-.51.64-.62.77-.24.15-.44.05a5.4 5.4 0 0 1-2.68-2.33c-.2-.35.2-.32.58-1.08a.4.4 0 0 0 0-.37c0-.1-.44-1.07-.61-1.47s-.32-.33-.44-.33h-.38a.72.72 0 0 0-.52.24 2.19 2.19 0 0 0-.68 1.62 3.78 3.78 0 0 0 .8 2.02 8.68 8.68 0 0 0 3.32 2.93c1.16.5 1.62.54 2.2.45a1.88 1.88 0 0 0 1.24-.88 1.55 1.55 0 0 0 .11-.88c-.05-.1-.19-.15-.4-.25z"/></svg>
+                        </a>
+                    </div>'''   # «пришлите фото шильдика»: первый экран главной, блоков и кейсов
+
+
 def ld_json(data):
     """JSON-LD для <script>: символы <, >, & заменяем на \\u-коды, чтобы текст кейса не закрыл тег script."""
     return (json.dumps(data, ensure_ascii=False, indent=2)
@@ -360,6 +372,9 @@ def render_case(c, cases, industries, types, parts):
 
     page_cta = cta.replace('value="Главная"', f'value="{esc(name)} (кейс)"').replace('home-phone', 'case-phone') \
         .replace('<h2>Остановилась линия?</h2>', '<h2>Похожая поломка?</h2>')
+    page_cta = (page_cta.replace('<p class="messengers__lead">Отправьте нам модель и дефект</p>',
+                                 '<p class="messengers__lead">Пришлите фото шильдика и экрана с ошибкой</p>')
+                .replace('href="https://wa.me/79268830939"', f'href="{WA_PHOTO}"'))
     if c.get('format') == 'block':
         page_cta = (page_cta.replace('Оставьте телефон — перезвоним и скажем, когда сможем выехать.',
                                      'Оставьте телефон — перезвоним, скажем, берёмся ли за ремонт, и договоримся о приёме блока.')
@@ -809,7 +824,7 @@ def replace_block(text, block):
     return text[:a] + block + text[b:]
 
 
-def cases_block(items, industries, title, more=True):
+def cases_block(items, industries, title, more=True, filters=False):
     if not items:
         return '<!-- CASES_START -->\n        <!-- CASES_END -->'
     cards = '\n                '.join(card(c, industries) for c in items)
@@ -817,6 +832,12 @@ def cases_block(items, industries, title, more=True):
             <div class="bottom-cta">
                 <a href="/cases.html" class="btn btn--ghost">Все примеры работ</a>
             </div>''' if more else ''
+    if filters and os.path.exists(os.path.join(ROOT, 'cases-blocks.html')):
+        more_html += '''
+            <div class="services-tags">
+                <a href="/cases-machines.html">Ремонт станков и линий на объекте</a>
+                <a href="/cases-blocks.html">Ремонт блоков в мастерской</a>
+            </div>'''
     return f'''<!-- CASES_START -->
         <section class="case-block">
             <p class="section-label">Примеры работ</p>
@@ -867,7 +888,7 @@ def build():
         if any(c['equipment_type'] == slug for c in cases):
             written.append(render_hub('type', slug, h, cases, industries, types, parts))
 
-    write('index.html', replace_block(read('index.html'), cases_block(cases[:HOME_CASES], industries, 'Последние ремонты')))
+    write('index.html', replace_block(read('index.html'), cases_block(cases[:HOME_CASES], industries, 'Последние ремонты', filters=True)))
     written.append('index.html')
 
     for slug in industries:

@@ -81,6 +81,29 @@ document.addEventListener('click', function (event) {
   else if (href.indexOf('mailto:') === 0) reachGoal('email_click');
 });
 
+// Защита формы от ботов: ключ появляется только после действий человека на странице (без JS заявку не принимаем).
+function formKey() {
+  const t = Math.floor(Date.now() / 1000);
+  let h = 7;
+  const src = 'pm' + t;
+  for (let i = 0; i < src.length; i++) h = (h * 31 + src.charCodeAt(i)) % 1000003;
+  return t + '.' + h;
+}
+
+function addFormKey() {
+  document.querySelectorAll('.cta-form').forEach(function (form) {
+    if (form.querySelector('input[name="pm_key"]')) return;
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'pm_key';
+    input.value = formKey();
+    form.appendChild(input);
+  });
+}
+['pointerdown', 'keydown', 'touchstart', 'focusin'].forEach(function (type) {
+  document.addEventListener(type, addFormKey, { once: true, passive: true });
+});
+
 // Форма заявки. Поля скрыты от Вебвизора: телефон и комментарий не попадают в запись сессии.
 document.querySelectorAll('.cta-form input, .cta-form textarea').forEach(function (field) {
   field.classList.add('ym-hide-content', 'ym-disable-keys');

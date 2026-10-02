@@ -131,7 +131,7 @@ test('кейс CODIMAG: фото загружены, ссылка на отра�
     await img.scrollIntoViewIfNeeded();
     await expect.poll(() => img.evaluate(el => el.complete && el.naturalWidth)).toBeGreaterThan(0);
   }
-  await page.click('text=Ремонт полиграфического оборудования');
+  await page.click('text=Ремонт оборудования: полиграфия');
   await expect(page).toHaveURL(/industry-printing\.html$/);
 });
 

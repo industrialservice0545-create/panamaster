@@ -166,6 +166,7 @@ def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, fo
                     <a href="tel:+79268830939" class="btn btn--primary">Позвонить: +7 926 883-09-39</a>
                     <a href="#zayavka" class="btn btn--ghost">Оставить заявку</a>
                 </div>
+{cases_gen.PHOTO_CTA}
             </div>
         </section>
 
