@@ -220,7 +220,7 @@ if (worksMap) {
   });
 }
 
-// Поиск по сайту (search.html): индекс страниц собирает bot/build_sitemap.py в /assets/data/search.json
+// Поиск по сайту (search.html): индекс страниц собирает bot/build_sitemap.py в /assets/search.json (не в assets/data — она закрыта в .htaccess)
 const searchForm = document.getElementById('site-search');
 if (searchForm) {
   const input = document.getElementById('search-q');
@@ -265,7 +265,7 @@ if (searchForm) {
     if (pages) run();
   });
 
-  fetch('/assets/data/search.json')
+  fetch('/assets/search.json')
     .then(function (r) { return r.json(); })
     .then(function (data) {
       pages = data;

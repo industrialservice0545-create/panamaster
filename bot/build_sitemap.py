@@ -2,7 +2,7 @@
 
 sitemap.xml — все индексируемые страницы (meta robots index), lastmod = дата последнего коммита файла.
 llms.txt   — краткое описание компании и список страниц для AI-поиска (Алиса, Нейро, ChatGPT, Perplexity).
-search.html + assets/data/search.json — поиск по сайту: индекс тех же страниц (заголовок, описание,
+search.html + assets/search.json — поиск по сайту: индекс тех же страниц (заголовок, описание,
              подзаголовки, текст), ищет assets/js/main.js в браузере. search.html — noindex.
 Не входят: privacy.html, consent.html, all-services.html, test.html и страницы с noindex.
 
@@ -148,7 +148,7 @@ def build_search(rels):
                  for h in re.findall(r'<h[23][^>]*>(.*?)</h[23]>', read(r), re.S)]
         index.append({'u': '/' if r == 'index.html' else '/' + r, 't': title, 'd': desc,
                       'h': ' · '.join(h for h in heads if h)[:600], 'x': page_text(r)[:2500]})
-    with open(os.path.join(ROOT, 'assets', 'data', 'search.json'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(ROOT, 'assets', 'search.json'), 'w', encoding='utf-8') as f:
         json.dump(index, f, ensure_ascii=False, separators=(',', ':'))
     idx = read('index.html')
     head = idx[:idx.index('<header class="site-header">')]
@@ -219,7 +219,7 @@ def stage_extra_pages():
     «Примеров работ» генераторы тоже пересобирают — добавляем их в индекс сами (только в CI)."""
     if os.environ.get('GITHUB_ACTIONS') != 'true':
         return
-    extra = ['map.html', 'about.html', 'search.html', 'assets/data/search.json'] + sorted(glob.glob('cases-*.html', root_dir=ROOT))
+    extra = ['map.html', 'about.html', 'search.html', 'assets/search.json'] + sorted(glob.glob('cases-*.html', root_dir=ROOT))
     import subprocess
     subprocess.run(['git', '-C', ROOT, 'add', '-A', '--'] + extra, check=False)
 

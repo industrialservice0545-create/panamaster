@@ -415,7 +415,7 @@ class SearchAndMenuTest(unittest.TestCase):
     """Поиск по сайту (build_sitemap.py → search.json + search.html) и меню с «О компании» и «Поиском»."""
 
     def test_search_index_covers_sitemap(self):
-        index = json.load(open(os.path.join(ROOT, 'assets', 'data', 'search.json'), encoding='utf-8'))
+        index = json.load(open(os.path.join(ROOT, 'assets', 'search.json'), encoding='utf-8'))
         urls = {p['u'] for p in index}
         for loc in re.findall(r'<loc>https://panamaster\.ru(/[^<]*)</loc>', read('sitemap.xml')):
             self.assertIn(loc, urls)
