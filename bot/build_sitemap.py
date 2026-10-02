@@ -129,6 +129,18 @@ def main():
     with open(os.path.join(ROOT, 'llms.txt'), 'w', encoding='utf-8') as f:
         f.write(build_llms(rels))
     print(f'sitemap.xml: {len(rels)} страниц; llms.txt готов')
+    stage_extra_pages()
+
+
+def stage_extra_pages():
+    """В GitHub Actions шаг «Commit pages» добавляет в коммит только свой список путей, а затем делает
+    git pull --rebase: любой другой изменённый файл ломает сборку. Карту работ и страницы фильтра
+    «Примеров работ» генераторы тоже пересобирают — добавляем их в индекс сами (только в CI)."""
+    if os.environ.get('GITHUB_ACTIONS') != 'true':
+        return
+    extra = ['map.html'] + sorted(glob.glob('cases-*.html', root_dir=ROOT))
+    import subprocess
+    subprocess.run(['git', '-C', ROOT, 'add', '-A', '--'] + extra, check=False)
 
 
 if __name__ == '__main__':
