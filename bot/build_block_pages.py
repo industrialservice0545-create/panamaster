@@ -82,14 +82,14 @@ def steps_html():
         </section>'''
 
 
-def faq_html(faq):
+def faq_html(faq, title='Коротко о ремонте блоков'):
     items = '\n'.join(f'''                <article>
                     <h3>{esc(q)}</h3>
                     <p>{esc(a)}</p>
                 </article>''' for q, a in faq)
     return f'''        <section class="case-block">
             <p class="section-label">Вопросы</p>
-            <h2>Коротко о ремонте блоков</h2>
+            <h2>{esc(title)}</h2>
             <div class="faq">
 {items}
             </div>
@@ -107,7 +107,8 @@ BRIDGE = '''        <section class="case-block">
 
 
 def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, footer, cta, org, form_page, form_id,
-              cases_html='<!-- CASES_START -->\n        <!-- CASES_END -->'):
+              cases_html='<!-- CASES_START -->\n        <!-- CASES_END -->', facts_block=None, bridge=None,
+              service_type='Ремонт промышленной электроники', faq_title='Коротко о ремонте блоков'):
     crumbs_html = '\n'.join(
         (f'        <a href="{href}">{esc(name)}</a>\n        <span class="breadcrumbs__sep">→</span>' if href
          else f'        <span aria-current="page">{esc(name)}</span>') for name, href in crumbs)
@@ -115,7 +116,7 @@ def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, fo
         {'@type': 'BreadcrumbList', 'itemListElement': [
             {'@type': 'ListItem', 'position': i + 1, 'name': name, 'item': SITE + (href or url[len(SITE):])}
             for i, (name, href) in enumerate(crumbs)]},
-        {'@type': 'Service', 'name': h1, 'serviceType': 'Ремонт промышленной электроники',
+        {'@type': 'Service', 'name': h1, 'serviceType': service_type,
          'areaServed': [{'@type': 'City', 'name': 'Москва'}, {'@type': 'Country', 'name': 'Россия'}],
          'provider': org, 'url': url},
         {'@type': 'FAQPage', 'mainEntity': [
@@ -174,7 +175,7 @@ def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, fo
             </div>
         </section>
 
-{facts_html()}
+{facts_block if facts_block is not None else facts_html()}
 
 {body}
 
@@ -182,9 +183,9 @@ def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, fo
 
         {cases_html}
 
-{faq_html(faq)}
+{faq_html(faq, faq_title)}
 
-{BRIDGE}
+{BRIDGE if bridge is None else bridge}
 
     </div>
 </main>
@@ -376,6 +377,82 @@ def add_auto_servo_brands():
         })
 
 
+SERVICES = json.load(open(os.path.join(ROOT, 'bot', 'content', 'services.json'), encoding='utf-8'))
+
+
+def service_body(sp):
+    when = '\n'.join(f'                <li>{esc(x)}</li>' for x in sp['when'])
+    what = '\n'.join(f'''                <article class="related-card">
+                    <h3>{esc(k)}</h3>
+                    <p>{esc(v)}</p>
+                </article>''' for k, v in sp['what'])
+    steps = '\n'.join(f'                <li><strong>{esc(k)}</strong><span>{esc(v)}</span></li>' for k, v in sp['steps'])
+    repair = '\n'.join(f'                <p>{esc(x)}</p>' for x in sp['repair'])
+    links = '\n'.join(f'                <a href="{href}">{esc(name)}</a>' for href, name in sp['links'])
+    return f'''        <section class="case-block">
+            <p class="section-label">Признаки</p>
+            <h2>{esc(sp["when_title"])}</h2>
+            <ul class="hub-list">
+{when}
+            </ul>
+        </section>
+
+        <section class="case-block">
+            <p class="section-label">Услуга</p>
+            <h2>{esc(sp["what_title"])}</h2>
+            <div class="related-grid related-grid--3">
+{what}
+            </div>
+        </section>
+
+        <section class="case-block">
+            <p class="section-label">Порядок работ</p>
+            <h2>{esc(sp["steps_title"])}</h2>
+            <ol class="steps-list">
+{steps}
+            </ol>
+        </section>
+
+        <section class="case-block">
+            <p class="section-label">Выбор</p>
+            <h2>{esc(sp["repair_title"])}</h2>
+            <div class="case-summary">
+{repair}
+            </div>
+        </section>
+
+        <section class="case-block case-services">
+            <h2 class="section-label">Смотрите также</h2>
+            <div class="services-tags">
+{links}
+            </div>
+        </section>'''
+
+
+def service_facts(sp):
+    items = '\n'.join(f'''            <div class="fact">
+                <p class="fact__label">{esc(k)}</p>
+                <p class="fact__value">{esc(v)}</p>
+            </div>''' for k, v in sp['facts'])
+    return f'        <section class="case-facts" aria-label="Условия работы">\n{items}\n        </section>'
+
+
+def build_service_pages(common):
+    """Посадочные услуг из bot/content/services.json (модернизация и др.) → services/{slug}.html."""
+    pages = {}
+    for sp in SERVICES['pages']:
+        cta = common['cta'].replace('<h2>Сняли блок?</h2>', '<h2>Нужна модернизация?</h2>').replace(
+            'Оставьте телефон — перезвоним, скажем, берёмся ли за ремонт, и договоримся о приёме блока.',
+            'Оставьте телефон — перезвоним, обсудим оборудование и договоримся об обследовании.')
+        pages[f'services/{sp["slug"]}.html'] = page_html(
+            url=f'{SITE}/services/{sp["slug"]}.html', title=sp['title'], desc=sp['desc'],
+            crumbs=[('Главная', '/'), (sp['name'], None)], meta=sp['meta'], h1=sp['h1'], lead=sp['lead'],
+            body=service_body(sp), faq=sp['faq'], form_page=sp['name'], form_id=f'service-{sp["slug"]}-phone',
+            facts_block=service_facts(sp), bridge='', service_type=sp['name'], faq_title='Коротко о модернизации',
+            header=common['header'], footer=common['footer'], cta=cta, org=common['org'])
+    return pages
+
+
 def build():
     add_auto_servo_brands()
     header, footer, cta, org = chrome()
@@ -417,6 +494,7 @@ def build():
                     form_id=f'blocks-{b["slug"]}-{m["slug"]}-phone',
                     cases_html=cases_gen.cases_block(own[:6], industries, f'Ремонты {b["name"]} {m["name"]}', more=False),
                     **common)
+    pages.update(build_service_pages(common))
     for rel, s in pages.items():
         with open(os.path.join(ROOT, rel), 'w', encoding='utf-8') as f:
             f.write(s)
