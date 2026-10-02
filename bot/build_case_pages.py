@@ -73,8 +73,86 @@ def load():
     return cases, industries, types
 
 
+def slug_of(text):
+    s = re.sub(r'[^a-z0-9]+', '-', text.lower()).strip('-')
+    return s or 'brand'
+
+
+SERVO_BRANDS = {   # серия привода → производитель (для страниц «ремонт сервосистем [бренд]»)
+    'acopos': 'B&R', 'b&r': 'B&R', 'parker': 'Parker', 'baldor': 'Baldor', 'yaskawa': 'Yaskawa',
+    'sigma': 'Yaskawa', 'fanuc': 'Fanuc', 'siemens': 'Siemens', 'simodrive': 'Siemens', 'sinamics': 'Siemens',
+    'indramat': 'Rexroth Indramat', 'rexroth': 'Rexroth Indramat', 'mitsubishi': 'Mitsubishi Electric',
+    'lenze': 'Lenze', 'sew': 'SEW-Eurodrive', 'omron': 'Omron', 'panasonic': 'Panasonic', 'delta': 'Delta',
+    'kollmorgen': 'Kollmorgen', 'beckhoff': 'Beckhoff', 'schneider': 'Schneider Electric', 'lexium': 'Schneider Electric',
+}
+
+
+def servo_brand(servo):
+    """Производитель сервопривода из поля кейса «servo» (Parker HPD5N → Parker). None — не распознан."""
+    low = (servo or '').lower()
+    for key, name in SERVO_BRANDS.items():
+        if key in low:
+            return name
+    return None
+
+
+def lower_first(text):
+    return text[:1].lower() + text[1:] if len(text) > 1 and not text[1].isupper() else text
+
+
+def auto_brand_hub(brand, own, types, industries):
+    """Страница «Сервисный центр [бренд станка]» по кейсам, когда в hubs.json нет ручного текста.
+    Только факты из кейсов и уже подтверждённые условия (выезд за 24 часа, договор, гарантия 3 месяца)."""
+    models = sorted({c['model'] for c in own})
+    kinds = sorted({types.get(c['equipment_type'], '').lower() for c in own if types.get(c['equipment_type'])})
+    racks = sorted({c['rack'] for c in own if c.get('rack')})
+    servos = sorted({c['servo'] for c in own if c.get('servo')})
+    what = ', '.join(kinds) if kinds else 'оборудования'
+    lead = [f'Ремонтируем электронику оборудования {brand}: {what} ({", ".join(models)}). '
+            'Компонентный ремонт плат, приводов и систем управления, настройка после ремонта.',
+            'Выезжаем на производство по Москве и Московской области в течение 24 часов. '
+            'Работаем по договору, гарантия на ремонт — 3 месяца.']
+    electronics = [f'Стойка и система ЧПУ: {r}.' for r in racks] + [f'Сервоприводы: {v}.' for v in servos]
+    electronics += [f'{c["model"]}: {c["headline"]}.' for c in own]
+    return {
+        'name': brand, 'match': [brand], 'auto': True,
+        'title': fit(f'Сервисный центр {brand}: ремонт электроники — Панамастер', 30, 60),
+        'h1': f'Сервисный центр по ремонту оборудования {brand}',
+        'desc': fit(f'Ремонт электроники оборудования {brand}: {", ".join(models)}. Компонентный ремонт плат, '
+                    'приводов и систем управления. Выезд за 24 часа, гарантия 3 месяца.', 120, 160),
+        'lead': lead,
+        'about_title': f'Что мы делали на оборудовании {brand}',
+        'about': [f'{c["brand"]} {c["model"]}: {lower_first(first_sentence(c["defect"]).rstrip("."))}. '
+                  f'{first_sentence(c["solution"])}' for c in own],
+        'lines_title': f'Какое оборудование {brand} ремонтировали',
+        'lines': [[f'{brand} {c["model"]}',
+                   ' · '.join(x for x in (types.get(c['equipment_type'], ''), industries.get(c['industry'], '')) if x)]
+                  for c in own],
+        'electronics_title': 'Электроника, с которой работали',
+        'electronics': electronics,
+        'faq': [[f'Ремонтируете оборудование {brand}?',
+                 f'Да. Например, {models[0]}: {own[0]["headline"]}. Подробности — в примерах работ на этой странице.'],
+                ['Как быстро выезжаете?', 'По Москве и Московской области — в течение 24 часов. В другие регионы — по договорённости.']],
+        'sources': [],
+    }
+
+
 def load_hubs():
-    return json.loads(read('bot/content/hubs.json'))
+    """Тексты посадочных из hubs.json + автоматические страницы брендов станков по кейсам формата «станок»."""
+    hubs = json.loads(read('bot/content/hubs.json'))
+    cases = json.loads(read('assets/data/cases.json'))
+    d = json.loads(read('bot/dictionaries/entities.json'))
+    types = {t['slug']: t['name'] for t in d['equipment_catalog']}
+    industries = {i['slug']: i['human'] for i in d['industries']}
+    for brand in sorted({c['brand'] for c in cases if c.get('format', 'machine') == 'machine'}):
+        if brand_slug(brand, hubs):
+            continue
+        own = [c for c in cases if c['brand'] == brand]
+        slug = slug_of(brand)
+        while slug in hubs['brands']:
+            slug += '-2'
+        hubs['brands'][slug] = auto_brand_hub(brand, own, types, industries)
+    return hubs
 
 
 def brand_slug(brand, hubs):
@@ -329,6 +407,11 @@ def render_case(c, cases, industries, types, parts):
     if c['equipment_type'] in hubs['types']:
         tags.append(f'<a href="/services/type-{c["equipment_type"]}.html">Ремонт: {esc(type_name.lower())}</a>')
     block_links = block_page_links(c) if c.get('format') == 'block' else []
+    sb = servo_brand(c.get('servo')) if c.get('format', 'machine') == 'machine' else None
+    if sb and sb.lower() != 'rexroth indramat':
+        block_links.append((f'/blocks/drives-servo/{slug_of(sb)}.html', f'Ремонт сервоприводов {sb}'))
+    elif sb:
+        block_links.append(('/blocks/drives-servo/rexroth.html', 'Ремонт сервоприводов Rexroth Indramat'))
     tags.extend(f'<a href="{href}">{esc(text)}</a>' for href, text in block_links)
     if os.path.exists(os.path.join(ROOT, 'services', f'industry-{c["industry"]}.html')):
         tags.append(f'<a href="/services/industry-{c["industry"]}.html">Ремонт оборудования: {esc(ind_name.lower())}</a>')

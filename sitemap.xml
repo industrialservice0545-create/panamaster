@@ -46,6 +46,21 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://panamaster.ru/blocks/drives-servo/b-r.html</loc>
+    <lastmod>2026-10-02</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/blocks/drives-servo/baldor.html</loc>
+    <lastmod>2026-10-02</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/blocks/drives-servo/parker.html</loc>
+    <lastmod>2026-10-02</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://panamaster.ru/blocks/drives-servo/rexroth.html</loc>
     <lastmod>2026-10-01</lastmod>
     <priority>0.7</priority>
@@ -67,6 +82,16 @@
   </url>
   <url>
     <loc>https://panamaster.ru/services/brand-cms.html</loc>
+    <lastmod>2026-10-02</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/services/brand-codimag.html</loc>
+    <lastmod>2026-10-02</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/services/brand-lvd.html</loc>
     <lastmod>2026-10-02</lastmod>
     <priority>0.7</priority>
   </url>
@@ -137,7 +162,7 @@
   </url>
   <url>
     <loc>https://panamaster.ru/cases/codimag-viva-340.html</loc>
-    <lastmod>2026-10-01</lastmod>
+    <lastmod>2026-10-02</lastmod>
     <priority>0.6</priority>
   </url>
   <url>

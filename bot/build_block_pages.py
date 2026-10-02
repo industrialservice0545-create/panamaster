@@ -22,11 +22,15 @@ import build_case_pages as cases_gen   # карточки кейсов — та 
 
 
 def block_cases(type_slug, brand=None, model=None):
-    """Кейсы формата «блок» для страницы вида / бренда / модели, свежие сверху."""
+    """Кейсы для страницы вида / бренда / модели, свежие сверху: формата «блок» этого вида, а для страниц
+    брендов сервоприводов — ещё и ремонты станков, где стоял привод этого бренда (поле servo)."""
     cases, industries, _ = cases_gen.load()
     own = [c for c in cases if c.get('format') == 'block' and c['equipment_type'] == type_slug]
     if brand:
         own = [c for c in own if any(m.lower() in c['brand'].lower() for m in brand['match'])]
+        if brand.get('servo_brand'):
+            own += [c for c in cases if c.get('format', 'machine') == 'machine'
+                    and cases_gen.servo_brand(c.get('servo')) == brand['servo_brand']]
     if model:
         own = [c for c in own if model['match'].lower() in c['model'].lower()]
     return own, industries
@@ -204,7 +208,7 @@ def type_body(p):
     faults = '\n'.join(f'                <li>{esc(f)}</li>' for f in p['faults'])
     def brand_title(name):
         for b in p.get('brand_pages', []):
-            if any(m.lower() in name.lower() for m in b['match']):
+            if ',' not in name and any(m.lower() in name.lower() for m in b['match']):
                 return f'<a href="/blocks/{p["slug"]}/{b["slug"]}.html">{esc(name)}</a>'
         return esc(name)
     brands = '\n'.join(f'''                <article class="related-card">
@@ -334,7 +338,46 @@ def hub_body():
 {steps_html()}'''
 
 
+def add_auto_servo_brands():
+    """Страницы «Ремонт сервоприводов [бренд]» по кейсам станков, где известен привод (поле servo).
+    Только факты из кейсов; ручные страницы из blocks.json (Rexroth) не трогаем."""
+    page = next((p for p in CONTENT['pages'] if p['slug'] == 'drives-servo'), None)
+    if not page:
+        return
+    cases, _, _ = cases_gen.load()
+    page.setdefault('brand_pages', [])
+    have = {b['slug'] for b in page['brand_pages']}
+    have_names = {m.lower() for b in page['brand_pages'] for m in b['match']}
+    by_brand = {}
+    for c in cases:
+        name = cases_gen.servo_brand(c.get('servo')) if c.get('format', 'machine') == 'machine' else None
+        if name and name.lower() not in have_names:
+            by_brand.setdefault(name, []).append(c)
+    for name, own in sorted(by_brand.items()):
+        slug = cases_gen.slug_of(name)
+        if slug in have:
+            continue
+        servos = sorted({c['servo'] for c in own})
+        page['brand_pages'].append({
+            'slug': slug, 'name': name, 'match': [name], 'servo_brand': name, 'auto': True,
+            'title': cases_gen.fit(f'Ремонт сервоприводов {name} в Москве — Панамастер', 30, 60),
+            'h1': f'Ремонт сервоприводов {name}',
+            'desc': cases_gen.fit(f'Ремонт сервоприводов {name} ({", ".join(servos)}): компонентный ремонт и настройка '
+                                  'на станке. Диагностика в мастерской бесплатно, гарантия 3 месяца.', 120, 160),
+            'lead': [f'Ремонтируем сервоприводы {name} ({", ".join(servos)}) на уровне компонентов: силовую часть, '
+                     'платы управления и питания, цепи обратной связи. При необходимости настраиваем привод на станке.',
+                     'Привезите блок в мастерскую на ул. Искры, 31к1 или отправьте транспортной компанией. '
+                     'Если блок не снять — выедем на производство.'],
+            'series': [[v, f'Работали на {c["brand"]} {c["model"]}'] for c in own for v in [c['servo']]],
+            'faults': [f'{c["brand"]} {c["model"]}: {c["headline"]}.' for c in own],
+            'faq': [[f'Ремонтируете сервоприводы {name}?',
+                     f'Да. Например, {servos[0]} на {own[0]["brand"]} {own[0]["model"]} — пример ниже на странице.']],
+            'models': [],
+        })
+
+
 def build():
+    add_auto_servo_brands()
     header, footer, cta, org = chrome()
     hub = CONTENT['hub']
     os.makedirs(os.path.join(ROOT, 'blocks'), exist_ok=True)
