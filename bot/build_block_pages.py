@@ -454,14 +454,14 @@ def build_service_pages(common):
     """Посадочные услуг из bot/content/services.json (модернизация и др.) → services/{slug}.html."""
     pages = {}
     for sp in SERVICES['pages']:
-        cta = common['cta'].replace('<h2>Сняли блок?</h2>', '<h2>Нужна модернизация?</h2>').replace(
+        cta = common['cta'].replace('<h2>Сняли блок?</h2>', f'<h2>{esc(sp["cta_title"])}</h2>').replace(
             'Оставьте телефон — перезвоним, скажем, берёмся ли за ремонт, и договоримся о приёме блока.',
-            'Оставьте телефон — перезвоним, обсудим оборудование и договоримся об обследовании.')
+            esc(sp['cta_text']))
         pages[f'services/{sp["slug"]}.html'] = page_html(
             url=f'{SITE}/services/{sp["slug"]}.html', title=sp['title'], desc=sp['desc'],
             crumbs=[('Главная', '/'), (sp['name'], None)], meta=sp['meta'], h1=sp['h1'], lead=sp['lead'],
             body=service_body(sp), faq=sp['faq'], form_page=sp['name'], form_id=f'service-{sp["slug"]}-phone',
-            facts_block=service_facts(sp), bridge='', service_type=sp['name'], faq_title='Коротко о модернизации',
+            facts_block=service_facts(sp), bridge='', service_type=sp['name'], faq_title=sp['faq_title'],
             min_price=cases_gen.PRICE_VISIT,
             header=common['header'], footer=common['footer'], cta=cta, org=common['org'])
     return pages
