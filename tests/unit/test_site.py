@@ -397,3 +397,15 @@ class PricesAuthorNoJsTest(unittest.TestCase):
             with self.subTest(rel):
                 self.assertIn('Вячеслав Бондаренко, сервисный инженер', s)
                 self.assertIn('"@type": "Person"', s)
+
+
+class ReviewsBlockTest(unittest.TestCase):
+    """Отзывы с Яндекс Карт на главной (bot/build_reviews.py): рейтинг, ссылка, без названий компаний клиентов."""
+
+    def test_reviews_block(self):
+        s = read('index.html')
+        block = s[s.index('<!-- REVIEWS_START -->'):s.index('<!-- REVIEWS_END -->')]
+        self.assertRegex(block, r'\d,\d на Яндекс Картах — \d+ отзыв')
+        self.assertIn('yandex.ru/maps/org/panamaster/1153146831/reviews', block)
+        self.assertEqual(block.count('class="related-card"'), 3)
+        self.assertNotIn('ВЕРТЬЕ', block)
