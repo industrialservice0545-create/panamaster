@@ -15,10 +15,19 @@ import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = 'https://panamaster.ru'
-CONTENT = json.load(open(os.path.join(ROOT, 'bot', 'content', 'blocks.json'), encoding='utf-8'))
 
 sys.path.insert(0, os.path.join(ROOT, 'bot'))
 import build_case_pages as cases_gen   # карточки кейсов — та же разметка, что на главной и в отраслях
+
+
+def load_content(name):
+    """JSON из bot/content/ с подстановкой цен {PRICE_BLOCK} / {PRICE_VISIT} из build_case_pages."""
+    raw = open(os.path.join(ROOT, 'bot', 'content', name), encoding='utf-8').read()
+    return json.loads(raw.replace('{PRICE_BLOCK}', cases_gen.rub(cases_gen.PRICE_BLOCK))
+                         .replace('{PRICE_VISIT}', cases_gen.rub(cases_gen.PRICE_VISIT)))
+
+
+CONTENT = load_content('blocks.json')
 
 
 def block_cases(type_slug, brand=None, model=None):
@@ -108,7 +117,8 @@ BRIDGE = '''        <section class="case-block">
 
 def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, footer, cta, org, form_page, form_id,
               cases_html='<!-- CASES_START -->\n        <!-- CASES_END -->', facts_block=None, bridge=None,
-              service_type='Ремонт промышленной электроники', faq_title='Коротко о ремонте блоков'):
+              service_type='Ремонт промышленной электроники', faq_title='Коротко о ремонте блоков',
+              min_price=cases_gen.PRICE_BLOCK):
     crumbs_html = '\n'.join(
         (f'        <a href="{href}">{esc(name)}</a>\n        <span class="breadcrumbs__sep">→</span>' if href
          else f'        <span aria-current="page">{esc(name)}</span>') for name, href in crumbs)
@@ -118,7 +128,10 @@ def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, fo
             for i, (name, href) in enumerate(crumbs)]},
         {'@type': 'Service', 'name': h1, 'serviceType': service_type,
          'areaServed': [{'@type': 'City', 'name': 'Москва'}, {'@type': 'Country', 'name': 'Россия'}],
-         'provider': org, 'url': url},
+         'provider': org, 'url': url,
+         'offers': {'@type': 'Offer', 'priceCurrency': 'RUB',
+                    'priceSpecification': {'@type': 'PriceSpecification', 'minPrice': min_price,
+                                           'priceCurrency': 'RUB'}}},
         {'@type': 'FAQPage', 'mainEntity': [
             {'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in faq]},
     ]}
@@ -377,7 +390,7 @@ def add_auto_servo_brands():
         })
 
 
-SERVICES = json.load(open(os.path.join(ROOT, 'bot', 'content', 'services.json'), encoding='utf-8'))
+SERVICES = load_content('services.json')
 
 
 def service_body(sp):
@@ -449,6 +462,7 @@ def build_service_pages(common):
             crumbs=[('Главная', '/'), (sp['name'], None)], meta=sp['meta'], h1=sp['h1'], lead=sp['lead'],
             body=service_body(sp), faq=sp['faq'], form_page=sp['name'], form_id=f'service-{sp["slug"]}-phone',
             facts_block=service_facts(sp), bridge='', service_type=sp['name'], faq_title='Коротко о модернизации',
+            min_price=cases_gen.PRICE_VISIT,
             header=common['header'], footer=common['footer'], cta=cta, org=common['org'])
     return pages
 

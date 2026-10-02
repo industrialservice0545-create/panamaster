@@ -308,7 +308,8 @@ class BlockPagesTests(unittest.TestCase):
         for p in self.pages:
             s = read(p)
             with self.subTest(p):
-                for fact in ('Бесплатно в мастерской, 1–3 дня', 'После проверки блока', '3 месяца', 'Искры, 31к1', 'транспортной компанией'):
+                for fact in ('Бесплатно в мастерской, 1–3 дня', 'оплата после проверки', 'от 10\u00a0000 ₽', '3 месяца',
+                             'Искры, 31к1', 'транспортной компанией'):
                     self.assertIn(fact, s)
 
     def test_free_diagnostics_only_with_workshop_condition(self):
@@ -367,3 +368,32 @@ class JsonLdEscapeTest(unittest.TestCase):
             text = open(path, encoding='utf-8').read()
             for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>', text, re.S):
                 self.assertNotIn('<', block, path)
+
+
+class PricesAuthorNoJsTest(unittest.TestCase):
+    """Цены и автор (владелец 02.10.2026); смысл страницы — в HTML без JS (AI-краулеры JS не исполняют)."""
+
+    def text_without_js(self, rel):
+        s = read(rel)
+        return re.sub(r'<script.*?</script>|<style.*?</style>|<[^>]+>', ' ', s, flags=re.S)
+
+    def test_prices_visible_without_js(self):
+        for rel, price in (('index.html', '15&nbsp;000 ₽'), ('services/modernization.html', 'от 15\u00a0000 ₽'),
+                           ('blocks/drives-servo.html', 'от 10\u00a0000 ₽'),
+                           ('services/industry-food.html', 'от 15&nbsp;000 ₽')):
+            with self.subTest(rel):
+                self.assertIn(price, self.text_without_js(rel))
+
+    def test_key_content_without_js(self):
+        for rel, phrase in (('blocks/drives-servo.html', 'Компонентный ремонт'),
+                            ('services/modernization.html', 'Что модернизируем'),
+                            ('index.html', '+7 926 883-09-39')):
+            with self.subTest(rel):
+                self.assertIn(phrase, self.text_without_js(rel))
+
+    def test_case_author(self):
+        for rel in glob.glob(os.path.join(ROOT, 'cases', '*.html')):
+            s = open(rel, encoding='utf-8').read()
+            with self.subTest(rel):
+                self.assertIn('Вячеслав Бондаренко, сервисный инженер', s)
+                self.assertIn('"@type": "Person"', s)

@@ -22,6 +22,14 @@ from datetime import date
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = 'https://panamaster.ru'
+# Цены и автор — решение владельца 02.10.2026. Меняются только здесь.
+PRICE_BLOCK = 10000   # ремонт блока в мастерской, после бесплатной диагностики
+PRICE_VISIT = 15000   # ремонт и модернизация на объекте
+AUTHOR = {'name': 'Вячеслав Бондаренко', 'role': 'сервисный инженер'}
+
+
+def rub(n):
+    return f'от {n:,} ₽'.replace(',', '\u00a0')
 PER_PAGE = 12
 HOME_CASES = 6
 FAST_REPAIR_DAYS = 5          # срок показываем, только если ремонт действительно быстрый
@@ -446,7 +454,8 @@ def render_case(c, cases, industries, types, parts):
             {'@type': 'ListItem', 'position': 3, 'name': name, 'item': url}]},
         {'@type': 'TechArticle', 'headline': f'{name}: {c["headline"]}', 'description': desc,
          'datePublished': c['date'], 'dateModified': c.get('updated') or c['date'], 'image': og,
-         'author': {'@type': 'Organization', 'name': 'Панамастер', 'url': SITE},
+         'author': {'@type': 'Person', 'name': AUTHOR['name'], 'jobTitle': AUTHOR['role'],
+                    'worksFor': {'@type': 'Organization', 'name': 'Панамастер', 'url': SITE}},
          'publisher': {'@type': 'Organization', 'name': 'Панамастер',
                        'logo': {'@type': 'ImageObject', 'url': f'{SITE}/assets/img/logo.svg'}},
          'mainEntityOfPage': {'@type': 'WebPage', '@id': url}},
@@ -481,7 +490,7 @@ def render_case(c, cases, industries, types, parts):
         <section class="case-hero">
             <div class="case-hero__inner">
                 <div class="case-hero__content">
-                    <p class="case-hero__meta"><time datetime="{c["date"]}">{ru_date(c["date"])}</time></p>
+                    <p class="case-hero__meta"><time datetime="{c["date"]}">{ru_date(c["date"])}</time> · {AUTHOR["name"]}, {AUTHOR["role"]}</p>
                     <h1><span class="case-hero__line">{esc(name)}:</span><span class="case-hero__line">{esc(c["headline"])}</span></h1>
                     <div class="case-summary">
                         <p>{esc(c["defect"])}</p>
