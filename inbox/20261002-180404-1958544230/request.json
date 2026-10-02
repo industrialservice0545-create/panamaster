@@ -1,0 +1,24 @@
+{
+    "id": "20261002-180404-1958544230",
+    "date": "2026-10-02",
+    "industry": "metalworking",
+    "equipment_type": "hydraulic-press",
+    "equipment_type_new": null,
+    "brand": "LVD",
+    "model": "PPEB 110\/30 CAD-CNC",
+    "rack": "Cadman-CNC",
+    "servo": "BALDOR BSM",
+    "defect": "Станок не функционировал. Не загружалась программа Cadman.",
+    "solution": "Компонентный ремонт платы интерфейсов стойки ЧПУ, настройка программного обеспечения.",
+    "headline": "Восстановление платы после скачка напряжения",
+    "result": "Пресс функционированирует в штатном режиме",
+    "repair_days": null,
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "chat_id": 1958544230,
+    "area": "Красногорск",
+    "lat": 55.820369,
+    "lon": 37.319484
+}
