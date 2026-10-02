@@ -837,6 +837,7 @@ def cases_block(items, industries, title, more=True, filters=False):
             <div class="services-tags">
                 <a href="/cases-machines.html">Ремонт станков и линий на объекте</a>
                 <a href="/cases-blocks.html">Ремонт блоков в мастерской</a>
+                <a href="/map.html">Карта работ</a>
             </div>'''
     return f'''<!-- CASES_START -->
         <section class="case-block">
