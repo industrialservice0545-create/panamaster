@@ -2,6 +2,8 @@
 
 sitemap.xml — все индексируемые страницы (meta robots index), lastmod = дата последнего коммита файла.
 llms.txt   — краткое описание компании и список страниц для AI-поиска (Алиса, Нейро, ChatGPT, Perplexity).
+search.html + assets/data/search.json — поиск по сайту: индекс тех же страниц (заголовок, описание,
+             подзаголовки, текст), ищет assets/js/main.js в браузере. search.html — noindex.
 Не входят: privacy.html, consent.html, all-services.html, test.html и страницы с noindex.
 
 Запуск из корня репозитория:  python3 bot/build_sitemap.py
@@ -15,7 +17,7 @@ from datetime import date
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = 'https://panamaster.ru'
-EXCLUDE = {'privacy.html', 'consent.html', 'all-services.html', 'test.html'}
+EXCLUDE = {'privacy.html', 'consent.html', 'all-services.html', 'test.html', 'search.html'}
 
 
 def read(rel):
@@ -128,13 +130,86 @@ def build_llms(rels):
 '''
 
 
+def page_text(rel):
+    """Видимый текст основной части страницы — для поиска по сайту."""
+    s = read(rel)
+    s = s[s.find('<main'):s.find('</main>')] if '<main' in s else s
+    s = re.sub(r'<script.*?</script>|<style.*?</style>|<svg.*?</svg>|<form.*?</form>', ' ', s, flags=re.S)
+    return re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', s))).strip()
+
+
+def build_search(rels):
+    """assets/data/search.json и страница search.html (шапка и подвал — с главной)."""
+    import json
+    index = []
+    for r in rels:
+        title, desc = meta(r)
+        heads = [html.unescape(re.sub(r'<[^>]+>', '', h)).strip()
+                 for h in re.findall(r'<h[23][^>]*>(.*?)</h[23]>', read(r), re.S)]
+        index.append({'u': '/' if r == 'index.html' else '/' + r, 't': title, 'd': desc,
+                      'h': ' · '.join(h for h in heads if h)[:600], 'x': page_text(r)[:2500]})
+    with open(os.path.join(ROOT, 'assets', 'data', 'search.json'), 'w', encoding='utf-8') as f:
+        json.dump(index, f, ensure_ascii=False, separators=(',', ':'))
+    idx = read('index.html')
+    head = idx[:idx.index('<header class="site-header">')]
+    head = re.sub(r'<title>.*?</title>', '<title>Поиск по сайту — Панамастер</title>', head, flags=re.S)
+    head = re.sub(r'<meta name="description"[^>]*>', '<meta name="description" content="Поиск по сайту Панамастер.">', head)
+    head = re.sub(r'<meta name="robots"[^>]*>', '<meta name="robots" content="noindex, follow">', head)
+    head = re.sub(r'<link rel="canonical"[^>]*>', f'<link rel="canonical" href="{SITE}/search.html">', head)
+    head = re.sub(r'\s*<meta property="og:[^>]*>', '', head)
+    head = re.sub(r'\s*<script type="application/ld\+json">.*?</script>', '', head, flags=re.S)
+    header = idx[idx.index('<header class="site-header">'):idx.index('</header>') + 9] \
+        .replace(' class="is-active">Главная', '>Главная').replace('<a href="/search.html">', '<a href="/search.html" class="is-active">')
+    footer = idx[idx.index('<footer class="site-footer">'):idx.index('</footer>') + 9]
+    page = f'''{head}{header}
+
+<main>
+    <div class="container">
+
+        <section class="case-hero">
+            <div class="case-hero__content">
+                <h1>Поиск по сайту</h1>
+                <form class="search-form" id="site-search" action="/search.html" method="get" role="search">
+                    <label class="cta-form__label" for="search-q">Оборудование, бренд, модель или неисправность</label>
+                    <div class="cta-form__row">
+                        <input id="search-q" type="search" class="cta-form__input" name="q"
+                               placeholder="Например: сервопривод Rexroth" autocomplete="off">
+                        <button type="submit" class="btn btn--primary">Найти</button>
+                    </div>
+                </form>
+                <p class="messengers__lead" id="search-status">Начните вводить запрос.</p>
+            </div>
+        </section>
+
+        <section class="case-block">
+            <div class="faq" id="search-results"></div>
+        </section>
+
+        <section class="case-block case-services">
+            <h2 class="section-label">Не нашли?</h2>
+            <p>Позвоните <a href="tel:+79268830939">+7 926 883-09-39</a> или пришлите фото шильдика в мессенджер — скажем, берёмся ли за ремонт.</p>
+        </section>
+
+    </div>
+</main>
+
+{footer}
+
+</body>
+</html>
+'''
+    with open(os.path.join(ROOT, 'search.html'), 'w', encoding='utf-8') as f:
+        f.write(page)
+
+
 def main():
     rels = pages()
     with open(os.path.join(ROOT, 'sitemap.xml'), 'w', encoding='utf-8') as f:
         f.write(build_sitemap(rels))
     with open(os.path.join(ROOT, 'llms.txt'), 'w', encoding='utf-8') as f:
         f.write(build_llms(rels))
-    print(f'sitemap.xml: {len(rels)} страниц; llms.txt готов')
+    build_search(rels)
+    print(f'sitemap.xml: {len(rels)} страниц; llms.txt и поиск готовы')
     stage_extra_pages()
 
 
@@ -144,7 +219,7 @@ def stage_extra_pages():
     «Примеров работ» генераторы тоже пересобирают — добавляем их в индекс сами (только в CI)."""
     if os.environ.get('GITHUB_ACTIONS') != 'true':
         return
-    extra = ['map.html', 'about.html'] + sorted(glob.glob('cases-*.html', root_dir=ROOT))
+    extra = ['map.html', 'about.html', 'search.html', 'assets/data/search.json'] + sorted(glob.glob('cases-*.html', root_dir=ROOT))
     import subprocess
     subprocess.run(['git', '-C', ROOT, 'add', '-A', '--'] + extra, check=False)
 

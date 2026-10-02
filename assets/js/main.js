@@ -219,3 +219,60 @@ if (worksMap) {
     });
   });
 }
+
+// Поиск по сайту (search.html): индекс страниц собирает bot/build_sitemap.py в /assets/data/search.json
+const searchForm = document.getElementById('site-search');
+if (searchForm) {
+  const input = document.getElementById('search-q');
+  const results = document.getElementById('search-results');
+  const status = document.getElementById('search-status');
+  const norm = function (s) { return (s || '').toLowerCase().replace(/ё/g, 'е'); };
+  const escHtml = function (s) {
+    return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
+  };
+  let pages = null;
+
+  // Слово запроса совпадает и по началу основы: «сервопривод» найдёт «сервоприводов», «частотник» — «частотников»
+  const stem = function (w) { return w.length > 5 ? w.slice(0, w.length - 2) : w; };
+
+  const run = function () {
+    const q = norm(input.value).trim();
+    const words = q.split(/[^0-9a-zа-я]+/i).filter(function (w) { return w.length > 1; }).map(stem);
+    results.innerHTML = '';
+    if (!words.length) { status.textContent = 'Начните вводить запрос.'; return; }
+    const found = pages.map(function (p) {
+      const t = norm(p.t), d = norm(p.d), h = norm(p.h), x = norm(p.x);
+      let score = 0;
+      for (const w of words) {
+        const s = (t.includes(w) ? 6 : 0) + (d.includes(w) ? 3 : 0) + (h.includes(w) ? 2 : 0) + (x.includes(w) ? 1 : 0);
+        if (!s) return null;               // все слова запроса должны найтись на странице
+        score += s;
+      }
+      return { p: p, score: score };
+    }).filter(Boolean).sort(function (a, b) { return b.score - a.score; }).slice(0, 20);
+    status.textContent = found.length ? 'Найдено страниц: ' + found.length : 'Ничего не нашли — попробуйте другое слово или позвоните нам.';
+    results.innerHTML = found.map(function (r) {
+      return '<article><h3><a href="' + r.p.u + '">' + escHtml(r.p.t) + '</a></h3><p>' + escHtml(r.p.d) + '</p></article>';
+    }).join('');
+    if (found.length) reachGoal('site_search');
+  };
+
+  searchForm.addEventListener('submit', function (event) {
+    event.preventDefault();
+    const url = new URL(window.location.href);
+    url.searchParams.set('q', input.value);
+    history.replaceState(null, '', url);
+    if (pages) run();
+  });
+
+  fetch('/assets/data/search.json')
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      pages = data;
+      input.value = new URLSearchParams(window.location.search).get('q') || '';
+      input.addEventListener('input', run);
+      run();
+      input.focus();
+    })
+    .catch(function () { status.textContent = 'Поиск временно недоступен. Позвоните: +7 926 883-09-39'; });
+}

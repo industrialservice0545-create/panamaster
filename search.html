@@ -3,10 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Согласие на обработку персональных данных — Панамастер</title>
-    <meta name="description" content="Текст согласия на обработку персональных данных при отправке заявки на сайте panamaster.ru, ООО «Интел-Сервис».">
+    <title>Поиск по сайту — Панамастер</title>
+    <meta name="description" content="Поиск по сайту Панамастер.">
     <meta name="robots" content="noindex, follow">
-    <link rel="canonical" href="https://panamaster.ru/consent.html">
+    <meta name="yandex-verification" content="656354d4a76c4ca0">
+    <link rel="canonical" href="https://panamaster.ru/search.html">
     <link rel="stylesheet" href="/assets/css/main.css">
     <script src="/assets/js/main.js" defer></script>
     <link rel="icon" href="/favicon.ico" sizes="32x32">
@@ -34,7 +35,7 @@
             <a href="/cases.html">Примеры работ</a>
             <a href="/about.html">О компании</a>
             <a href="/contacts.html">Контакты</a>
-            <a href="/search.html">Поиск</a>
+            <a href="/search.html" class="is-active">Поиск</a>
         </nav>
         <a href="tel:+79268830939" class="site-header__phone" aria-label="+7 926 883-09-39">
             <svg class="site-header__phone-icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
@@ -45,52 +46,38 @@
     </div>
 </header>
 
-<nav class="breadcrumbs" aria-label="Хлебные крошки">
-    <div class="container">
-        <a href="/">Главная</a>
-        <span class="breadcrumbs__sep">→</span>
-        <span aria-current="page">Согласие на обработку данных</span>
-    </div>
-</nav>
-
 <main>
     <div class="container">
-        <section class="case-block">
-            <h1>Согласие на обработку персональных данных</h1>
-        </section>
-        <section class="case-block">
-            <div class="faq">
-                <article>
-                    <h2>Согласие</h2>
-                    <p>Отправляя номер телефона через форму на сайте panamaster.ru, я свободно, своей волей и в своём интересе даю согласие ООО «Интел-Сервис» (ИНН 7723582307, ОГРН 5067746205027, адрес: 129344, г. Москва, ул. Искры, д. 31, к. 1, офис 103А) на обработку моих персональных данных.</p>
-                </article>
-                <article>
-                    <h2>Какие данные</h2>
-                    <p>Номер телефона, комментарий к заявке, адрес страницы, IP-адрес и время отправки.</p>
-                </article>
-                <article>
-                    <h2>Цель</h2>
-                    <p>Обратная связь по моей заявке на ремонт оборудования, подготовка и заключение договора.</p>
-                </article>
-                <article>
-                    <h2>Действия с данными</h2>
-                    <p>Сбор, запись, систематизация, хранение, уточнение, использование, удаление и уничтожение, с использованием средств автоматизации, в том числе передача сотрудникам оператора по электронной почте и через мессенджер Telegram.</p>
-                </article>
-                <article>
-                    <h2>Срок и отзыв</h2>
-                    <p>Согласие действует до достижения цели обработки, но не дольше 1 года с даты заявки. Я могу отозвать его, написав на info@panamaster.ru.</p>
-                </article>
-                <article>
-                    <h2>Политика</h2>
-                    <p>Порядок обработки описан в <a href="/privacy.html">политике конфиденциальности</a>.</p>
-                </article>
+
+        <section class="case-hero">
+            <div class="case-hero__content">
+                <h1>Поиск по сайту</h1>
+                <form class="search-form" id="site-search" action="/search.html" method="get" role="search">
+                    <label class="cta-form__label" for="search-q">Оборудование, бренд, модель или неисправность</label>
+                    <div class="cta-form__row">
+                        <input id="search-q" type="search" class="cta-form__input" name="q"
+                               placeholder="Например: сервопривод Rexroth" autocomplete="off">
+                        <button type="submit" class="btn btn--primary">Найти</button>
+                    </div>
+                </form>
+                <p class="messengers__lead" id="search-status">Начните вводить запрос.</p>
             </div>
         </section>
+
+        <section class="case-block">
+            <div class="faq" id="search-results"></div>
+        </section>
+
+        <section class="case-block case-services">
+            <h2 class="section-label">Не нашли?</h2>
+            <p>Позвоните <a href="tel:+79268830939">+7 926 883-09-39</a> или пришлите фото шильдика в мессенджер — скажем, берёмся ли за ремонт.</p>
+        </section>
+
     </div>
 </main>
 
 <footer class="site-footer">
-    <div class="site-footer__contacts">
+    <div class="site-footer__contacts" id="kontakty">
         <div class="container">
             <div class="site-footer__grid">
                 <div>

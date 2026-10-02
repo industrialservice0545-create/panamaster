@@ -409,3 +409,27 @@ class ReviewsBlockTest(unittest.TestCase):
         self.assertIn('yandex.ru/maps/org/panamaster/1153146831/reviews', block)
         self.assertEqual(block.count('class="related-card"'), 3)
         self.assertNotIn('ВЕРТЬЕ', block)
+
+
+class SearchAndMenuTest(unittest.TestCase):
+    """Поиск по сайту (build_sitemap.py → search.json + search.html) и меню с «О компании» и «Поиском»."""
+
+    def test_search_index_covers_sitemap(self):
+        index = json.load(open(os.path.join(ROOT, 'assets', 'data', 'search.json'), encoding='utf-8'))
+        urls = {p['u'] for p in index}
+        for loc in re.findall(r'<loc>https://panamaster\.ru(/[^<]*)</loc>', read('sitemap.xml')):
+            self.assertIn(loc, urls)
+        self.assertTrue(all(p['t'] and p['x'] for p in index))
+
+    def test_search_page_noindex(self):
+        s = read('search.html')
+        self.assertIn('noindex', s)
+        self.assertIn('id="site-search"', s)
+        self.assertNotIn('search.html', read('sitemap.xml'))
+
+    def test_menu_on_every_page(self):
+        for p in indexable_pages() + ['search.html', 'contacts.html']:
+            with self.subTest(p):
+                nav = re.search(r'<nav class="site-header__nav".*?</nav>', read(p), re.S).group(0)
+                self.assertIn('href="/about.html"', nav)
+                self.assertIn('href="/search.html"', nav)
