@@ -98,5 +98,39 @@
       }
     ],
     "request_id": "260601-rexroth-dkc"
+  },
+  {
+    "slug": "lvd-ppeb-11030-cad-cnc",
+    "date": "2026-10-02",
+    "industry": "metalworking",
+    "equipment_type": "hydraulic-press",
+    "format": "machine",
+    "brand": "LVD",
+    "model": "PPEB 110/30 CAD-CNC",
+    "rack": "Cadman-CNC",
+    "servo": "BALDOR BSM",
+    "headline": "восстановление платы после скачка напряжения",
+    "defect": "Станок не функционировал. Не загружалась программа Cadman.",
+    "solution": "Компонентный ремонт платы интерфейсов стойки ЧПУ, настройка программного обеспечения.",
+    "result": "Пресс функционирует в штатном режиме.",
+    "repair_days": null,
+    "area": "Красногорск",
+    "lat": 55.820369,
+    "lon": 37.319484,
+    "photos": [
+      {
+        "file": "photo-1.webp",
+        "w": 1200,
+        "h": 800,
+        "alt": "Гидравлические прессы LVD PPEB 110/30 CAD-CNC"
+      },
+      {
+        "file": "photo-2.webp",
+        "w": 960,
+        "h": 640,
+        "alt": "Шкаф управления LVD PPEB 110/30 CAD-CNC после ремонта"
+      }
+    ],
+    "request_id": "20261002-180404-1958544230"
   }
 ]

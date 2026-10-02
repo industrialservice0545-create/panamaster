@@ -52,4 +52,5 @@
 
 - [CMS BR/5 302: устранены последствия короткого замыкания](https://panamaster.ru/cases/cms-br5-302.html): CMS BR/5 302: устранены последствия короткого замыкания. Компонентный ремонт сервосистемы Acopos, ремонт силовых блоков Выезд за 24 часа, гарантия 3 месяца.
 - [CODIMAG VIVA 340: устранено смещение рапорта](https://panamaster.ru/cases/codimag-viva-340.html): CODIMAG VIVA 340: устранено смещение рапорта. Мы провели диагностику и выявили неисправность контроллера Serad MCS 32. Выезд за 24 часа, гарантия 3 месяца.
+- [Ремонт LVD PPEB 110/30 CAD-CNC в Москве](https://panamaster.ru/cases/lvd-ppeb-11030-cad-cnc.html): LVD PPEB 110/30 CAD-CNC: восстановление платы после скачка напряжения. Компонентный ремонт платы интерфейсов стойки ЧПУ Выезд за 24 часа, гарантия 3 месяца.
 - [Ремонт Rexroth Indramat ECODRIVE DKCXX.3-040-7-FW, Москва](https://panamaster.ru/cases/rexroth-indramat-ecodrive-dkcxx3-040-7-fw.html): Rexroth Indramat ECODRIVE DKCXX.3-040-7-FW: стойка ЧПУ не видела сервопривод. Выполнили компонентный ремонт платы Ремонт блока в мастерской, гарантия 3 месяца.
