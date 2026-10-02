@@ -80,6 +80,7 @@ def meta(rel):
 def build_llms(rels):
     industries = [r for r in rels if r.startswith('services/industry-')]
     hubs = [r for r in rels if r.startswith(('services/brand-', 'services/type-'))]
+    services = [r for r in rels if r.startswith('services/') and r not in industries and r not in hubs]
     blocks = [r for r in rels if r == 'blocks.html' or r.startswith('blocks/')]
     cases = [r for r in rels if r.startswith('cases/')]
     line = lambda r: '- [{0}]({1}): {2}'.format(*meta(r)[:1], url_of(r), meta(r)[1])
@@ -103,6 +104,10 @@ def build_llms(rels):
 - [Главная]({SITE}/): услуги, сроки, отрасли, заявка.
 - [Примеры работ]({SITE}/cases.html): реальные ремонты — что сломалось, что сделали, результат.
 - [Контакты]({SITE}/contacts.html): телефон, мессенджеры, адрес мастерской, реквизиты.
+
+## Услуги
+
+{chr(10).join(line(r) for r in services)}
 
 ## Отрасли
 
