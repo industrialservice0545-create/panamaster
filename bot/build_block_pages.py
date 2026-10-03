@@ -7,6 +7,7 @@
 
 Запуск из корня репозитория:  python3 bot/build_block_pages.py
 """
+import glob
 import html
 import sys
 import json
@@ -505,24 +506,16 @@ def build_catalog_pages(common):
     on_site.sort(key=lambda x: next((i for i, o in enumerate(order) if x[2].endswith(f'/{o}.html')), 99))
     workshop = [(HUB_NAME, CONTENT['hub']['desc'], '/blocks.html')] + \
         [(p['name'], p['desc'], f'/blocks/{p["slug"]}.html') for p in CONTENT['pages']]
-    brands = [(b['name'], f'/blocks/{p["slug"]}/{b["slug"]}.html') for p in CONTENT['pages'] for b in p.get('brand_pages', [])]
-    hubs = json.load(open(os.path.join(ROOT, 'bot', 'content', 'hubs.json'), encoding='utf-8'))
-    machine = [(n, f'/services/brand-{sl}.html') for n, sl in (('CMS', 'cms'), ('CODIMAG', 'codimag'), ('LVD', 'lvd'))
-               if os.path.exists(os.path.join(ROOT, 'services', f'brand-{sl}.html'))]
-    if os.path.exists(os.path.join(ROOT, 'services', 'type-thermoformer.html')):
-        machine.append(('Термоформеры', '/services/type-thermoformer.html'))
-    tags = '\n'.join(f'                <a href="{href}">{esc(name)}</a>' for name, href in machine + brands)
     body = '\n\n'.join([
         catalog_section('На вашем производстве', 'Выезд инженера на производство', on_site, 'na-obekte'),
         catalog_section('В мастерской', 'Ремонт снятых электронных блоков', workshop, 'v-masterskoy'),
-        f'''        <section class="case-block case-services">
-            <h2 class="section-label">Оборудование и производители</h2>
-            <div class="services-tags">
-{tags}
-            </div>
+        '''        <section class="case-block case-services">
+            <h2 class="section-label">Ещё разделы</h2>
             <div class="bottom-cta">
-                <a href="/industries.html" class="btn btn--ghost">Отрасли, в которых работаем</a>
-                <a href="/cases.html" class="btn btn--ghost">Примеры работ</a>
+                <a href="/equipment.html" class="btn btn--ghost">Виды оборудования</a>
+                <a href="/brands.html" class="btn btn--ghost">Производители оборудования</a>
+                <a href="/electronics-brands.html" class="btn btn--ghost">Производители электроники</a>
+                <a href="/industries.html" class="btn btn--ghost">Отрасли</a>
             </div>
         </section>'''])
     url = f'{SITE}/services.html'
@@ -571,6 +564,62 @@ def build_catalog_pages(common):
         faq=[('Вашей отрасли нет в списке?', 'Ремонтируем электронику оборудования и в других отраслях. Позвоните или пришлите фото шильдика — скажем, берёмся ли.')],
         faq_title='Коротко об отраслях', main_entity={'@type': 'CollectionPage', 'name': 'Отрасли', 'url': url, 'about': common['org']},
         cta=cta, **{k: common[k] for k in ('header', 'footer', 'org')})
+    def page_meta(rel):
+        t = open(os.path.join(ROOT, rel), encoding='utf-8').read()
+        title = html.unescape(re.search(r'<h1[^>]*>(.*?)</h1>', t, re.S).group(1))
+        title = re.sub(r'<[^>]+>', ' ', title)
+        desc = html.unescape(re.search(r'<meta name="description" content="([^"]*)"', t).group(1))
+        return re.sub(r'\s+', ' ', title).strip(), desc
+
+    note = ('Мы независимый сервис: ремонтируем электронику оборудования этих производителей. '
+            'Официальными представителями производителей не являемся.')
+    rubrics = [
+        ('equipment.html', 'Виды оборудования', 'Виды оборудования: ремонт электроники — Панамастер',
+         'Ремонт электроники по видам оборудования: термоформеры и другие машины. Что ломается, как ищем причину, примеры работ. Москва и Московская область.',
+         'Виды оборудования',
+         ['Страницы по видам машин: какая электроника стоит, что в ней чаще всего ломается и как мы ищем причину.',
+          'Раздел пополняется по мере появления кейсов.'],
+         [page_meta(r) + ('/' + r,) for r in sorted(glob.glob('services/type-*.html', root_dir=ROOT))]),
+        ('brands.html', 'Производители оборудования', 'Сервисные центры по производителям оборудования — Панамастер',
+         'Сервисные центры Панамастер по производителям оборудования: CMS, CODIMAG, LVD и другие. Ремонт электроники станков и машин, примеры работ. Москва и МО.',
+         'Сервисные центры: производители оборудования',
+         ['Производители станков и машин, электронику которых мы ремонтируем, — с примерами работ.', note],
+         [page_meta(r) + ('/' + r,) for r in sorted(glob.glob('services/brand-*.html', root_dir=ROOT))]),
+    ]
+    eb = {}
+    for p in CONTENT['pages']:
+        for b in p.get('brand_pages', []):
+            eb.setdefault(b['name'], []).append((p['name'], f'/blocks/{p["slug"]}/{b["slug"]}.html', b['desc']))
+    rubrics.append(('electronics-brands.html', 'Производители электроники', 'Сервисные центры по производителям электроники — Панамастер',
+         'Ремонт электронных блоков по производителям: Rexroth Indramat, B&R, Parker, Baldor и другие. Сервоприводы, частотники, ПЛК. Мастерская в Москве.',
+         'Сервисные центры: производители электроники',
+         ['Производители приводов, контроллеров и другой электроники, блоки которых мы ремонтируем в мастерской.', note],
+         [(name, '; '.join(f'{t}' for t, _, _ in items) + '. ' + items[0][2], items[0][1]) for name, items in sorted(eb.items())]))
+    for rel, crumb, title, desc, h1, lead, items in rubrics:
+        url = f'{SITE}/{rel}'
+        others = [(c, f'/{r}') for r, c, *_ in rubrics if r != rel] + [('Отрасли', '/industries.html'), ('Все услуги', '/services.html')]
+        tags = '\n'.join(f'                <a href="{h}">{esc(n)}</a>' for n, h in others)
+        pick = {'equipment.html': 'Выберите вид оборудования', 'brands.html': 'Выберите производителя оборудования',
+                'electronics-brands.html': 'Выберите производителя электроники'}[rel]
+        body = catalog_section(crumb, pick, items) + f'''
+
+        <section class="case-block case-services">
+            <h2 class="section-label">Другие разделы</h2>
+            <div class="services-tags">
+{tags}
+            </div>
+        </section>'''
+        pages[rel] = page_html(
+            url=url, title=title, desc=desc, crumbs=[('Главная', '/'), (crumb, None)],
+            meta='Москва и Московская область · с 2006 года', h1=h1, lead=lead,
+            body=body, facts_block='', bridge='', cases_html='', form_page=crumb, form_id=rel.replace('.html', '') + '-phone',
+            faq=[('Вашего производителя нет в списке?', 'Ремонтируем электронику и других производителей. Пришлите фото шильдика — скажем, берёмся ли.')],
+            faq_title='Коротко', main_entity={'@type': 'CollectionPage', 'name': h1, 'url': url, 'about': common['org']},
+            cta=common['cta'] if rel == 'electronics-brands.html' else common['cta'].replace(
+                '<h2>Сняли блок?</h2>', '<h2>Остановилось оборудование?</h2>').replace(
+                'Оставьте телефон — перезвоним, скажем, берёмся ли за ремонт, и договоримся о приёме блока.',
+                'Оставьте телефон — перезвоним, уточним оборудование и договоримся о выезде.'),
+            **{k: common[k] for k in ('header', 'footer', 'org')})
     return pages
 
 

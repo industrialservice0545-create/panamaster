@@ -457,3 +457,25 @@ class CatalogPagesTest(unittest.TestCase):
                 nav = re.search(r'<nav class="site-header__nav".*?</nav>', read(p), re.S).group(0)
                 self.assertIn('href="/services.html"', nav)
                 self.assertNotIn('/#uslugi', nav)
+
+
+class RubricCatalogsTest(unittest.TestCase):
+    """Виды оборудования, производители оборудования и производители электроники — без пересечений."""
+
+    def links(self, rel):
+        s = read(rel)
+        body = s[s.index('<main'):s.index('Другие разделы')]
+        return set(re.findall(r'<h3><a href="(/[^"]+)"', body))
+
+    def test_rubrics_cover_their_pages_without_overlap(self):
+        eq, br, el = self.links('equipment.html'), self.links('brands.html'), self.links('electronics-brands.html')
+        self.assertEqual(eq, {'/' + r for r in glob.glob('services/type-*.html', root_dir=ROOT)})
+        self.assertEqual(br, {'/' + r for r in glob.glob('services/brand-*.html', root_dir=ROOT)})
+        self.assertTrue(el and all(u.startswith('/blocks/') for u in el))
+        self.assertFalse(eq & br or eq & el or br & el)
+
+    def test_hub_breadcrumbs_point_to_rubrics(self):
+        for r in glob.glob('services/brand-*.html', root_dir=ROOT):
+            self.assertIn('<a href="/brands.html">Производители оборудования</a>', read(r), r)
+        for r in glob.glob('services/type-*.html', root_dir=ROOT):
+            self.assertIn('<a href="/equipment.html">Виды оборудования</a>', read(r), r)

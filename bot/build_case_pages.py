@@ -745,11 +745,12 @@ def render_hub(kind, slug, h, cases, industries, types, parts):
     else:
         for i in h.get('industries', []):
             links.append(f'<a href="/services/industry-{i}.html">{esc(industries.get(i, i))}</a>')
-    crumb = h['name'] if kind == 'brand' else h['name']
+    crumb = h['name']
+    rubric = ('Производители оборудования', '/brands.html') if kind == 'brand' else ('Виды оборудования', '/equipment.html')
     ld = {'@context': 'https://schema.org', '@graph': [
         {'@type': 'BreadcrumbList', 'itemListElement': [
             {'@type': 'ListItem', 'position': 1, 'name': 'Главная', 'item': f'{SITE}/'},
-            {'@type': 'ListItem', 'position': 2, 'name': 'Услуги', 'item': f'{SITE}/services.html'},
+            {'@type': 'ListItem', 'position': 2, 'name': rubric[0], 'item': f'{SITE}{rubric[1]}'},
             {'@type': 'ListItem', 'position': 3, 'name': crumb, 'item': url}]},
         {'@type': 'Service', 'name': h['h1'], 'serviceType': 'Ремонт промышленного оборудования', 'url': url,
          'areaServed': [{'@type': 'City', 'name': 'Москва'}, {'@type': 'AdministrativeArea', 'name': 'Московская область'}],
@@ -763,7 +764,7 @@ def render_hub(kind, slug, h, cases, industries, types, parts):
     <div class="container">
         <a href="/">Главная</a>
         <span class="breadcrumbs__sep">→</span>
-        <a href="/services.html">Услуги</a>
+        <a href="{rubric[1]}">{rubric[0]}</a>
         <span class="breadcrumbs__sep">→</span>
         <span aria-current="page">{esc(crumb)}</span>
     </div>

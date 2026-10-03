@@ -18,6 +18,7 @@
 - [Главная](https://panamaster.ru/): услуги, сроки, отрасли, заявка.
 - [Услуги](https://panamaster.ru/services.html): все работы на объекте и ремонт блоков в мастерской.
 - [Отрасли](https://panamaster.ru/industries.html): как среда каждого производства влияет на электронику.
+- [Виды оборудования](https://panamaster.ru/equipment.html), [производители оборудования](https://panamaster.ru/brands.html), [производители электроники](https://panamaster.ru/electronics-brands.html): каталоги без пересечений.
 - [Примеры работ](https://panamaster.ru/cases.html): реальные ремонты — что сломалось, что сделали, результат.
 - [Контакты](https://panamaster.ru/contacts.html): телефон, мессенджеры, адрес мастерской, реквизиты.
 - [О компании](https://panamaster.ru/about.html): с 2006 года, специализация, принципы работы, опыт, отзывы.
