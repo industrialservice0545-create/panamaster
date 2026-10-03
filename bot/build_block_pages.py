@@ -615,7 +615,9 @@ def build_catalog_pages(common):
 ''' + (catalog_section('Подробные страницы', 'Сервисные центры по видам оборудования', items) + '\n\n' if items else '')
             for c in cat['industries']:
                 li = '\n'.join(
-                    f'                <li><strong>{esc(x["name"])}</strong> — {esc(x["electronics"])}</li>' for x in c['items'])
+                    (f'                <li><strong><a href="/services/type-{x["type"]}.html">{esc(x["name"])}</a></strong> — {esc(x["electronics"])}</li>'
+                     if x.get('type') and os.path.exists(os.path.join(ROOT, 'services', f'type-{x["type"]}.html'))
+                     else f'                <li><strong>{esc(x["name"])}</strong> — {esc(x["electronics"])}</li>') for x in c['items'])
                 body += f'''        <section class="case-block" id="{c["slug"]}">
             <p class="section-label">{esc(c["name"])} · {len(c["items"])} видов</p>
             <h2>{esc(c["name"])}: какое оборудование ремонтируем</h2>
