@@ -127,8 +127,12 @@ def auto_brand_hub(brand, own, types, industries):
         'name': brand, 'match': [brand], 'auto': True,
         'title': fit(f'Сервисный центр {brand}: ремонт электроники — Панамастер', 30, 60),
         'h1': f'Сервисный центр по ремонту оборудования {brand}',
-        'desc': fit(f'Ремонт электроники оборудования {brand}: {", ".join(models)}. Компонентный ремонт плат, '
-                    'приводов и систем управления. Выезд за 24 часа, гарантия 3 месяца.', 120, 160),
+        'desc': pick_len([f'Ремонт электроники оборудования {brand}: {", ".join(models)}. Компонентный ремонт плат, '
+                          'приводов и систем управления. Выезд за 24 часа, гарантия 3 месяца.',
+                          f'Ремонт электроники оборудования {brand}: {", ".join(models)}. Компонентный ремонт плат, приводов '
+                          'и систем управления. Выезд за 24 часа по Москве и МО, гарантия 3 месяца.',
+                          f'Сервисный центр {brand}: ремонт электроники оборудования {", ".join(models)} — платы, приводы, '
+                          'системы управления. Выезд за 24 часа по Москве и МО, договор, гарантия.'], 140, 160),
         'lead': lead,
         'about_title': f'Что мы делали на оборудовании {brand}',
         'about': [f'{c["brand"]} {c["model"]}: {lower_first(first_sentence(c["defect"]).rstrip("."))}. '
@@ -808,10 +812,12 @@ def render_hub(kind, slug, h, cases, industries, types, parts):
             if t in hubs['types']:
                 links.append(f'<a href="/services/type-{t}.html">Ремонт: {esc(types.get(t, t).lower())}</a>')
         for i in sorted({c['industry'] for c in own}):
-            links.append(f'<a href="/services/industry-{i}.html">{esc(industries.get(i, i))}</a>')
+            if os.path.exists(os.path.join(ROOT, 'services', f'industry-{i}.html')):
+                links.append(f'<a href="/services/industry-{i}.html">{esc(industries.get(i, i))}</a>')
     else:
         for i in h.get('industries', []):
-            links.append(f'<a href="/services/industry-{i}.html">{esc(industries.get(i, i))}</a>')
+            if os.path.exists(os.path.join(ROOT, 'services', f'industry-{i}.html')):
+                links.append(f'<a href="/services/industry-{i}.html">{esc(industries.get(i, i))}</a>')
     crumb = h['name']
     rubric = ('Производители оборудования', '/brands.html') if kind == 'brand' else ('Виды оборудования', '/equipment.html')
     ld = {'@context': 'https://schema.org', '@graph': [
