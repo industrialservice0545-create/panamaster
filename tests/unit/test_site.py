@@ -83,7 +83,7 @@ class GeneratorTests(unittest.TestCase):
         types = set(json.loads(read('bot/dictionaries/entities.json'))['equipment_types'])
         for ind in self.industries:
             for e in ind['equipment']:
-                name = e[0] if isinstance(e, tuple) else e      # карточка с описанием: (название, текст[, ссылка])
+                name = e[0] if isinstance(e, (list, tuple)) else e      # карточка с описанием: (название, текст[, ссылка])
                 self.assertIn(name, types, f'{ind["slug"]}: «{name}» нет в справочнике')
 
     def test_descriptions_length_140_160(self):
