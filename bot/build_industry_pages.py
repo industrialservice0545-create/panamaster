@@ -89,6 +89,18 @@ def main():
             </ul>
         </section>
 ''' if fails else '')
+        if ind.get('diagnostics'):
+            dg = ind['diagnostics']
+            steps = '\n'.join(f'                <li><strong>{esc(k)}</strong><span>{esc(v)}</span></li>' for k, v in dg['steps'])
+            env_html += f'''
+        <section class="case-block">
+            <p class="section-label">Диагностика</p>
+            <h2>{esc(dg['title'])}</h2>
+            <ol class="steps-list">
+{steps}
+            </ol>
+        </section>
+'''
         brands_html = ''
         if ind.get('brands'):
             tags = '\n'.join(f'                <a href="{href}">{esc(n)}</a>' for n, href in ind['brands'])
