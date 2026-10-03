@@ -28,7 +28,7 @@ def read(rel):
 def pages():
     """Индексируемые страницы в порядке важности: главная, разделы, отрасли, кейсы."""
     result = []
-    for rel in ['index.html', 'cases.html', 'cases-machines.html', 'cases-blocks.html', 'contacts.html', 'about.html', 'map.html', 'blocks.html'] + sorted(glob.glob('blocks/**/*.html', root_dir=ROOT, recursive=True)) \
+    for rel in ['index.html', 'cases.html', 'cases-machines.html', 'cases-blocks.html', 'services.html', 'industries.html', 'contacts.html', 'about.html', 'map.html', 'blocks.html'] + sorted(glob.glob('blocks/**/*.html', root_dir=ROOT, recursive=True)) \
             + sorted(glob.glob('services/*.html', root_dir=ROOT)) \
             + sorted(glob.glob('cases/*.html', root_dir=ROOT)):
         if rel in EXCLUDE or not os.path.exists(os.path.join(ROOT, rel)):
@@ -58,7 +58,7 @@ def lastmod(rel):
 def priority(rel):
     if rel == 'index.html':
         return '1.0'
-    if rel in ('cases.html', 'contacts.html', 'about.html', 'blocks.html'):
+    if rel in ('services.html', 'industries.html', 'cases.html', 'contacts.html', 'about.html', 'blocks.html'):
         return '0.8'
     if rel.startswith(('services/', 'blocks/')):
         return '0.7'
@@ -104,6 +104,8 @@ def build_llms(rels):
 ## Основные страницы
 
 - [Главная]({SITE}/): услуги, сроки, отрасли, заявка.
+- [Услуги]({SITE}/services.html): все работы на объекте и ремонт блоков в мастерской.
+- [Отрасли]({SITE}/industries.html): как среда каждого производства влияет на электронику.
 - [Примеры работ]({SITE}/cases.html): реальные ремонты — что сломалось, что сделали, результат.
 - [Контакты]({SITE}/contacts.html): телефон, мессенджеры, адрес мастерской, реквизиты.
 - [О компании]({SITE}/about.html): с 2006 года, специализация, принципы работы, опыт, отзывы.
@@ -219,7 +221,7 @@ def stage_extra_pages():
     «Примеров работ» генераторы тоже пересобирают — добавляем их в индекс сами (только в CI)."""
     if os.environ.get('GITHUB_ACTIONS') != 'true':
         return
-    extra = ['map.html', 'about.html', 'search.html', 'assets/search.json'] + sorted(glob.glob('cases-*.html', root_dir=ROOT))
+    extra = ['map.html', 'about.html', 'services.html', 'industries.html', 'search.html', 'assets/search.json'] + sorted(glob.glob('cases-*.html', root_dir=ROOT))
     import subprocess
     subprocess.run(['git', '-C', ROOT, 'add', '-A', '--'] + extra, check=False)
 

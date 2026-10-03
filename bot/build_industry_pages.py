@@ -89,6 +89,17 @@ def main():
             </ul>
         </section>
 ''' if fails else '')
+        brands_html = ''
+        if ind.get('brands'):
+            tags = '\n'.join(f'                <a href="{href}">{esc(n)}</a>' for n, href in ind['brands'])
+            brands_html = f'''
+        <section class="case-block case-services">
+            <h2 class="section-label">Производители, с которыми работали в отрасли</h2>
+            <div class="services-tags">
+{tags}
+            </div>
+        </section>
+'''
         if ind.get('prevention'):
             items = '\n'.join(f'                <li>{esc(x)}</li>' for x in ind['prevention']['items'])
             prevention_html = f'''
@@ -100,6 +111,7 @@ def main():
             </ul>
         </section>
 '''
+        prevention_html += brands_html
         ph = ind.get('photo')
         hero_open = '\n            <div class="case-hero__inner">' if ph else ''
         hero_photo = (f'''
@@ -114,7 +126,7 @@ def main():
             '@graph': [
                 {'@type': 'BreadcrumbList', 'itemListElement': [
                     {'@type': 'ListItem', 'position': 1, 'name': 'Главная', 'item': f'{SITE}/'},
-                    {'@type': 'ListItem', 'position': 2, 'name': 'Услуги', 'item': f'{SITE}/#uslugi'},
+                    {'@type': 'ListItem', 'position': 2, 'name': 'Отрасли', 'item': f'{SITE}/industries.html'},
                     {'@type': 'ListItem', 'position': 3, 'name': ind['name'], 'item': url}]},
                 {'@type': 'Service', 'name': h1, 'serviceType': 'Ремонт промышленного оборудования',
                  'areaServed': [{'@type': 'City', 'name': 'Москва'}, {'@type': 'AdministrativeArea', 'name': 'Московская область'}],
@@ -153,7 +165,7 @@ def main():
     <div class="container">
         <a href="/">Главная</a>
         <span class="breadcrumbs__sep">→</span>
-        <a href="/#uslugi">Услуги</a>
+        <a href="/industries.html">Отрасли</a>
         <span class="breadcrumbs__sep">→</span>
         <span aria-current="page">{esc(ind["name"])}</span>
     </div>

@@ -749,7 +749,7 @@ def render_hub(kind, slug, h, cases, industries, types, parts):
     ld = {'@context': 'https://schema.org', '@graph': [
         {'@type': 'BreadcrumbList', 'itemListElement': [
             {'@type': 'ListItem', 'position': 1, 'name': 'Главная', 'item': f'{SITE}/'},
-            {'@type': 'ListItem', 'position': 2, 'name': 'Услуги', 'item': f'{SITE}/#uslugi'},
+            {'@type': 'ListItem', 'position': 2, 'name': 'Услуги', 'item': f'{SITE}/services.html'},
             {'@type': 'ListItem', 'position': 3, 'name': crumb, 'item': url}]},
         {'@type': 'Service', 'name': h['h1'], 'serviceType': 'Ремонт промышленного оборудования', 'url': url,
          'areaServed': [{'@type': 'City', 'name': 'Москва'}, {'@type': 'AdministrativeArea', 'name': 'Московская область'}],
@@ -763,7 +763,7 @@ def render_hub(kind, slug, h, cases, industries, types, parts):
     <div class="container">
         <a href="/">Главная</a>
         <span class="breadcrumbs__sep">→</span>
-        <a href="/#uslugi">Услуги</a>
+        <a href="/services.html">Услуги</a>
         <span class="breadcrumbs__sep">→</span>
         <span aria-current="page">{esc(crumb)}</span>
     </div>

@@ -334,7 +334,7 @@ class BlockPagesTests(unittest.TestCase):
         idx = read('index.html')
         self.assertGreaterEqual(idx.count('href="/blocks.html"'), 2)
         for p in self.pages:
-            self.assertIn('Ремонт оборудования с выездом', read(p), p)
+            self.assertIn('Работы на вашем производстве', read(p), p)
 
     def test_in_sitemap(self):
         sm = read('sitemap.xml')
@@ -434,3 +434,26 @@ class SearchAndMenuTest(unittest.TestCase):
                 nav = re.search(r'<nav class="site-header__nav".*?</nav>', read(p), re.S).group(0)
                 self.assertIn('href="/about.html"', nav)
                 self.assertIn('href="/search.html"', nav)
+
+
+class CatalogPagesTest(unittest.TestCase):
+    """Каталоги /services.html и /industries.html: ссылки на все услуги и отрасли, пункт меню «Услуги»."""
+
+    def test_services_catalog_links_all_services(self):
+        s = read('services.html')
+        for sp in json.loads(read('bot/content/services.json'))['pages']:
+            if sp.get('kind') != 'about':
+                self.assertIn(f'href="/services/{sp["slug"]}.html"', s)
+        self.assertIn('href="/blocks.html"', s)
+
+    def test_industries_catalog_links_all_industries(self):
+        s = read('industries.html')
+        for i in json.loads(read('bot/content/industries.json'))['industries']:
+            self.assertIn(f'href="/services/industry-{i["slug"]}.html"', s)
+
+    def test_menu_services_points_to_catalog(self):
+        for p in indexable_pages():
+            with self.subTest(p):
+                nav = re.search(r'<nav class="site-header__nav".*?</nav>', read(p), re.S).group(0)
+                self.assertIn('href="/services.html"', nav)
+                self.assertNotIn('/#uslugi', nav)

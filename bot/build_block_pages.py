@@ -109,8 +109,8 @@ BRIDGE = '''        <section class="case-block">
             <p class="section-label">Выезд на производство</p>
             <h2>Не можете снять блок или не знаете, что сломалось?</h2>
             <div class="case-summary">
-                <p>Выедем на производство по Москве и Московской области в течение 24 часов, найдём неисправность на месте и запустим оборудование. Гарантия — 3 месяца.</p>
-                <p><a class="related-card__link" href="/">Ремонт оборудования с выездом</a></p>
+                <p>Выедем на производство по Москве и Московской области в течение 24 часов, найдём неисправность на месте и запустим оборудование. Гарантия — 3 месяца на работы, 1 год на новые блоки и модули.</p>
+                <p><a class="related-card__link" href="/services.html#na-obekte">Работы на вашем производстве</a></p>
             </div>
         </section>'''
 
@@ -398,10 +398,10 @@ def service_body(sp):
     подписи и заголовки из JSON; steps, repair и отзывы (reviews: true) — необязательные."""
     def card(item):
         k, v, href = (list(item) + [None])[:3]
-        link = f'\n                    <a class="related-card__link" href="{href}">Подробнее</a>' if href else ''
+        title = f'<a href="{href}">{esc(k)}</a>' if href else esc(k)
         return f'''                <article class="related-card">
-                    <h3>{esc(k)}</h3>
-                    <p>{esc(v)}</p>{link}
+                    <h3>{title}</h3>
+                    <p>{esc(v)}</p>
                 </article>'''
     when = '\n'.join(f'                <li>{esc(x)}</li>' for x in sp['when'])
     what = '\n'.join(card(x) for x in sp['what'])
@@ -478,6 +478,102 @@ def build_service_pages(common):
     return pages
 
 
+def catalog_cards(items):
+    """Карточки каталога: (название, текст, ссылка) — заголовок карточки и есть ссылка."""
+    return '\n'.join(f'''                <article class="related-card">
+                    <h3><a href="{href}">{esc(name)}</a></h3>
+                    <p>{esc(text)}</p>
+                </article>''' for name, text, href in items)
+
+
+def catalog_section(label, title, items, anchor=None, grid='related-grid related-grid--3'):
+    aid = f' id="{anchor}"' if anchor else ''
+    return f'''        <section class="case-block"{aid}>
+            <p class="section-label">{esc(label)}</p>
+            <h2>{esc(title)}</h2>
+            <div class="{grid}">
+{catalog_cards(items)}
+            </div>
+        </section>'''
+
+
+def build_catalog_pages(common):
+    """Каталоги /services.html (все услуги) и /industries.html (все отрасли): ссылки на существующие страницы."""
+    pages = {}
+    on_site = [(sp['name'], sp['desc'], f'/services/{sp["slug"]}.html') for sp in SERVICES['pages'] if sp.get('kind') != 'about']
+    order = ['emergency', 'cnc-repair', 'commissioning', 'modernization', 'plc-programming']
+    on_site.sort(key=lambda x: next((i for i, o in enumerate(order) if x[2].endswith(f'/{o}.html')), 99))
+    workshop = [(HUB_NAME, CONTENT['hub']['desc'], '/blocks.html')] + \
+        [(p['name'], p['desc'], f'/blocks/{p["slug"]}.html') for p in CONTENT['pages']]
+    brands = [(b['name'], f'/blocks/{p["slug"]}/{b["slug"]}.html') for p in CONTENT['pages'] for b in p.get('brand_pages', [])]
+    hubs = json.load(open(os.path.join(ROOT, 'bot', 'content', 'hubs.json'), encoding='utf-8'))
+    machine = [(n, f'/services/brand-{sl}.html') for n, sl in (('CMS', 'cms'), ('CODIMAG', 'codimag'), ('LVD', 'lvd'))
+               if os.path.exists(os.path.join(ROOT, 'services', f'brand-{sl}.html'))]
+    if os.path.exists(os.path.join(ROOT, 'services', 'type-thermoformer.html')):
+        machine.append(('Термоформеры', '/services/type-thermoformer.html'))
+    tags = '\n'.join(f'                <a href="{href}">{esc(name)}</a>' for name, href in machine + brands)
+    body = '\n\n'.join([
+        catalog_section('На вашем производстве', 'Выезд инженера на производство', on_site, 'na-obekte'),
+        catalog_section('В мастерской', 'Ремонт снятых электронных блоков', workshop, 'v-masterskoy'),
+        f'''        <section class="case-block case-services">
+            <h2 class="section-label">Оборудование и производители</h2>
+            <div class="services-tags">
+{tags}
+            </div>
+            <div class="bottom-cta">
+                <a href="/industries.html" class="btn btn--ghost">Отрасли, в которых работаем</a>
+                <a href="/cases.html" class="btn btn--ghost">Примеры работ</a>
+            </div>
+        </section>'''])
+    url = f'{SITE}/services.html'
+    cta = common['cta'].replace('<h2>Сняли блок?</h2>', '<h2>Не знаете, что выбрать?</h2>').replace(
+        'Оставьте телефон — перезвоним, скажем, берёмся ли за ремонт, и договоримся о приёме блока.',
+        'Оставьте телефон — перезвоним и подскажем: нужен выезд или ремонт блока в мастерской.')
+    pages['services.html'] = page_html(
+        url=url, title='Услуги: ремонт электроники оборудования — Панамастер',
+        desc='Все услуги Панамастер: аварийный выезд, ремонт станков с ЧПУ, пусконаладка, модернизация, программирование ПЛК и ремонт электронных блоков в мастерской.',
+        crumbs=[('Главная', '/'), ('Услуги', None)], meta='Москва и Московская область · с 2006 года',
+        h1='Услуги Панамастер', lead=[
+            'Ремонтируем и настраиваем электронику промышленного оборудования двумя способами: инженер выезжает на ваше производство или вы привозите снятый блок в мастерскую.',
+            'Выберите, что нужно сделать, или позвоните — подскажем по фото шильдика и ошибки.'],
+        body=body, facts_block='', bridge='', cases_html='', form_page='Услуги', form_id='services-phone',
+        faq=[('Чем отличается ремонт на объекте от ремонта в мастерской?',
+              'На объекте инженер приезжает на производство, находит причину и ремонтирует электронику станка или линии; выезд платный. В мастерскую вы привозите или присылаете снятый блок; диагностика блока бесплатная.'),
+             ('Не знаете, какая услуга нужна?', 'Позвоните или пришлите в мессенджер фото шильдика и экрана с ошибкой — подскажем, что нужно: выезд или ремонт блока.')],
+        faq_title='Коротко об услугах', main_entity={'@type': 'CollectionPage', 'name': 'Услуги Панамастер', 'url': url, 'about': common['org']},
+        cta=cta, **{k: common[k] for k in ('header', 'footer', 'org')})
+    inds = json.load(open(os.path.join(ROOT, 'bot', 'content', 'industries.json'), encoding='utf-8'))['industries']
+    url = f'{SITE}/industries.html'
+    body = catalog_section('Отрасли', 'В каких отраслях работаем',
+                           [(i['name'], i['desc'], f'/services/industry-{i["slug"]}.html') for i in inds]) + \
+        '''
+
+        <section class="case-block case-services">
+            <h2 class="section-label">Смотрите также</h2>
+            <div class="services-tags">
+                <a href="/services.html">Все услуги</a>
+                <a href="/blocks.html">Ремонт блоков в мастерской</a>
+                <a href="/cases.html">Примеры работ</a>
+                <a href="/map.html">Карта работ</a>
+            </div>
+        </section>'''
+    cta = common['cta'].replace('<h2>Сняли блок?</h2>', '<h2>Остановилось оборудование?</h2>').replace(
+        'Оставьте телефон — перезвоним, скажем, берёмся ли за ремонт, и договоримся о приёме блока.',
+        'Оставьте телефон — перезвоним, уточним оборудование и договоримся о выезде.')
+    pages['industries.html'] = page_html(
+        url=url, title='Отрасли: ремонт электроники производств — Панамастер',
+        desc='Ремонт электроники оборудования по отраслям: металлообработка, полиграфия, упаковка, пищевая, фармацевтика, пластмассы, деревообработка и другие. Москва и МО.',
+        crumbs=[('Главная', '/'), ('Отрасли', None)], meta='Москва и Московская область · с 2006 года',
+        h1='Отрасли, в которых работаем', lead=[
+            'У каждого производства своя среда: пыль, влага, масляный туман, агрессивные пары, вибрация, старые сети. Она по-своему выводит из строя электронику оборудования.',
+            'Выберите свою отрасль — расскажем, что ломается чаще всего, какое оборудование ремонтируем и как продлить жизнь электронике.'],
+        body=body, facts_block='', bridge='', cases_html='', form_page='Отрасли', form_id='industries-phone',
+        faq=[('Вашей отрасли нет в списке?', 'Ремонтируем электронику оборудования и в других отраслях. Позвоните или пришлите фото шильдика — скажем, берёмся ли.')],
+        faq_title='Коротко об отраслях', main_entity={'@type': 'CollectionPage', 'name': 'Отрасли', 'url': url, 'about': common['org']},
+        cta=cta, **{k: common[k] for k in ('header', 'footer', 'org')})
+    return pages
+
+
 def build():
     add_auto_servo_brands()
     header, footer, cta, org = chrome()
@@ -520,6 +616,7 @@ def build():
                     cases_html=cases_gen.cases_block(own[:6], industries, f'Ремонты {b["name"]} {m["name"]}', more=False),
                     **common)
     pages.update(build_service_pages(common))
+    pages.update(build_catalog_pages(common))
     for rel, s in pages.items():
         with open(os.path.join(ROOT, rel), 'w', encoding='utf-8') as f:
             f.write(s)
