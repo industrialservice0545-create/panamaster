@@ -575,10 +575,10 @@ def build_catalog_pages(common):
             'Официальными представителями производителей не являемся.')
     rubrics = [
         ('equipment.html', 'Виды оборудования', 'Виды оборудования: ремонт электроники — Панамастер',
-         'Ремонт электроники по видам оборудования: термоформеры и другие машины. Что ломается, как ищем причину, примеры работ. Москва и Московская область.',
-         'Виды оборудования',
-         ['Страницы по видам машин: какая электроника стоит, что в ней чаще всего ломается и как мы ищем причину.',
-          'Раздел пополняется по мере появления кейсов.'],
+         'Ремонт электроники 269 видов промышленного оборудования в 11 отраслях — станки, машины, линии. Любой бренд и производитель. Москва, МО и вся Россия.',
+         'Виды оборудования: ремонт электроники',
+         ['Ремонтируем электронику промышленного оборудования любых брендов и производителей: системы ЧПУ, ПЛК, приводы, панели оператора, промышленные компьютеры, силовую электронику, датчики и машинное зрение.',
+          'Ниже — 269 видов станков, машин и линий в 11 отраслях и какая электроника в них стоит. Точный состав зависит от модели и комплектации — сверяем по шильдику и паспорту. Механику не ремонтируем.'],
          [page_meta(r) + ('/' + r,) for r in sorted(glob.glob('services/type-*.html', root_dir=ROOT))]),
         ('brands.html', 'Производители оборудования', 'Сервисные центры по производителям оборудования — Панамастер',
          'Сервисные центры Панамастер по производителям оборудования: CMS, CODIMAG, LVD и другие. Ремонт электроники станков и машин, примеры работ. Москва и МО.',
@@ -601,8 +601,34 @@ def build_catalog_pages(common):
         tags = '\n'.join(f'                <a href="{h}">{esc(n)}</a>' for n, h in others)
         pick = {'equipment.html': 'Выберите вид оборудования', 'brands.html': 'Выберите производителя оборудования',
                 'electronics-brands.html': 'Выберите производителя электроники'}[rel]
-        body = catalog_section(crumb, pick, items) + f'''
+        body = catalog_section(crumb, pick, items) if items else ''
+        if rel == 'equipment.html':
+            cat = json.load(open(os.path.join(ROOT, 'bot', 'content', 'equipment_catalog.json'), encoding='utf-8'))
+            nav = '\n'.join(f'                <a href="#{c["slug"]}">{esc(c["name"])} ({len(c["items"])})</a>' for c in cat['industries'])
+            body = f'''        <section class="case-block case-services">
+            <h2 class="section-label">Отрасли каталога</h2>
+            <div class="services-tags">
+{nav}
+            </div>
+        </section>
 
+''' + (catalog_section('Подробные страницы', 'Сервисные центры по видам оборудования', items) + '\n\n' if items else '')
+            for c in cat['industries']:
+                li = '\n'.join(
+                    f'                <li><strong>{esc(x["name"])}</strong> — {esc(x["electronics"])}</li>' for x in c['items'])
+                body += f'''        <section class="case-block" id="{c["slug"]}">
+            <p class="section-label">{esc(c["name"])} · {len(c["items"])} видов</p>
+            <h2>{esc(c["name"])}: какое оборудование ремонтируем</h2>
+            <ul class="hub-list">
+{li}
+            </ul>
+            <div class="services-tags">
+                <a href="/services/industry-{c["slug"]}.html">Как среда отрасли влияет на электронику</a>
+            </div>
+        </section>
+
+'''
+        body += f'''
         <section class="case-block case-services">
             <h2 class="section-label">Другие разделы</h2>
             <div class="services-tags">

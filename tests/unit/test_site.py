@@ -479,3 +479,18 @@ class RubricCatalogsTest(unittest.TestCase):
             self.assertIn('<a href="/brands.html">Производители оборудования</a>', read(r), r)
         for r in glob.glob('services/type-*.html', root_dir=ROOT):
             self.assertIn('<a href="/equipment.html">Виды оборудования</a>', read(r), r)
+
+
+class EquipmentCatalogTest(unittest.TestCase):
+    """Каталог видов оборудования: все виды из equipment_catalog.json, у каждого — описание электроники."""
+
+    def test_all_types_listed_with_electronics(self):
+        cat = json.loads(read('bot/content/equipment_catalog.json'))
+        items = [x for c in cat['industries'] for x in c['items']]
+        s = read('equipment.html')
+        self.assertEqual(s.count('<li><strong>'), len(items))
+        for x in items:
+            self.assertTrue(x['electronics'].strip(), x['name'])
+        for c in cat['industries']:
+            self.assertIn(f'id="{c["slug"]}"', s)
+            self.assertTrue(os.path.exists(os.path.join(ROOT, 'services', f'industry-{c["slug"]}.html')), c['slug'])
