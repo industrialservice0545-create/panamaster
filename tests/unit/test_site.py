@@ -494,3 +494,21 @@ class EquipmentCatalogTest(unittest.TestCase):
         for c in cat['industries']:
             self.assertIn(f'id="{c["slug"]}"', s)
             self.assertTrue(os.path.exists(os.path.join(ROOT, 'services', f'industry-{c["slug"]}.html')), c['slug'])
+
+
+class AutoTypeHubTest(unittest.TestCase):
+    """Новый кейс с видом оборудования без ручной страницы — автоматическая страница вида с метой в норме."""
+
+    def test_auto_type_hub_meta(self):
+        import importlib, sys
+        sys.path.insert(0, os.path.join(ROOT, 'bot'))
+        b = importlib.import_module('build_case_pages')
+        d = json.loads(read('bot/dictionaries/entities.json'))
+        types = {t['slug']: t['name'] for t in d['equipment_catalog']}
+        case = {'brand': 'TESTBRAND', 'model': 'X1', 'equipment_type': 'press-brake', 'industry': 'metalworking',
+                'headline': 'восстановление платы', 'defect': 'Станок не включался.', 'solution': 'Отремонтировали плату.'}
+        h = b.auto_type_hub('press-brake', [case], types, {'metalworking': 'Металлообработка'}, {})
+        self.assertTrue(50 <= len(h['title']) <= 60, h['title'])
+        self.assertTrue(140 <= len(h['desc']) <= 160, h['desc'])
+        self.assertIn('любых', h['lead'][0])
+        self.assertTrue(h['auto'])

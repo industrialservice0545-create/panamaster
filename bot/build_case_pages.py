@@ -22,6 +22,7 @@ from datetime import date
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = 'https://panamaster.ru'
+TYPE_SYNONYMS = {t['slug']: t.get('synonyms', []) for t in json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'bot', 'dictionaries', 'entities.json'), encoding='utf-8'))['equipment_catalog']}
 # Цены и автор — решение владельца 02.10.2026. Меняются только здесь.
 PRICE_BLOCK = 10000   # ремонт блока в мастерской, после бесплатной диагностики
 PRICE_VISIT = 15000   # ремонт и модернизация на объекте
@@ -145,8 +146,69 @@ def auto_brand_hub(brand, own, types, industries):
     }
 
 
+def pick_len(cands, lo, hi):
+    """Первый вариант текста, который укладывается в lo..hi символов; иначе — обрезка первого."""
+    for c in cands:
+        if lo <= len(c) <= hi:
+            return c
+    return fit(cands[0], lo, hi)
+
+
+def auto_type_hub(slug, own, types, industries, type_inds):
+    """Страница «Сервисный центр по ремонту [вид оборудования]» по кейсам, когда в hubs.json нет ручного текста.
+    Только факты из кейсов, описание электроники вида из каталога (equipment_catalog.json) и подтверждённые условия.
+    Помечается auto=True: рабочий цикл дополняет такие страницы вручную."""
+    name = types.get(slug, slug)
+    low = name.lower()
+    syn = [low] + [x.lower() for x in TYPE_SYNONYMS.get(slug, [])]
+    elec = ''
+    try:
+        cat = json.loads(read('bot/content/equipment_catalog.json'))
+        for ind in cat['industries']:
+            for x in ind['items']:
+                if not elec and any(w[:7] in x['name'].lower() for w in syn if len(w) >= 5):
+                    elec = x['electronics']
+    except (OSError, ValueError):
+        pass
+    makers = sorted({c['brand'] for c in own})
+    lead = [f'Ремонтируем электронику оборудования этого вида — {low} — любых брендов и производителей: системы управления, '
+            'ПЛК, приводы, панели оператора, датчики и силовую электронику.',
+            'Выезжаем на производство по Москве и Московской области в течение 24 часов. Механику не ремонтируем — '
+            'только электронику и автоматику.']
+    about = ([f'Что в электронике: {lower_first(elec)}'] if elec else []) + \
+        [f'{c["brand"]} {c["model"]}: {lower_first(first_sentence(c["defect"]).rstrip("."))}. {first_sentence(c["solution"])}' for c in own]
+    return {
+        'name': name, 'auto': True,
+        'title': pick_len([f'Сервисный центр по ремонту: {low} — Панамастер',
+                           f'Ремонт электроники: {low} — Панамастер',
+                           f'{name}: ремонт электроники в Москве — Панамастер'], 50, 60),
+        'h1': f'{name}: сервисный центр по ремонту электроники',
+        'desc': pick_len([f'Ремонт электроники — {low} любых производителей: системы управления, ПЛК, приводы, датчики. '
+                          'Выезд за 24 часа по Москве и МО, договор, гарантия.',
+                          f'Ремонт электроники — {low} любых производителей: системы управления, приводы, датчики. '
+                          'Выезд за 24 часа по Москве и Московской области, договор и гарантия.'], 140, 160),
+        'lead': lead,
+        'about_title': f'{name}: электроника и наш опыт',
+        'about': about,
+        'lines_title': 'Что ремонтировали',
+        'lines': [[f'{c["brand"]} {c["model"]}', ' · '.join(x for x in (c['headline'], industries.get(c['industry'], '')) if x)] for c in own],
+        'electronics_title': 'Электроника, с которой работали',
+        'electronics': [f'Стойка и система ЧПУ: {c["rack"]}.' for c in own if c.get('rack')] +
+                       [f'Сервоприводы: {c["servo"]}.' for c in own if c.get('servo')] +
+                       [f'{c["model"]}: {c["headline"]}.' for c in own],
+        'brands_title': f'{name} любых производителей',
+        'brands_text': f'Ремонтировали оборудование {", ".join(makers)}. Электронику ремонтируем на уровне компонентов, '
+                       'поэтому работаем с оборудованием любых брендов, в том числе снятым с производства.',
+        'faq': [[f'Ремонтируете {low} любых производителей?', 'Да. Ремонтируем электронику любых брендов: системы управления, приводы, платы, датчики.'],
+                ['Ремонтируете механику?', 'Нет. Только электронику и автоматику.'],
+                ['Какая гарантия?', 'На работы — 3 месяца с момента пусконаладки, на установленные новые блоки и модули — 1 год.'],
+                ['Как быстро выезжаете?', 'По Москве и Московской области — в течение 24 часов. В другие регионы — по договорённости.']],
+        'industries': type_inds.get(slug, sorted({c['industry'] for c in own})),
+    }
+
+
 def load_hubs():
-    """Тексты посадочных из hubs.json + автоматические страницы брендов станков по кейсам формата «станок»."""
+    """Тексты посадочных из hubs.json + автоматические страницы брендов станков и видов оборудования по кейсам формата «станок»."""
     hubs = json.loads(read('bot/content/hubs.json'))
     cases = json.loads(read('assets/data/cases.json'))
     d = json.loads(read('bot/dictionaries/entities.json'))
@@ -160,6 +222,11 @@ def load_hubs():
         while slug in hubs['brands']:
             slug += '-2'
         hubs['brands'][slug] = auto_brand_hub(brand, own, types, industries)
+    type_inds = {t['slug']: t.get('industries', []) for t in d['equipment_catalog']}
+    for t in sorted({c['equipment_type'] for c in cases if c.get('format', 'machine') == 'machine' and c.get('equipment_type')}):
+        if t in hubs['types'] or t not in types:
+            continue
+        hubs['types'][t] = auto_type_hub(t, [c for c in cases if c['equipment_type'] == t], types, industries, type_inds)
     return hubs
 
 
@@ -772,7 +839,7 @@ def render_hub(kind, slug, h, cases, industries, types, parts):
 
 <main>
     <div class="container">
-
+{'        <!-- auto-hub: страница создана по кейсам автоматически, дополнить вручную (hubs.json) -->' if h.get('auto') else ''}
         <section class="case-hero">
             <div class="case-hero__content">
                 <p class="case-hero__meta">{"Производитель" if kind == "brand" else "Вид оборудования"} · Москва и Московская область</p>

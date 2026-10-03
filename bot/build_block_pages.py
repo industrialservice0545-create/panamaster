@@ -604,6 +604,13 @@ def build_catalog_pages(common):
         body = catalog_section(crumb, pick, items) if items else ''
         if rel == 'equipment.html':
             cat = json.load(open(os.path.join(ROOT, 'bot', 'content', 'equipment_catalog.json'), encoding='utf-8'))
+            stems = {t['slug']: [w[:6] for w in re.findall(r'[а-яёa-z]+', t['name'].lower()) if len(w) >= 4]
+                     for t in json.load(open(os.path.join(ROOT, 'bot', 'dictionaries', 'entities.json'), encoding='utf-8'))['equipment_catalog']
+                     if os.path.exists(os.path.join(ROOT, 'services', f'type-{t["slug"]}.html'))}
+            for c in cat['industries']:          # новые страницы видов (в т.ч. созданные по кейсам) — ссылкой из каталога
+                for x in c['items']:
+                    if not x.get('type'):        # все основы слов названия вида должны быть в названии позиции
+                        x['type'] = next((sl for sl, st in stems.items() if st and all(w in x['name'].lower() for w in st)), None)
             nav = '\n'.join(f'                <a href="#{c["slug"]}">{esc(c["name"])} ({len(c["items"])})</a>' for c in cat['industries'])
             body = f'''        <section class="case-block case-services">
             <h2 class="section-label">Отрасли каталога</h2>
