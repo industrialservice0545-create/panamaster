@@ -205,6 +205,8 @@ class CasePagesTests(unittest.TestCase):
             with self.subTest(p):
                 self.assertTrue(50 <= len(t) <= 60, f'title {len(t)}: {t}')
                 self.assertTrue(140 <= len(d) <= 160, f'description {len(d)}: {d}')
+                # фраза не обрывается: перед заглавной буквой следующего предложения стоит точка
+                self.assertNotRegex(d, r'[а-яa-z0-9] [А-Я][а-я]+ (за|блока)', f'обрыв фразы: {d}')
 
     def test_every_case_in_data_has_page_and_photos(self):
         for c in json.loads(read('assets/data/cases.json')):
