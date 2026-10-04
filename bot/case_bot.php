@@ -2,7 +2,7 @@
 // Бот приёма кейсов Панамастер (PHP 8.4, запуск cron раз в минуту).
 //
 // Диалог: /add_case → отрасль → вид оборудования → бренд → модель → стойка → сервосистема →
-// дефект → ремонт → заголовок → результат → срок → адрес → фото → подтверждение.
+// дефект → ремонт → заголовок → результат → когда (месяц и год) → срок → адрес → фото → подтверждение.
 // Готовая заявка кладётся в inbox/{id}/ рабочей копии репозитория и отправляется в GitHub;
 // страницы собирает GitHub Actions (bot/process_inbox.py).
 //
@@ -158,8 +158,9 @@ const STEPS = [
     'solution' => ['Что сделали (ремонт), 30–500 символов:', false],
     'headline' => ['Суть в 3–7 словах для заголовка. Например: «устранено смещение рапорта».', false],
     'result'   => ['Результат после ремонта одной фразой. Например: «Линия работает в штатном режиме».', true],
+    'when'     => ['Когда был ремонт: месяц и год. Например: «07.2026» или «июль 2026». Точная дата не нужна.', false],
     'days'     => ['Срок ремонта в рабочих днях (числом). Покажем на сайте, только если ремонт был быстрым — до 5 дней.', true],
-    'address'  => ['Адрес объекта: город, улица, дом. В крупном городе метка встанет по адресу, в области — на населённый пункт. Название клиента на сайте не показываем.', true],
+    'address'  => ['Где был ремонт — для точки на «Карте работ»: город, улица, дом (или населённый пункт в области). Сам адрес и название клиента на сайте не показываем. Можно пропустить.', true],
     'photo1'   => ['Фото: общий план оборудования.', false],
     'photo2'   => ['Фото: шкаф управления.', true],
 ];
@@ -192,6 +193,34 @@ function next_step(string $step): ?string
     return $keys[$i + 1] ?? null;
 }
 
+const MONTHS_RU = ['январ' => 1, 'феврал' => 2, 'март' => 3, 'апрел' => 4, 'ма' => 5, 'июн' => 6,
+                   'июл' => 7, 'август' => 8, 'сентябр' => 9, 'октябр' => 10, 'ноябр' => 11, 'декабр' => 12];
+
+/** «07.2026», «7/2026», «2026-07», «июль 2026» → «2026-07»; дата в будущем или до 2006 — null. */
+function parse_month(string $text): ?string
+{
+    $t = mb_strtolower(trim($text));
+    $m = $y = null;
+    if (preg_match('~^(\d{1,2})\s*[./\-\s]\s*(\d{4})$~u', $t, $x)) {
+        [$m, $y] = [(int) $x[1], (int) $x[2]];
+    } elseif (preg_match('~^(\d{4})\s*[./\-]\s*(\d{1,2})$~u', $t, $x)) {
+        [$y, $m] = [(int) $x[1], (int) $x[2]];
+    } elseif (preg_match('~^([а-яё]+)\s+(\d{4})~u', $t, $x)) {
+        $y = (int) $x[2];
+        foreach (MONTHS_RU as $stem => $n) {
+            if (str_starts_with($x[1], $stem) && ($stem !== 'ма' || str_starts_with($x[1], 'ма') && !str_starts_with($x[1], 'март'))) {
+                $m = $n;
+                break;
+            }
+        }
+    }
+    if (!$m || $m < 1 || $m > 12 || $y < 2006) {
+        return null;
+    }
+    $iso = sprintf('%04d-%02d', $y, $m);
+    return $iso > gmdate('Y-m', time() + 3 * 3600) ? null : $iso;
+}
+
 function validate(string $step, string $text): ?string
 {
     $len = mb_strlen($text);
@@ -201,6 +230,7 @@ function validate(string $step, string $text): ?string
         'headline' => ($len < 10 || $len > 60) ? 'Нужно 10–60 символов. Напишите короче или подробнее.' : null,
         'model' => ($len < 1 || $len > 100) ? 'Модель — до 100 символов.' : null,
         'brand' => ($len < 2 || $len > 60) ? 'Бренд — от 2 до 60 символов.' : null,
+        'when' => parse_month($text) === null ? 'Не понял дату. Напишите месяц и год, например «07.2026» или «июль 2026» (не позже текущего месяца).' : null,
         'days' => (!ctype_digit($text) || (int) $text < 1 || (int) $text > 90) ? 'Нужно целое число от 1 до 90.' : null,
         'company', 'address' => ($len < 3 || $len > 200) ? 'Нужно от 3 до 200 символов.' : null,
         default => $len > 200 ? 'Слишком длинно — до 200 символов.' : null,
@@ -220,6 +250,10 @@ function summary(array $d): string
             $lines[] = "$label: {$d[$k]}";
         }
     }
+    if (!empty($d['when']) && ($iso = parse_month($d['when']))) {
+        $lines[] = 'Когда: ' . $iso;
+    }
+    $lines[] = 'Где: ' . (!empty($d['address']) ? 'указано (на сайте — только точка на карте)' : 'не указано — без точки на карте');
     $lines[] = "Заголовок: {$d['brand']} {$d['model']}: {$d['headline']}";
     $lines[] = 'Фото: ' . count($d['photos'] ?? []);
     return implode("\n", $lines);
@@ -330,7 +364,7 @@ function submit(int $chat, array $d): string
     ], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
 
     $public = [
-        'id' => $id, 'date' => date('Y-m-d'), 'industry' => $d['industry'],
+        'id' => $id, 'date' => (!empty($d['when']) ? parse_month($d['when']) : null) ?? date('Y-m-d'), 'industry' => $d['industry'],
         'equipment_type' => $d['type_slug'] ?? null, 'equipment_type_new' => $d['type_new'] ?? null,
         'brand' => $d['brand'], 'model' => $d['model'], 'rack' => $d['rack'] ?? null, 'servo' => $d['servo'] ?? null,
         'defect' => $d['defect'], 'solution' => $d['solution'], 'headline' => $d['headline'],
