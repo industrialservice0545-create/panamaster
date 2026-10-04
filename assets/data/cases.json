@@ -166,5 +166,39 @@
       }
     ],
     "request_id": "20261003-235201-1958544230"
+  },
+  {
+    "slug": "matsuura-mc-800vg",
+    "date": "2026-10-04",
+    "industry": "metalworking",
+    "equipment_type": "vertikalnyy-obrabatyvayuschiy-tsentr",
+    "format": "machine",
+    "brand": "Matsuura",
+    "model": "MC-800VG",
+    "rack": "MATSUURA SYSTEM J300",
+    "servo": "Yaskawa VS-656MR5",
+    "headline": "ошибка устранена, станок работает в штатном режиме",
+    "defect": "Сгорела силовая часть инвестора Yaskawa VS-656MR5, блок, который отвечает за вращение шпинделя.Ошибка 3100 SERVO ALARM.",
+    "solution": "Компонентный ремонт Yaskawa VS-656MR5 силового блока.",
+    "result": "Станок работает в штатном режиме.",
+    "repair_days": null,
+    "area": null,
+    "lat": null,
+    "lon": null,
+    "photos": [
+      {
+        "file": "photo-1.webp",
+        "w": 1200,
+        "h": 800,
+        "alt": "Вертикальный обрабатывающий центр Matsuura MC-800VG"
+      },
+      {
+        "file": "photo-2.webp",
+        "w": 1200,
+        "h": 800,
+        "alt": "Шкаф управления Matsuura MC-800VG после ремонта"
+      }
+    ],
+    "request_id": "20261004-134101-1958544230"
   }
 ]
