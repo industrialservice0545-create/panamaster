@@ -200,5 +200,39 @@
       }
     ],
     "request_id": "20261004-134101-1958544230"
+  },
+  {
+    "slug": "pultrex-px1000-20t",
+    "date": "2026-05",
+    "industry": "plastics",
+    "equipment_type": "pultruzionnaya-liniya",
+    "format": "machine",
+    "brand": "Pultrex",
+    "model": "Px1000-20T",
+    "rack": null,
+    "servo": "Siemens SINAMICS S120",
+    "headline": "устранение аварийной ошибки Seevo Alarm",
+    "defect": "Линяя не запускалась из за аварийной ошибки Servo Alarm.",
+    "solution": "Компонентный ремонт блока питания Siemens Active Line Module и модуля управления двигателем Siemens 6SL3120-1TE28-5AA3:.",
+    "result": "Линяя работает в штатном режиме.",
+    "repair_days": null,
+    "area": "Москва, район Печатники",
+    "lat": 55.708902,
+    "lon": 37.721058,
+    "photos": [
+      {
+        "file": "photo-1.webp",
+        "w": 1200,
+        "h": 800,
+        "alt": "Пултрузионная линия Pultrex Px1000-20T"
+      },
+      {
+        "file": "photo-2.webp",
+        "w": 960,
+        "h": 640,
+        "alt": "Шкаф управления Pultrex Px1000-20T после ремонта"
+      }
+    ],
+    "request_id": "20261004-184601-1958544230"
   }
 ]

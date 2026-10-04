@@ -57,7 +57,7 @@
   </url>
   <url>
     <loc>https://panamaster.ru/map.html</loc>
-    <lastmod>2026-10-03</lastmod>
+    <lastmod>2026-10-04</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
@@ -101,6 +101,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://panamaster.ru/blocks/drives-servo/siemens.html</loc>
+    <lastmod>2026-10-04</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://panamaster.ru/blocks/drives-servo/yaskawa.html</loc>
     <lastmod>2026-10-04</lastmod>
     <priority>0.7</priority>
@@ -132,6 +137,11 @@
   </url>
   <url>
     <loc>https://panamaster.ru/services/brand-matsuura.html</loc>
+    <lastmod>2026-10-04</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/services/brand-pultrex.html</loc>
     <lastmod>2026-10-04</lastmod>
     <priority>0.7</priority>
   </url>
@@ -192,7 +202,7 @@
   </url>
   <url>
     <loc>https://panamaster.ru/services/industry-plastics.html</loc>
-    <lastmod>2026-10-03</lastmod>
+    <lastmod>2026-10-04</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
@@ -236,6 +246,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://panamaster.ru/services/type-pultruzionnaya-liniya.html</loc>
+    <lastmod>2026-10-04</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://panamaster.ru/services/type-thermoformer.html</loc>
     <lastmod>2026-10-03</lastmod>
     <priority>0.7</priority>
@@ -247,7 +262,7 @@
   </url>
   <url>
     <loc>https://panamaster.ru/cases/cms-br5-302.html</loc>
-    <lastmod>2026-10-03</lastmod>
+    <lastmod>2026-10-04</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
@@ -262,6 +277,11 @@
   </url>
   <url>
     <loc>https://panamaster.ru/cases/matsuura-mc-800vg.html</loc>
+    <lastmod>2026-10-04</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/cases/pultrex-px1000-20t.html</loc>
     <lastmod>2026-10-04</lastmod>
     <priority>0.6</priority>
   </url>
