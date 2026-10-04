@@ -1,0 +1,24 @@
+{
+    "id": "20261004-134101-1958544230",
+    "date": "2026-10-04",
+    "industry": "metalworking",
+    "equipment_type": null,
+    "equipment_type_new": "Вертикальный обрабатывающий центр",
+    "brand": "Matsuura",
+    "model": "MC-800VG",
+    "rack": "MATSUURA SYSTEM J300",
+    "servo": "Yaskawa VS-656MR5",
+    "defect": "Сгорела силовая часть инвестора Yaskawa VS-656MR5, блок, который отвечает за вращение шпинделя.Ошибка 3100 SERVO ALARM",
+    "solution": "Компонентный ремонт Yaskawa VS-656MR5 силового блока.",
+    "headline": "Ошибка устранена, станок работает в штатном режиме",
+    "result": "Станок работает в штатном режиме",
+    "repair_days": null,
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "chat_id": 1958544230,
+    "area": null,
+    "lat": null,
+    "lon": null
+}
