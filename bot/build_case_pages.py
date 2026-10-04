@@ -155,7 +155,8 @@ def pick_len(cands, lo, hi):
     for c in cands:
         if lo <= len(c) <= hi:
             return c
-    return fit(cands[0], lo, hi)
+    fitting = [c for c in cands if len(c) <= hi]
+    return max(fitting, key=len) if fitting else fit(cands[0], lo, hi)
 
 
 def auto_type_hub(slug, own, types, industries, type_inds):
@@ -185,8 +186,11 @@ def auto_type_hub(slug, own, types, industries, type_inds):
         'name': name, 'auto': True,
         'title': pick_len([f'Сервисный центр по ремонту: {low} — Панамастер',
                            f'Ремонт электроники: {low} — Панамастер',
-                           f'{name}: ремонт электроники в Москве — Панамастер'], 50, 60),
-        'h1': f'{name}: сервисный центр по ремонту электроники',
+                           f'{name}: ремонт электроники в Москве — Панамастер',
+                           f'{name}: ремонт электроники — Панамастер',
+                           f'{name}: ремонт в Москве — Панамастер',
+                           f'{name}: ремонт — Панамастер'], 50, 60),
+        'h1': f'{name}: ремонт электроники',
         'desc': pick_len([f'Ремонт электроники — {low} любых производителей: системы управления, ПЛК, приводы, датчики. '
                           'Выезд за 24 часа по Москве и МО, договор, гарантия.',
                           f'Ремонт электроники — {low} любых производителей: системы управления, приводы, датчики. '
