@@ -53,6 +53,12 @@ def ld_json(data):
             .replace('<', '\\u003c').replace('>', '\\u003e').replace('&', '\\u0026'))
 
 
+def plural(n, one, few, many):
+    if n % 10 == 1 and n % 100 != 11:
+        return one
+    return few if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14 else many
+
+
 def esc(s):
     return html.escape(s, quote=True)
 
@@ -626,7 +632,7 @@ def build_catalog_pages(common):
                      if x.get('type') and os.path.exists(os.path.join(ROOT, 'services', f'type-{x["type"]}.html'))
                      else f'                <li><strong>{esc(x["name"])}</strong> — {esc(x["electronics"])}</li>') for x in c['items'])
                 body += f'''        <section class="case-block" id="{c["slug"]}">
-            <p class="section-label">{esc(c["name"])} · {len(c["items"])} видов</p>
+            <p class="section-label">{esc(c["name"])} · {len(c["items"])} {plural(len(c["items"]), "вид", "вида", "видов")}</p>
             <h2>{esc(c["name"])}: какое оборудование ремонтируем</h2>
             <ul class="hub-list">
 {li}
