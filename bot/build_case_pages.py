@@ -96,6 +96,22 @@ SERVO_BRANDS = {   # серия привода → производитель (�
 }
 
 
+RACK_BRANDS = {   # система управления / стойка → производитель (страницы «ремонт систем управления [бренд]»)
+    'moog': 'Moog', 'serad': 'Serad', 'b&r': 'B&R', 'fanuc': 'Fanuc', 'sinumerik': 'Siemens', 'siemens': 'Siemens',
+    'heidenhain': 'Heidenhain', 'mitsubishi': 'Mitsubishi Electric', 'delem': 'Delem', 'cybelec': 'Cybelec',
+    'fagor': 'Fagor', 'beckhoff': 'Beckhoff', 'omron': 'Omron', 'allen-bradley': 'Allen-Bradley',
+}
+
+
+def rack_brand(rack):
+    """Производитель системы управления из поля кейса «rack» (Moog IMI220 → Moog). None — не распознан."""
+    low = (rack or '').lower()
+    for key, name in RACK_BRANDS.items():
+        if key in low:
+            return name
+    return None
+
+
 def servo_brand(servo):
     """Производитель сервопривода из поля кейса «servo» (Parker HPD5N → Parker). None — не распознан."""
     low = (servo or '').lower()
@@ -505,6 +521,9 @@ def render_case(c, cases, industries, types, parts):
         block_links.append((f'/blocks/drives-servo/{slug_of(sb)}.html', f'Ремонт сервоприводов {sb}'))
     elif sb:
         block_links.append(('/blocks/drives-servo/rexroth.html', 'Ремонт сервоприводов Rexroth Indramat'))
+    rb = rack_brand(c.get('rack')) if c.get('format', 'machine') == 'machine' else None
+    if rb:   # страницу создаёт build_block_pages (add_auto_rack_brands) в том же прогоне CI
+        block_links.append((f'/blocks/cnc-controls/{slug_of(rb)}.html', f'Ремонт систем управления {rb}'))
     tags.extend(f'<a href="{href}">{esc(text)}</a>' for href, text in block_links)
     if os.path.exists(os.path.join(ROOT, 'services', f'industry-{c["industry"]}.html')):
         tags.append(f'<a href="/services/industry-{c["industry"]}.html">Ремонт оборудования: {esc(ind_name.lower())}</a>')

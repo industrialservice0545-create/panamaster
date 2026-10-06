@@ -41,6 +41,9 @@ def block_cases(type_slug, brand=None, model=None):
         if brand.get('servo_brand'):
             own += [c for c in cases if c.get('format', 'machine') == 'machine'
                     and cases_gen.servo_brand(c.get('servo')) == brand['servo_brand']]
+        if brand.get('rack_brand'):
+            own += [c for c in cases if c.get('format', 'machine') == 'machine'
+                    and cases_gen.rack_brand(c.get('rack')) == brand['rack_brand']]
     if model:
         own = [c for c in own if model['match'].lower() in c['model'].lower()]
     return own, industries
@@ -405,6 +408,51 @@ def add_auto_servo_brands():
         })
 
 
+
+def add_auto_rack_brands():
+    """Страницы «Ремонт систем управления [бренд]» по кейсам станков, где известна система управления (поле rack).
+    Только факты из кейсов; бренды без распознавания (собственные системы станков) не создаём."""
+    page = next((p for p in CONTENT['pages'] if p['slug'] == 'cnc-controls'), None)
+    if not page:
+        return
+    cases, _, _ = cases_gen.load()
+    page.setdefault('brand_pages', [])
+    have = {b['slug'] for b in page['brand_pages']}
+    have_names = {m.lower() for b in page['brand_pages'] for m in b['match']}
+    by_brand = {}
+    for c in cases:
+        name = cases_gen.rack_brand(c.get('rack')) if c.get('format', 'machine') == 'machine' else None
+        if name and name.lower() not in have_names:
+            by_brand.setdefault(name, []).append(c)
+    for name, own in sorted(by_brand.items()):
+        slug = cases_gen.slug_of(name)
+        if slug in have:
+            continue
+        racks = sorted({c['rack'] for c in own})
+        short = ', '.join(sorted({re.sub(rf'^{re.escape(name)}\s+', '', v, flags=re.I) for v in racks}))
+        short = short if re.search(r'\d', short) else ''   # только модели («IMI220-801A001»), не «Industrial Automation»
+        par = f' ({short})' if short else ''
+        page['brand_pages'].append({
+            'slug': slug, 'name': name, 'match': [name], 'rack_brand': name, 'auto': True,
+            'title': cases_gen.pick_len([f'Ремонт систем управления {name}{" " + short if short else ""} — Панамастер',
+                                         f'Ремонт систем управления {name} в Москве — Панамастер',
+                                         f'Ремонт контроллеров {name} в Москве — Панамастер'], 50, 60),
+            'h1': f'Ремонт систем управления {name}',
+            'desc': cases_gen.pick_len([f'Ремонт систем управления {name}{par}: компонентный ремонт процессорных модулей '
+                                        'и плат, настройка на оборудовании. Гарантия 3 месяца.',
+                                        f'Ремонт систем управления {name}: компонентный ремонт процессорных модулей и плат '
+                                        'в мастерской в Москве, настройка на оборудовании. Гарантия 3 месяца.'], 140, 160),
+            'lead': [f'Ремонтируем системы управления {name}{par} на уровне компонентов: процессорные модули, '
+                     'платы ввода-вывода и связи, источники питания. После ремонта настраиваем систему на оборудовании.',
+                     'Привезите блок в мастерскую на ул. Искры, 31к1 или отправьте транспортной компанией. '
+                     'Если блок не снять — выедем на производство.'],
+            'series': [[v, f'Работали на {c["brand"]} {c["model"]}'] for c in own for v in [c['rack']]],
+            'faults': [f'{c["brand"]} {c["model"]}: {c["headline"]}.' for c in own],
+            'faq': [[f'Ремонтируете системы управления {name}?',
+                     f'Да. Например, {racks[0]} на {own[0]["brand"]} {own[0]["model"]} — пример ниже на странице.']],
+            'models': [],
+        })
+
 SERVICES = load_content('services.json')
 
 
@@ -674,6 +722,7 @@ def build_catalog_pages(common):
 
 def build():
     add_auto_servo_brands()
+    add_auto_rack_brands()
     header, footer, cta, org = chrome()
     hub = CONTENT['hub']
     os.makedirs(os.path.join(ROOT, 'blocks'), exist_ok=True)

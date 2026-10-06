@@ -71,6 +71,21 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://panamaster.ru/blocks/cnc-controls/b-r.html</loc>
+    <lastmod>2026-10-06</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/blocks/cnc-controls/moog.html</loc>
+    <lastmod>2026-10-06</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/blocks/cnc-controls/serad.html</loc>
+    <lastmod>2026-10-06</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://panamaster.ru/blocks/drives-servo.html</loc>
     <lastmod>2026-10-06</lastmod>
     <priority>0.7</priority>
