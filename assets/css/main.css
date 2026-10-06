@@ -1028,3 +1028,22 @@ main { padding-block-end: var(--space-xl); }
 .related-card__photo { display: block; }
 
 .map--works { margin-block-start: var(--space-md); block-size: clamp(320px, 55vh, 560px); }
+
+/* Навигация в футере: разделы сайта (06.10.2026) — новые правила, существующие не меняются */
+.site-footer__nav {
+    padding-block: var(--space-lg) 0;
+    background: #E2E2E2;
+}
+.site-footer__nav-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md);
+}
+.site-footer__nav ul { margin: 0; padding: 0; list-style: none; }
+.site-footer__nav li + li { margin-block-start: 6px; }
+.site-footer__nav a { color: var(--base-color-text-normal); text-decoration: none; }
+.site-footer__nav a:hover,
+.site-footer__nav a:active { color: var(--link-color-text-normal); }
+@media (min-width: 1024px) {
+    .site-footer__nav-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
