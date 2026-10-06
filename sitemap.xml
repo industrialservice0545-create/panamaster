@@ -47,7 +47,7 @@
   </url>
   <url>
     <loc>https://panamaster.ru/contacts.html</loc>
-    <lastmod>2026-10-03</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
@@ -117,6 +117,11 @@
   </url>
   <url>
     <loc>https://panamaster.ru/blocks/plc.html</loc>
+    <lastmod>2026-10-06</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/services/brand-bmb.html</loc>
     <lastmod>2026-10-06</lastmod>
     <priority>0.7</priority>
   </url>
@@ -236,6 +241,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://panamaster.ru/services/type-injection-molding.html</loc>
+    <lastmod>2026-10-06</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://panamaster.ru/services/type-offset-press.html</loc>
     <lastmod>2026-10-06</lastmod>
     <priority>0.7</priority>
@@ -259,6 +269,11 @@
     <loc>https://panamaster.ru/services/type-vertikalnyy-obrabatyvayuschiy-tsentr.html</loc>
     <lastmod>2026-10-06</lastmod>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/cases/bmb-kw3502200-1300.html</loc>
+    <lastmod>2026-10-06</lastmod>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://panamaster.ru/cases/cms-br5-302.html</loc>
