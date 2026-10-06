@@ -301,11 +301,11 @@ def up_links(items):
         </section>'''
 
 
-def faults_html(faults):
+def faults_html(faults, title='С чем приносят в ремонт', label='Неисправности'):
     items = '\n'.join(f'                <li>{esc(f)}</li>' for f in faults)
     return f'''        <section class="case-block">
-            <p class="section-label">Неисправности</p>
-            <h2>С чем приносят в ремонт</h2>
+            <p class="section-label">{esc(label)}</p>
+            <h2>{esc(title)}</h2>
             <ul class="hub-list">
 {items}
             </ul>
@@ -326,7 +326,7 @@ def brand_body(p, b):
             </div>
         </section>
 
-{faults_html(b["faults"])}
+{faults_html(b["faults"], *(('Какие неисправности устраняли', 'Из практики') if b.get('auto') else ()))}
 
 {steps_html()}
 
