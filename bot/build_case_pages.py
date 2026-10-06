@@ -306,6 +306,8 @@ def description_of(c):
     head = f'{c["brand"]} {c["model"]}: {c["headline"]}.'
     sol = first_sentence(c['solution']).rstrip('.:;, ')
     # решение — целиком или до последней запятой/«и», но никогда не обрывом посреди фразы
+    if sol.lower() == c['headline'].rstrip('.').lower():   # решение повторяет заголовок — не дублируем
+        sol = first_sentence(c['defect']).rstrip('.:;, ')
     parts = [sol] + [sol[:m.start()].rstrip(',;: ') for m in reversed(list(re.finditer(r',\s| и ', sol)))]
     room = 160 - len(tail) - len(head) - 1
     body = next((f'{head} {x}.' for x in parts if len(x) >= 15 and len(x) + 1 <= room), head)
