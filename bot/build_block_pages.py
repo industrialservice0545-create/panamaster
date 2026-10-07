@@ -568,7 +568,7 @@ def build_service_pages(common):
             if sp.get('kind') == 'about' else None
         pages[rel] = page_html(
             url=url, title=sp['title'], desc=sp['desc'], main_entity=about,
-            crumbs=[('Главная', '/'), (sp['name'], None)], meta=sp['meta'], h1=sp['h1'], lead=sp['lead'],
+            crumbs=[('Главная', '/')] + ([('Услуги', '/services.html')] if sp.get('group') else []) + [(sp['name'], None)], meta=sp['meta'], h1=sp['h1'], lead=sp['lead'],
             body=service_body(sp), faq=sp['faq'], form_page=sp['name'], form_id=f'service-{sp["slug"]}-phone',
             facts_block=service_facts(sp), bridge='', service_type=sp['name'], faq_title=sp['faq_title'],
             min_price=sp.get('min_price', cases_gen.PRICE_VISIT),
@@ -598,7 +598,10 @@ def catalog_section(label, title, items, anchor=None, grid='related-grid related
 def build_catalog_pages(common):
     """Каталоги /services.html (все услуги) и /industries.html (все отрасли): ссылки на существующие страницы."""
     pages = {}
-    on_site = [(sp['name'], sp['desc'], f'/services/{sp["slug"]}.html') for sp in SERVICES['pages'] if sp.get('kind') != 'about']
+    on_site = [(sp['name'], sp['desc'], f'/services/{sp["slug"]}.html') for sp in SERVICES['pages']
+               if sp.get('kind') != 'about' and not sp.get('group')]
+    engineering = [(sp['name'], sp['desc'], f'/services/{sp["slug"]}.html') for sp in SERVICES['pages']
+                   if sp.get('group') == 'engineering']
     order = ['emergency', 'cnc-repair', 'commissioning', 'modernization', 'plc-programming']
     on_site.sort(key=lambda x: next((i for i, o in enumerate(order) if x[2].endswith(f'/{o}.html')), 99))
     workshop = [(HUB_NAME, CONTENT['hub']['desc'], '/blocks.html')] + \
@@ -606,6 +609,8 @@ def build_catalog_pages(common):
     body = '\n\n'.join([
         catalog_section('На вашем производстве', 'Выезд инженера на производство', on_site, 'na-obekte'),
         catalog_section('В мастерской', 'Ремонт снятых электронных блоков', workshop, 'v-masterskoy'),
+        catalog_section('Для службы главного инженера', 'Обучение и инженерные знания', engineering, 'inzhenernaya-sluzhba')
+        if engineering else '',
         '''        <section class="case-block case-services">
             <h2 class="section-label">Ещё разделы</h2>
             <div class="bottom-cta">
