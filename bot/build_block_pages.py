@@ -456,6 +456,31 @@ def add_auto_rack_brands():
 SERVICES = load_content('services.json')
 
 
+def section_html(x, card):
+    """Раздел длинной посадочной: label, title, text (абзацы), quote, list, cards, steps, after (абзацы после)."""
+    out = [f'            <p class="section-label">{esc(x["label"])}</p>' if x.get('label') else '',
+           f'            <h2>{esc(x["title"])}</h2>' if x.get('title') else '']
+    if x.get('text'):
+        out.append('            <div class="case-summary">\n' +
+                   '\n'.join(f'                <p>{esc(t)}</p>' for t in x['text']) + '\n            </div>')
+    if x.get('list'):
+        out.append('            <ul class="hub-list">\n' +
+                   '\n'.join(f'                <li>{esc(t)}</li>' for t in x['list']) + '\n            </ul>')
+    if x.get('cards'):
+        out.append('            <div class="related-grid related-grid--3">\n' +
+                   '\n'.join(card(c) for c in x['cards']) + '\n            </div>')
+    if x.get('steps'):
+        out.append('            <ol class="steps-list">\n' +
+                   '\n'.join(f'                <li><strong>{esc(k)}</strong><span>{esc(v)}</span></li>' for k, v in x['steps'])
+                   + '\n            </ol>')
+    if x.get('after'):
+        out.append('            <div class="case-summary">\n' +
+                   '\n'.join(f'                <p>{esc(t)}</p>' for t in x['after']) + '\n            </div>')
+    if x.get('quote'):
+        out.append(f'            <div class="case-summary">\n                <p><strong>{esc(x["quote"])}</strong></p>\n            </div>')
+    return '        <section class="case-block">\n' + '\n'.join(o for o in out if o) + '\n        </section>'
+
+
 def service_body(sp):
     """Тело посадочной из services.json. Разделы «Признаки / Услуга / Порядок работ / Выбор» —
     подписи и заголовки из JSON; steps, repair и отзывы (reviews: true) — необязательные."""
@@ -466,6 +491,16 @@ def service_body(sp):
                     <h3>{title}</h3>
                     <p>{esc(v)}</p>
                 </article>'''
+    if sp.get('sections'):   # длинная посадочная (обучение и т.п.): разделы произвольной структуры из JSON
+        parts = [section_html(x, card) for x in sp['sections']]
+        links = '\n'.join(f'                <a href="{href}">{esc(name)}</a>' for href, name in sp['links'])
+        parts.append(f'''        <section class="case-block case-services">
+            <h2 class="section-label">Смотрите также</h2>
+            <div class="services-tags">
+{links}
+            </div>
+        </section>''')
+        return '\n\n'.join(parts)
     when = '\n'.join(f'                <li>{esc(x)}</li>' for x in sp['when'])
     what = '\n'.join(card(x) for x in sp['what'])
     links = '\n'.join(f'                <a href="{href}">{esc(name)}</a>' for href, name in sp['links'])
@@ -536,7 +571,7 @@ def build_service_pages(common):
             crumbs=[('Главная', '/'), (sp['name'], None)], meta=sp['meta'], h1=sp['h1'], lead=sp['lead'],
             body=service_body(sp), faq=sp['faq'], form_page=sp['name'], form_id=f'service-{sp["slug"]}-phone',
             facts_block=service_facts(sp), bridge='', service_type=sp['name'], faq_title=sp['faq_title'],
-            min_price=cases_gen.PRICE_VISIT,
+            min_price=sp.get('min_price', cases_gen.PRICE_VISIT),
             header=common['header'], footer=common['footer'], cta=cta, org=common['org'])
     return pages
 
