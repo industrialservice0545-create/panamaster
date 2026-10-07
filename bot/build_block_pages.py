@@ -609,7 +609,7 @@ def build_catalog_pages(common):
     body = '\n\n'.join([
         catalog_section('На вашем производстве', 'Выезд инженера на производство', on_site, 'na-obekte'),
         catalog_section('В мастерской', 'Ремонт снятых электронных блоков', workshop, 'v-masterskoy'),
-        catalog_section('Для службы главного инженера', 'Обучение и инженерные знания', engineering, 'inzhenernaya-sluzhba')
+        catalog_section('Обучение и инженерные знания', 'Развитие производства', engineering, 'razvitie-proizvodstva')
         if engineering else '',
         '''        <section class="case-block case-services">
             <h2 class="section-label">Ещё разделы</h2>
