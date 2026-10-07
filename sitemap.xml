@@ -86,6 +86,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://panamaster.ru/blocks/cnc-controls/siemens.html</loc>
+    <lastmod>2026-10-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://panamaster.ru/blocks/drives-servo.html</loc>
     <lastmod>2026-10-07</lastmod>
     <priority>0.7</priority>
@@ -157,6 +162,11 @@
   </url>
   <url>
     <loc>https://panamaster.ru/services/brand-matsuura.html</loc>
+    <lastmod>2026-10-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/services/brand-persico.html</loc>
     <lastmod>2026-10-07</lastmod>
     <priority>0.7</priority>
   </url>
@@ -266,6 +276,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://panamaster.ru/services/type-hydraulic-press.html</loc>
+    <lastmod>2026-10-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://panamaster.ru/services/type-injection-molding.html</loc>
     <lastmod>2026-10-07</lastmod>
     <priority>0.7</priority>
@@ -317,6 +332,11 @@
   </url>
   <url>
     <loc>https://panamaster.ru/cases/matsuura-mc-800vg.html</loc>
+    <lastmod>2026-10-07</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/cases/persico-c-ms-3520.html</loc>
     <lastmod>2026-10-07</lastmod>
     <priority>0.6</priority>
   </url>

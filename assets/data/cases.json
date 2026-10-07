@@ -274,5 +274,39 @@
       }
     ],
     "request_id": "20261006-170903-1958544230"
+  },
+  {
+    "slug": "persico-c-ms-3520",
+    "date": "2025-08",
+    "industry": "plastics",
+    "equipment_type": "hydraulic-press",
+    "format": "machine",
+    "brand": "Persico",
+    "model": "C-MS 35/20",
+    "rack": "SIEMENS S7-300",
+    "servo": "ATOS E-RI-LEB-N-NP-01H",
+    "headline": "гидроцилиндры стали синхронно работать",
+    "defect": "Перекос подвижной плиты пресса, Рассогласование гидроцилиндров. Система уходила в аварию.",
+    "solution": "Ремонт сервоклапана ATOS E-RI-LEB-N-NP-01H, перенастройка программного обеспечения клапана.",
+    "result": "Гидравлический пресс работает в штатном режиме.",
+    "repair_days": null,
+    "area": null,
+    "lat": null,
+    "lon": null,
+    "photos": [
+      {
+        "file": "photo-1.webp",
+        "w": 960,
+        "h": 640,
+        "alt": "Гидравлические прессы Persico C-MS 35/20"
+      },
+      {
+        "file": "photo-2.webp",
+        "w": 1200,
+        "h": 800,
+        "alt": "Шкаф управления Persico C-MS 35/20 после ремонта"
+      }
+    ],
+    "request_id": "20261007-233018-1958544230"
   }
 ]
