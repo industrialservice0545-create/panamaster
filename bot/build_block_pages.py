@@ -128,7 +128,7 @@ BRIDGE = '''        <section class="case-block">
 def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, footer, cta, org, form_page, form_id,
               cases_html='<!-- CASES_START -->\n        <!-- CASES_END -->', facts_block=None, bridge=None,
               service_type='Ремонт промышленной электроники', faq_title='Коротко о ремонте блоков',
-              min_price=cases_gen.PRICE_BLOCK, main_entity=None):
+              min_price=cases_gen.PRICE_BLOCK, main_entity=None, cta_button='Оставить заявку'):
     crumbs_html = '\n'.join(
         (f'        <a href="{href}">{esc(name)}</a>\n        <span class="breadcrumbs__sep">→</span>' if href
          else f'        <span aria-current="page">{esc(name)}</span>') for name, href in crumbs)
@@ -192,7 +192,7 @@ def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, fo
                 </div>
                 <div class="bottom-cta">
                     <a href="tel:+79268830939" class="btn btn--primary">Позвонить: +7 926 883-09-39</a>
-                    <a href="#zayavka" class="btn btn--ghost">Оставить заявку</a>
+                    <a href="#zayavka" class="btn btn--ghost">{esc(cta_button)}</a>
                 </div>
 {cases_gen.PHOTO_CTA}
             </div>
@@ -571,7 +571,7 @@ def build_service_pages(common):
             crumbs=[('Главная', '/')] + ([('Услуги', '/services.html')] if sp.get('group') else []) + [(sp['name'], None)], meta=sp['meta'], h1=sp['h1'], lead=sp['lead'],
             body=service_body(sp), faq=sp['faq'], form_page=sp['name'], form_id=f'service-{sp["slug"]}-phone',
             facts_block=service_facts(sp), bridge='', service_type=sp['name'], faq_title=sp['faq_title'],
-            min_price=sp.get('min_price', cases_gen.PRICE_VISIT),
+            min_price=sp.get('min_price', cases_gen.PRICE_VISIT), cta_button=sp.get('cta_button', 'Оставить заявку'),
             header=common['header'], footer=common['footer'], cta=cta, org=common['org'])
     return pages
 
