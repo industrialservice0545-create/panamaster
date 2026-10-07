@@ -748,6 +748,10 @@
         [
           "/cases-machines.html",
           "Примеры ремонта на объекте"
+        ],
+        [
+          "/services/diesel-generators.html",
+          "Генератор не запускается при пропадании сети?"
         ]
       ]
     },
@@ -1464,7 +1468,8 @@
           "/services.html",
           "Все услуги"
         ]
-      ]
+      ],
+      "crumbs_services": true
     }
   ]
 }

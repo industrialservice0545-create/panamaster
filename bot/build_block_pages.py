@@ -571,7 +571,7 @@ def build_service_pages(common):
             if sp.get('kind') == 'about' else None
         pages[rel] = page_html(
             url=url, title=sp['title'], desc=sp['desc'], main_entity=about,
-            crumbs=[('Главная', '/')] + ([('Услуги', '/services.html')] if sp.get('group') else []) + [(sp['name'], None)], meta=sp['meta'], h1=sp['h1'], lead=sp['lead'],
+            crumbs=[('Главная', '/')] + ([('Услуги', '/services.html')] if sp.get('group') or sp.get('crumbs_services') else []) + [(sp['name'], None)], meta=sp['meta'], h1=sp['h1'], lead=sp['lead'],
             body=service_body(sp), faq=sp['faq'], form_page=sp['name'], form_id=f'service-{sp["slug"]}-phone',
             facts_block=service_facts(sp), bridge='', service_type=sp['name'], faq_title=sp['faq_title'],
             min_price=sp.get('min_price', cases_gen.PRICE_VISIT), cta_button=sp.get('cta_button', 'Оставить заявку'),
