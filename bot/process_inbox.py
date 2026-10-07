@@ -54,6 +54,11 @@ def sentence(text):
 def style_photo(src, dst):
     """Кадр 3:2, 1200×800, монохром с сохранением тёплых тонов, WebP ≤100 КБ. Возвращает (w, h)."""
     im = ImageOps.exif_transpose(Image.open(src)).convert('RGB')
+    if im.height > im.width:   # вертикальное фото: вписываем целиком на светло-серый фон, а не режем середину
+        canvas = Image.new('RGB', SIZE, (226, 226, 226))
+        fg = im.resize((round(im.width * SIZE[1] / im.height), SIZE[1]), Image.LANCZOS)
+        canvas.paste(fg, ((SIZE[0] - fg.width) // 2, 0))
+        im = canvas
     im = ImageOps.fit(im, SIZE, Image.LANCZOS) if im.width >= SIZE[0] and im.height >= SIZE[1] \
         else ImageOps.fit(im, (im.width, round(im.width * 2 / 3)) if im.width * 2 / 3 <= im.height
                           else (round(im.height * 3 / 2), im.height), Image.LANCZOS)
