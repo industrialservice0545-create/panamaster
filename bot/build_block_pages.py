@@ -476,6 +476,9 @@ def section_html(x, card):
     if x.get('after'):
         out.append('            <div class="case-summary">\n' +
                    '\n'.join(f'                <p>{esc(t)}</p>' for t in x['after']) + '\n            </div>')
+    if x.get('links'):   # ссылки раздела — кнопками-тегами, как «Смотрите также»
+        out.append('            <div class="services-tags">\n' +
+                   '\n'.join(f'                <a href="{h}">{esc(t)}</a>' for h, t in x['links']) + '\n            </div>')
     if x.get('quote'):
         out.append(f'            <div class="case-summary">\n                <p><strong>{esc(x["quote"])}</strong></p>\n            </div>')
     return '        <section class="case-block">\n' + '\n'.join(o for o in out if o) + '\n        </section>'
