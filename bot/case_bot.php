@@ -409,7 +409,19 @@ function handle_text(int $chat, string $text, array $msg): void
         return;
     }
     if ($text === '/help') {
-        send($chat, "/add_case — новый кейс\n/cancel — отменить\n/status — где я в анкете\n«8/10» или «оценка 8» — оценка работы системы за день");
+        send($chat, "/add_case — новый кейс\n/cancel — отменить\n/status — где я в анкете\n/checkup — диагностика всех сервисов\n/seo — SEO: анализ и одно действие на согласование\n/promo — продвижение на бесплатных площадках: анализ и одно действие\n«8/10» или «оценка 8» — оценка работы системы за день");
+        return;
+    }
+    // Команды владельца: выполняет Mac (status/commands.py забирает строки из commands.jsonl каждые 2 мин)
+    $commands = ['/checkup' => ['checkup', 'Диагностика всех сервисов', '2–3 минуты'],
+                 '/seo' => ['seo', 'SEO-анализ', '10–20 минут'],
+                 '/promo' => ['promo', 'Анализ продвижения на внешних площадках', '10–20 минут']];
+    if (isset($commands[$text])) {
+        global $CFG;
+        [$cmd, $name, $eta] = $commands[$text];
+        file_put_contents($CFG['data_dir'] . '/commands.jsonl',
+            json_encode(['ts' => date('c'), 'cmd' => $cmd], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND | LOCK_EX);
+        send($chat, "Принято: $name. Результат пришлю сюда примерно через $eta (если Mac включён).");
         return;
     }
     // Оценка дня из вечернего статуса: «10/10», «Владелец-система 10/10», «оценка 8, комментарий»
