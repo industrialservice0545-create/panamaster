@@ -128,7 +128,7 @@ BRIDGE = '''        <section class="case-block">
 def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, footer, cta, org, form_page, form_id,
               cases_html='<!-- CASES_START -->\n        <!-- CASES_END -->', facts_block=None, bridge=None,
               service_type='Ремонт промышленной электроники', faq_title='Коротко о ремонте блоков',
-              min_price=cases_gen.PRICE_BLOCK, main_entity=None, cta_button='Оставить заявку'):
+              min_price=cases_gen.PRICE_BLOCK, main_entity=None, cta_button='Оставить заявку', photo_hint=None):
     crumbs_html = '\n'.join(
         (f'        <a href="{href}">{esc(name)}</a>\n        <span class="breadcrumbs__sep">→</span>' if href
          else f'        <span aria-current="page">{esc(name)}</span>') for name, href in crumbs)
@@ -139,13 +139,15 @@ def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, fo
         main_entity or {'@type': 'Service', 'name': h1, 'serviceType': service_type,
          'areaServed': [{'@type': 'City', 'name': 'Москва'}, {'@type': 'Country', 'name': 'Россия'}],
          'provider': org, 'url': url,
-         'offers': {'@type': 'Offer', 'priceCurrency': 'RUB',
-                    'priceSpecification': {'@type': 'PriceSpecification', 'minPrice': min_price,
-                                           'priceCurrency': 'RUB'}}},
+         **({'offers': {'@type': 'Offer', 'priceCurrency': 'RUB',
+                        'priceSpecification': {'@type': 'PriceSpecification', 'minPrice': min_price,
+                                               'priceCurrency': 'RUB'}}} if min_price else {})},
         {'@type': 'FAQPage', 'mainEntity': [
             {'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in faq]},
     ]}
     page_cta = cta.replace('value="Главная"', f'value="{esc(form_page)}"').replace('home-phone', form_id)
+    photo_cta = cases_gen.PHOTO_CTA.replace('Пришлите фото шильдика и экрана с ошибкой — скажем, берёмся ли за ремонт',
+                                            esc(photo_hint)) if photo_hint else cases_gen.PHOTO_CTA
     lead_html = '\n'.join(f'                    <p>{esc(p)}</p>' for p in lead)
     return f'''<!DOCTYPE html>
 <html lang="ru">
@@ -194,7 +196,7 @@ def page_html(*, url, title, desc, crumbs, meta, h1, lead, body, faq, header, fo
                     <a href="tel:+79268830939" class="btn btn--primary">Позвонить: +7 926 883-09-39</a>
                     <a href="#zayavka" class="btn btn--ghost">{esc(cta_button)}</a>
                 </div>
-{cases_gen.PHOTO_CTA}
+{photo_cta}
             </div>
         </section>
 
@@ -565,6 +567,8 @@ def build_service_pages(common):
         cta = common['cta'].replace('<h2>Сняли блок?</h2>', f'<h2>{esc(sp["cta_title"])}</h2>').replace(
             'Оставьте телефон — перезвоним, скажем, берёмся ли за ремонт, и договоримся о приёме блока.',
             esc(sp['cta_text']))
+        if sp.get('form_hint'):  # своя подсказка у формы (не про ремонт), например для консалтинга
+            cta = cta.replace('Пришлите фото шильдика и описание неисправности', esc(sp['form_hint']))
         rel = sp.get('path', f'services/{sp["slug"]}.html')
         url = f'{SITE}/{rel}'
         about = {'@type': 'AboutPage', 'name': sp['h1'], 'url': url, 'about': common['org']} \
@@ -575,6 +579,7 @@ def build_service_pages(common):
             body=service_body(sp), faq=sp['faq'], form_page=sp['name'], form_id=f'service-{sp["slug"]}-phone',
             facts_block=service_facts(sp), bridge='', service_type=sp['name'], faq_title=sp['faq_title'],
             min_price=sp.get('min_price', cases_gen.PRICE_VISIT), cta_button=sp.get('cta_button', 'Оставить заявку'),
+            photo_hint=sp.get('photo_hint'),
             header=common['header'], footer=common['footer'], cta=cta, org=common['org'])
     return pages
 
