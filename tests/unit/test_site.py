@@ -478,7 +478,7 @@ class RubricCatalogsTest(unittest.TestCase):
 
     def test_hub_breadcrumbs_point_to_rubrics(self):
         for r in glob.glob('services/brand-*.html', root_dir=ROOT):
-            self.assertIn('<a href="/brands.html">Производители оборудования</a>', read(r), r)
+            self.assertIn('<a href="/brands.html">Бренды производителей</a>', read(r), r)
         for r in glob.glob('services/type-*.html', root_dir=ROOT):
             self.assertIn('<a href="/equipment.html">Виды оборудования</a>', read(r), r)
 

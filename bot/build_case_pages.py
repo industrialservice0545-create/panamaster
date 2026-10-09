@@ -852,7 +852,7 @@ def render_hub(kind, slug, h, cases, industries, types, parts):
             if os.path.exists(os.path.join(ROOT, 'services', f'industry-{i}.html')):
                 links.append(f'<a href="/services/industry-{i}.html">{esc(industries.get(i, i))}</a>')
     crumb = h['name']
-    rubric = ('Производители оборудования', '/brands.html') if kind == 'brand' else ('Виды оборудования', '/equipment.html')
+    rubric = ('Бренды производителей', '/brands.html') if kind == 'brand' else ('Виды оборудования', '/equipment.html')
     ld = {'@context': 'https://schema.org', '@graph': [
         {'@type': 'BreadcrumbList', 'itemListElement': [
             {'@type': 'ListItem', 'position': 1, 'name': 'Главная', 'item': f'{SITE}/'},

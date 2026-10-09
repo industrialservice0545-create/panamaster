@@ -1,0 +1,528 @@
+{
+  "_comment": "Раздел «Производителям оборудования» (владелец 09.10.2026): отдельная аудитория — производители и экспортёры оборудования. Три версии, каждая адаптирована под рынок: ru — российские представительства и дистрибьюторы; en — поставщики из Индии и Латинской Америки; zh — производители Азии (Китай). Факты — только подтверждённые: с 2006 года, более 350 ремонтов, бренды из кейсов. Генератор: bot/build_manufacturers.py.",
+  "wechat": "panamaster",
+  "pages": {
+    "ru": {
+      "path": "manufacturers.html",
+      "locale": "ru_RU",
+      "title": "Производителям оборудования: сервис и продажи в России — Панамастер",
+      "desc": "Сервисный партнёр производителей промышленного оборудования в России: пусконаладка, ремонт электроники, поддержка продаж. Москва, с 2006 года.",
+      "meta": "Производителям оборудования · Партнёрство",
+      "h1": "Производителям оборудования: пусконаладка, сервис и развитие продаж в России",
+      "lead": [
+        "Помогаем производителям промышленного оборудования продавать и обслуживать технику в России: запускаем её у заказчиков, ремонтируем электронику и автоматику, поддерживаем продажи инженерной экспертизой.",
+        "Panamaster — инженерная сервисная компания из Москвы. С 2006 года восстанавливаем промышленную электронику, на нашем счету более 350 успешных ремонтов — в том числе оборудования из Италии, Японии, Германии, Бельгии, Франции и Великобритании."
+      ],
+      "cta_button": "Обсудить сотрудничество",
+      "photo_hint": "Напишите на e-mail, в WhatsApp, Telegram или WeChat — ответим в течение рабочего дня",
+      "facts": [
+        [
+          "Опыт",
+          "С 2006 года, более 350 ремонтов"
+        ],
+        [
+          "Оборудование",
+          "Импортное: Европа, Япония и другие страны"
+        ],
+        [
+          "Где работаем",
+          "Москва и область, регионы — по договорённости"
+        ],
+        [
+          "Начало",
+          "С пилотного проекта"
+        ]
+      ],
+      "sections": [
+        {
+          "label": "Задача",
+          "title": "Продать оборудование — только половина дела",
+          "text": [
+            "Российский заказчик, выбирая оборудование, почти всегда спрашивает: кто его запустит, кто приедет при аварии и как быстро. Если на эти вопросы нет ответа, сделка затягивается или уходит к конкуренту с местным сервисом."
+          ],
+          "list": [
+            "удалённая поддержка не заменяет инженера у станка;",
+            "командировки специалистов из-за рубежа — это дорого и долго;",
+            "языковой барьер и документация на иностранном языке тормозят запуск;",
+            "каждый день простоя у заказчика бьёт по репутации бренда."
+          ],
+          "after": [
+            "Собственное сервисное подразделение в России окупается не сразу. Сервисный партнёр закрывает эту задачу уже с первого проекта."
+          ]
+        },
+        {
+          "label": "Что предлагаем",
+          "title": "Три направления сотрудничества",
+          "cards": [
+            [
+              "Пусконаладка и ввод в эксплуатацию",
+              "Подключение и настройка систем управления, приводов и автоматики, запуск под нагрузкой, инструктаж персонала заказчика."
+            ],
+            [
+              "Сервис и ремонт",
+              "Диагностика и ремонт электроники на уровне компонентов, обслуживание и гарантийные случаи — по правилам, согласованным с производителем."
+            ],
+            [
+              "Развитие продаж",
+              "Поиск заказчиков среди производств Москвы и области, технические консультации и демонстрации, инженерное сопровождение переговоров."
+            ]
+          ]
+        },
+        {
+          "label": "Опыт",
+          "title": "С каким оборудованием уже работали",
+          "text": [
+            "Наш основной опыт — ремонт и запуск импортного оборудования, когда поддержки производителя рядом нет. Несколько примеров из наших работ:"
+          ],
+          "list": [
+            "Persico, BMB, SCM, CMS (Италия) — прессы, термопластавтоматы, деревообрабатывающие станки, термоформовочные машины;",
+            "Matsuura (Япония) — вертикальные обрабатывающие центры;",
+            "LVD (Бельгия) — листогибочные прессы с ЧПУ;",
+            "Pultrex (Великобритания) — пултрузионные линии;",
+            "Rexroth Indramat (Германия) — сервоприводы;",
+            "CODIMAG (Франция) — печатные машины."
+          ],
+          "after": [
+            "Мы не являемся официальными представителями этих брендов: это оборудование наших клиентов, которое мы ремонтировали и запускали."
+          ],
+          "links": [
+            [
+              "/cases.html",
+              "Примеры работ"
+            ]
+          ]
+        },
+        {
+          "label": "Модели",
+          "title": "Как можем работать",
+          "cards": [
+            [
+              "Сервисный партнёр",
+              "Пусконаладка, обслуживание и ремонт оборудования ваших заказчиков в России по договору."
+            ],
+            [
+              "Агентская модель",
+              "Ищем заказчиков и сопровождаем сделки; вознаграждение — по согласованию."
+            ],
+            [
+              "Комплексное партнёрство",
+              "Продажи, запуск и сервис в одних руках: заказчик получает поставщика и сервис сразу."
+            ]
+          ],
+          "after": [
+            "Условия, объёмы работ и порядок взаимодействия обсуждаем индивидуально и фиксируем в договоре."
+          ]
+        },
+        {
+          "label": "Как начнём",
+          "title": "От первого письма до договора",
+          "steps": [
+            [
+              "Знакомство",
+              "Напишите на e-mail или в мессенджер: какое оборудование производите, где ваши заказчики, что нужно в России."
+            ],
+            [
+              "Созвон",
+              "Обсуждаем задачи и формат, при необходимости изучаем документацию на оборудование."
+            ],
+            [
+              "Пилотный проект",
+              "Начинаем с одного заказчика или одной единицы оборудования — так обе стороны проверяют сотрудничество на деле."
+            ],
+            [
+              "Договор",
+              "Закрепляем модель работы, сроки реакции и порядок отчётности."
+            ]
+          ]
+        },
+        {
+          "label": "Почему мы",
+          "title": "Инженеры, а не посредники",
+          "text": [
+            "Мы — действующая ремонтная компания: каждый день разбираемся в электронике, приводах и системах управления оборудования разных производителей. Ремонтируем на уровне компонентов, а не только меняем блоки — это сокращает простой заказчика и расходы на гарантию.",
+            "Для заказчиков ваших машин можем провести обучение персонала, а историю сервиса по каждой единице оборудования — вести в нашей платформе Panamaster Engineering."
+          ],
+          "links": [
+            [
+              "/services/training.html",
+              "Корпоративное обучение"
+            ],
+            [
+              "/services/engineering-platform.html",
+              "Panamaster Engineering"
+            ]
+          ]
+        }
+      ],
+      "faq_title": "Коротко о сотрудничестве",
+      "faq": [
+        [
+          "Работаете с оборудованием из Китая, Индии, Турции?",
+          "Да. Мы ремонтируем электронику и автоматику разных производителей; с новой для нас маркой заранее изучаем документацию."
+        ],
+        [
+          "Можно ли выполнять гарантийный ремонт от имени производителя?",
+          "Да, по согласованным правилам: порядок диагностики, замены узлов и отчётности фиксируем в договоре."
+        ],
+        [
+          "В каких регионах работаете?",
+          "Москва и Московская область; выезд в другие регионы — по договорённости."
+        ],
+        [
+          "С чего начать?",
+          "Напишите нам о вашем оборудовании и задачах в России — предложим формат пилотного проекта."
+        ]
+      ],
+      "form": {
+        "title": "Обсудить сотрудничество",
+        "text": "Расскажите о компании и оборудовании — ответим в течение рабочего дня.",
+        "company": "Компания",
+        "country": "Страна",
+        "equipment": "Какое оборудование производите",
+        "contact": "E-mail, WeChat или WhatsApp",
+        "comment": "Что нужно в России",
+        "button": "Отправить",
+        "ok": "Спасибо! Сообщение отправлено — ответим в течение рабочего дня.",
+        "consent": "Отправляя форму, вы даёте <a href=\"/consent.html\">согласие на обработку персональных данных</a> и принимаете <a href=\"/privacy.html\">политику конфиденциальности</a>."
+      }
+    },
+    "en": {
+      "path": "en/manufacturers.html",
+      "locale": "en_US",
+      "title": "Service & Sales Partner in Russia for Equipment Manufacturers — Panamaster",
+      "desc": "Engineering partner in Russia for industrial equipment manufacturers: commissioning, component-level electronics repair, warranty service and sales support. Moscow, since 2006.",
+      "meta": "For equipment manufacturers · Partnership",
+      "h1": "Your engineering partner in Russia: commissioning, service and sales support",
+      "lead": [
+        "You build industrial machines. We make sure they are installed, running and supported at your customers' plants in Russia — without you opening a local office.",
+        "Panamaster is an engineering service company based in Moscow. Since 2006 we have repaired industrial electronics and automation, with more than 350 successful repairs — including machines from Italy, Japan, Germany, Belgium, France and the UK."
+      ],
+      "cta_button": "Discuss a partnership",
+      "facts": [
+        [
+          "Experience",
+          "Since 2006, 350+ repairs"
+        ],
+        [
+          "Equipment",
+          "Imported machines from many countries"
+        ],
+        [
+          "Coverage",
+          "Moscow and region, other regions by agreement"
+        ],
+        [
+          "First step",
+          "A pilot project"
+        ]
+      ],
+      "sections": [
+        {
+          "label": "The challenge",
+          "title": "Selling a machine in Russia is only half the job",
+          "text": [
+            "Russian buyers almost always ask the same questions before they sign: who will install the machine, who will come if it stops, and how fast. Without a local answer, deals stall or go to a competitor with service on the ground."
+          ],
+          "list": [
+            "remote support cannot replace an engineer next to the machine;",
+            "sending your own technicians abroad is slow and expensive;",
+            "time zones, language and documentation slow down every start-up;",
+            "every day of downtime at a customer's plant hurts your brand."
+          ],
+          "after": [
+            "Building your own service team in Russia takes years to pay off. A local service partner solves it from the very first project."
+          ]
+        },
+        {
+          "label": "What we offer",
+          "title": "Three ways we support your business",
+          "cards": [
+            [
+              "Installation and commissioning",
+              "Connection and set-up of controls, drives and automation, test run under load, training of the customer's operators."
+            ],
+            [
+              "Service and repair",
+              "Fault diagnosis and component-level repair of electronics, maintenance and warranty cases handled under your rules."
+            ],
+            [
+              "Sales support",
+              "Finding customers among plants in the Moscow region, technical consultations and demonstrations, engineering support in negotiations."
+            ]
+          ]
+        },
+        {
+          "label": "Track record",
+          "title": "Equipment we have already worked with",
+          "text": [
+            "Most of our experience is repairing and restarting imported machines when the manufacturer's support is far away. A few examples:"
+          ],
+          "list": [
+            "Persico, BMB, SCM, CMS (Italy) — presses, injection moulding, woodworking and thermoforming machines;",
+            "Matsuura (Japan) — vertical machining centres;",
+            "LVD (Belgium) — CNC press brakes;",
+            "Pultrex (UK) — pultrusion lines;",
+            "Rexroth Indramat (Germany) — servo drives;",
+            "CODIMAG (France) — printing presses."
+          ],
+          "after": [
+            "We are not official representatives of these brands — these are our customers' machines that we repaired and restarted."
+          ]
+        },
+        {
+          "label": "Partnership models",
+          "title": "Choose the model that fits you",
+          "cards": [
+            [
+              "Service partner",
+              "Commissioning, maintenance and repair of your machines at customers in Russia under a contract."
+            ],
+            [
+              "Sales agent",
+              "We find customers and support your deals; commission as agreed."
+            ],
+            [
+              "Full partnership",
+              "Sales, start-up and service in one place — your customer gets the machine and the support together."
+            ]
+          ],
+          "after": [
+            "Terms, scope and response times are agreed individually and fixed in a contract."
+          ]
+        },
+        {
+          "label": "How we start",
+          "title": "From the first e-mail to a contract",
+          "steps": [
+            [
+              "Introduction",
+              "Write to us: what you manufacture, where your customers are and what you need in Russia."
+            ],
+            [
+              "Video call",
+              "We discuss goals and the format, and review your machine documentation if needed."
+            ],
+            [
+              "Pilot project",
+              "We start with one customer or one machine, so both sides can test the cooperation in practice."
+            ],
+            [
+              "Contract",
+              "We fix the model, response times and reporting — clear and transparent."
+            ]
+          ]
+        },
+        {
+          "label": "Why Panamaster",
+          "title": "Engineers, not resellers",
+          "text": [
+            "We are a working repair company: every day we deal with electronics, drives and control systems from many manufacturers. We repair at component level instead of only swapping boards — that means shorter downtime for your customer and lower warranty costs for you.",
+            "After every job you receive a clear report with photos. We can also train your customers' staff and keep the service history of each machine in our Panamaster Engineering platform."
+          ]
+        }
+      ],
+      "faq_title": "Partnership FAQ",
+      "faq": [
+        [
+          "Do you work with machines from India, Latin America, China or Turkey?",
+          "Yes. We repair electronics and automation from many manufacturers; for a brand that is new to us we study the documentation before the job."
+        ],
+        [
+          "Can you handle warranty repairs on our behalf?",
+          "Yes, under agreed rules: diagnosis, part replacement and reporting procedures are fixed in the contract."
+        ],
+        [
+          "Which regions do you cover?",
+          "Moscow and the Moscow region; other Russian regions by agreement."
+        ],
+        [
+          "How do we start?",
+          "Tell us about your machines and your plans for Russia — we will suggest a pilot project."
+        ]
+      ],
+      "form": {
+        "title": "Discuss a partnership",
+        "text": "Tell us about your company and equipment — we will reply within one business day.",
+        "company": "Company",
+        "country": "Country",
+        "equipment": "What equipment you manufacture",
+        "contact": "E-mail, WhatsApp or WeChat",
+        "comment": "What you need in Russia",
+        "button": "Send",
+        "ok": "Thank you! Your message has been sent — we will reply within one business day.",
+        "consent": "By sending the form you agree to the processing of your data under our <a href=\"/privacy.html\">privacy policy</a>."
+      }
+    },
+    "zh": {
+      "path": "zh/manufacturers.html",
+      "locale": "zh_CN",
+      "title": "俄罗斯设备安装调试与售后服务合作伙伴 — Panamaster",
+      "desc": "面向工业设备制造商的俄罗斯本地工程合作伙伴：安装调试、电子元件级维修、保修服务与销售支持。莫斯科，成立于2006年。",
+      "meta": "致设备制造商 · 合作",
+      "h1": "您在俄罗斯的工程合作伙伴：安装调试、售后服务与销售支持",
+      "lead": [
+        "您的设备卖到俄罗斯，客户最关心的是：谁来安装调试？设备出了故障，谁能尽快到现场？Panamaster 作为本地工程服务团队，帮助您的设备在俄罗斯客户工厂顺利投产、稳定运行，无需您在当地设立分公司。",
+        "Panamaster 是一家位于莫斯科的工程服务公司，成立于2006年，专注工业电子与自动化维修，已成功完成350多项维修，其中包括来自意大利、日本、德国、比利时、法国和英国的设备。"
+      ],
+      "cta_button": "洽谈合作",
+      "facts": [
+        [
+          "经验",
+          "成立于2006年，350多项成功维修"
+        ],
+        [
+          "设备",
+          "多国进口工业设备"
+        ],
+        [
+          "服务区域",
+          "莫斯科及莫斯科州，其他地区可协商"
+        ],
+        [
+          "合作起步",
+          "从试点项目开始"
+        ]
+      ],
+      "sections": [
+        {
+          "label": "挑战",
+          "title": "设备卖出去，只完成了一半",
+          "text": [
+            "俄罗斯客户在签合同前几乎都会问同样的问题：谁来安装？停机了谁来修？多快能到？如果没有本地服务，订单容易拖延，甚至流向有本地服务的竞争对手。"
+          ],
+          "list": [
+            "远程指导无法代替工程师到现场；",
+            "从国内派工程师出差，周期长、成本高；",
+            "语言、时差和资料翻译，会拖慢每一次调试；",
+            "客户工厂每停机一天，都会影响品牌口碑。"
+          ],
+          "after": [
+            "在俄罗斯自建服务团队需要多年才能回本，而本地服务合作伙伴从第一个项目起就能解决问题。"
+          ]
+        },
+        {
+          "label": "我们提供",
+          "title": "三大合作方向",
+          "cards": [
+            [
+              "安装调试",
+              "控制系统、驱动和自动化的接线与调试，带负荷试运行，并对客户操作人员进行培训。"
+            ],
+            [
+              "售后与维修",
+              "故障诊断和电子元件级维修，日常维护，并按照与厂家约定的规则处理保修。"
+            ],
+            [
+              "销售支持",
+              "在莫斯科地区的工厂中寻找客户，提供技术咨询和演示，在商务谈判中提供工程支持。"
+            ]
+          ]
+        },
+        {
+          "label": "经验",
+          "title": "我们服务过的设备",
+          "text": [
+            "我们的核心经验，是在厂家不在身边的情况下维修并重新启动进口设备。部分案例："
+          ],
+          "list": [
+            "Persico、BMB、SCM、CMS（意大利）— 压力机、注塑机、木工机械、热成型机；",
+            "Matsuura（日本）— 立式加工中心；",
+            "LVD（比利时）— 数控折弯机；",
+            "Pultrex（英国）— 拉挤生产线；",
+            "Rexroth Indramat（德国）— 伺服驱动器；",
+            "CODIMAG（法国）— 印刷机。"
+          ],
+          "after": [
+            "我们并非上述品牌的官方代表，这些是我们为客户维修和重新启动的设备。"
+          ]
+        },
+        {
+          "label": "合作模式",
+          "title": "选择适合您的方式",
+          "cards": [
+            [
+              "服务合作伙伴",
+              "按合同为您在俄罗斯的客户提供安装调试、维护和维修。"
+            ],
+            [
+              "销售代理",
+              "为您开发客户并跟进订单，佣金另行协商。"
+            ],
+            [
+              "全面合作",
+              "销售、调试、售后一站式完成，客户同时获得设备与服务保障。"
+            ]
+          ],
+          "after": [
+            "合作条件、工作范围和响应时间均可单独协商，并写入合同。"
+          ]
+        },
+        {
+          "label": "合作流程",
+          "title": "从第一次沟通到签订合同",
+          "steps": [
+            [
+              "初步沟通",
+              "通过微信或邮件联系我们：介绍您的设备、客户所在地以及在俄罗斯的需求。"
+            ],
+            [
+              "视频会议",
+              "讨论合作目标和方式，必要时研究设备技术资料。"
+            ],
+            [
+              "试点项目",
+              "先从一个客户或一台设备开始，双方在实践中检验合作。"
+            ],
+            [
+              "签订合同",
+              "明确合作模式、响应时间和报告方式，长期稳定合作。"
+            ]
+          ]
+        },
+        {
+          "label": "为什么选择我们",
+          "title": "我们是工程师，不是中间商",
+          "text": [
+            "我们是一家一线维修公司，每天都在处理不同厂家的电子、驱动和控制系统。我们做元件级维修，而不只是更换整块板卡——这意味着客户停机时间更短，您的保修成本更低。",
+            "每次服务后，我们都会提供带照片的工作报告。我们还可以为您的客户培训操作和维修人员，并在 Panamaster Engineering 平台中记录每台设备的服务历史。"
+          ]
+        }
+      ],
+      "faq_title": "合作常见问题",
+      "faq": [
+        [
+          "你们能维修中国制造的设备吗？",
+          "可以。我们维修多家厂商的电子与自动化系统；遇到新品牌时，会在工作前先研究技术资料。"
+        ],
+        [
+          "能否代表厂家处理保修？",
+          "可以，按约定规则执行：诊断、更换部件和报告流程均写入合同。"
+        ],
+        [
+          "服务覆盖哪些地区？",
+          "莫斯科及莫斯科州；俄罗斯其他地区可协商。"
+        ],
+        [
+          "如何开始合作？",
+          "请告诉我们您的设备和在俄罗斯的计划，我们会建议一个试点项目。"
+        ],
+        [
+          "用什么语言沟通？",
+          "我们用英文进行书面和视频沟通；您也可以通过微信用中文发送资料，我们会认真阅读。"
+        ]
+      ],
+      "form": {
+        "title": "洽谈合作",
+        "text": "请介绍贵公司和设备情况。我们使用英文回复，一个工作日内答复。",
+        "company": "公司名称",
+        "country": "国家",
+        "equipment": "生产的设备",
+        "contact": "微信、邮箱或 WhatsApp",
+        "comment": "在俄罗斯的需求",
+        "button": "发送",
+        "ok": "谢谢！信息已发送，我们会在一个工作日内回复。",
+        "consent": "提交表单即表示您同意我们按照<a href=\"/privacy.html\">隐私政策</a>处理您的数据。"
+      }
+    }
+  }
+}

@@ -128,7 +128,7 @@ document.querySelectorAll('.cta-form').forEach(function (form) {
       .then(function (response) { return response.json(); })
       .then(function (data) {
         if (data.ok) {
-          setFormStatus(form, 'Заявка отправлена. Перезвоним в рабочее время: пн–пт, 09:00–19:00.');
+          setFormStatus(form, form.dataset.ok || 'Заявка отправлена. Перезвоним в рабочее время: пн–пт, 09:00–19:00.');
           form.reset();
           reachGoal('form_submit');
         } else {

@@ -134,10 +134,26 @@ if (rateLimited(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '')) 
     respond(false, 'Слишком много заявок подряд. Позвоните: +7 926 883-09-39');
 }
 
-$phone = isset($_POST['phone']) ? trim((string) $_POST['phone']) : '';
-$digits = preg_replace('/\D+/', '', $phone);
-if (strlen($digits) < 10 || strlen($digits) > 12) {
-    respond(false, 'Проверьте номер телефона');
+// Производители оборудования (/manufacturers.html, /en/, /zh/): контакт — e-mail, WeChat или WhatsApp, а не российский телефон
+$isMaker = isset($_POST['audience']) && $_POST['audience'] === 'manufacturer';
+$lang = isset($_POST['lang']) && in_array($_POST['lang'], array('ru', 'en', 'zh'), true) ? $_POST['lang'] : 'ru';
+$makerField = function ($name, $len) {
+    return isset($_POST[$name]) ? mb_substr(trim((string) $_POST[$name]), 0, $len) : '';
+};
+if ($isMaker) {
+    $contact = $makerField('contact', 200);
+    $company = $makerField('company', 200);
+    if (mb_strlen($contact) < 4 || $company === '') {
+        respond(false, $lang === 'zh' ? '请填写公司名称和联系方式' : ($lang === 'en' ? 'Please enter your company and a contact' : 'Укажите компанию и контакт'));
+    }
+    $phone = $contact;
+    $digits = substr(preg_replace('/\D+/', '', $contact), -4) ?: 'mkr';
+} else {
+    $phone = isset($_POST['phone']) ? trim((string) $_POST['phone']) : '';
+    $digits = preg_replace('/\D+/', '', $phone);
+    if (strlen($digits) < 10 || strlen($digits) > 12) {
+        respond(false, 'Проверьте номер телефона');
+    }
 }
 
 $page = isset($_POST['page']) ? mb_substr(trim((string) $_POST['page']), 0, 200) : '';
@@ -176,11 +192,19 @@ $botSigns = array();
 if (empty($_SERVER['HTTP_ORIGIN'])) {
     $botSigns[] = 'нет Origin';
 }
-if (stripos(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : '', 'ru') === false) {
+if (!$isMaker && stripos(isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : '', 'ru') === false) {
     $botSigns[] = 'язык браузера не русский';
 }
 
-$lines = array(
+$lines = $isMaker ? array(
+    '🏭 ПРОИЗВОДИТЕЛЬ ОБОРУДОВАНИЯ — заявка на сотрудничество (' . $lang . ')',
+    '',
+    'Компания: ' . $makerField('company', 200),
+    'Страна: ' . ($makerField('country', 100) ?: '—'),
+    'Оборудование: ' . ($makerField('equipment', 200) ?: '—'),
+    'Контакт: ' . $phone,
+    'Страница: ' . ($page !== '' ? $page : '—'),
+) : array(
     'Новая заявка с сайта panamaster.ru',
     '',
     'Телефон: ' . mb_substr($phone, 0, 40),
@@ -195,7 +219,7 @@ if ($botSigns) {
     $lines[] = '⚠️ Возможен спам: ' . implode(', ', $botSigns);
 }
 
-$subject = '=?UTF-8?B?' . base64_encode('Заявка с сайта: ' . $digits) . '?=';
+$subject = '=?UTF-8?B?' . base64_encode(($isMaker ? 'Производитель оборудования: ' . $makerField('company', 80) : 'Заявка с сайта: ' . $digits)) . '?=';
 $headers = implode("\r\n", array(
     'From: =?UTF-8?B?' . base64_encode('Сайт Панамастер') . '?= <noreply@panamaster.ru>',
     'MIME-Version: 1.0',
@@ -209,6 +233,7 @@ $leadId = gmdate('ymd-His', time() + 3 * 3600) . '-' . substr($digits, -4);
 @file_put_contents(dirname(__DIR__) . '/leads.jsonl', json_encode(array(
     'ts' => date('c'), 'type' => 'lead', 'id' => $leadId, 'source' => 'site_form',
     'page' => $page, 'phone' => mb_substr($phone, 0, 40), 'comment' => $comment,
+    'audience' => $isMaker ? 'manufacturer' : 'owner', 'lang' => $lang,
 ), JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND | LOCK_EX);
 $lines[] = 'Заявка: ' . $leadId;
 
@@ -221,4 +246,5 @@ $telegramSent = sendTelegram($text, array(array(
 $mailSent = mail($to, $subject, $text, $headers, '-fnoreply@panamaster.ru');
 $sent = $telegramSent || $mailSent;
 
-respond($sent, $sent ? 'Заявка отправлена' : 'Не удалось отправить. Позвоните: +7 926 883-09-39');
+$failText = $lang === 'zh' ? '发送失败，请发邮件至 info@panamaster.ru' : ($lang === 'en' ? 'Sending failed. Please e-mail info@panamaster.ru' : 'Не удалось отправить. Позвоните: +7 926 883-09-39');
+respond($sent, $sent ? 'Заявка отправлена' : $failText);
