@@ -18,12 +18,12 @@ RedirectMatch 404 \.(log|md|mdc|sh|jsonc|yml|yaml|bak|backup|wip)$
 # Старый сайт (до 09.2026, бытовая техника): адреса ещё в выдаче поисковиков (решение владельца 09.10.2026).
 # Нужные страницы — 301 на новые; остальное — 410 «удалено навсегда», чтобы Яндекс и Google быстрее убрали их.
 # Порядок важен: первое совпавшее правило срабатывает. Новые адреса сайта (*.html, папки ниже) не затрагиваются.
-RedirectMatch 301 ^/o-kompanii/?$ /about.html
-RedirectMatch 301 ^/(kontakty|nashi-kontakty|rekvizity|rekvizity-kompanii)/?$ /contacts.html
-RedirectMatch 301 ^/remont-promyshlennoj-elektroniki/?$ /blocks.html
-RedirectMatch 301 ^/(service-avtomatizatsiya|service/kompleksnye-tekhnicheskie-uslugi)/?$ /services.html
-RedirectMatch 301 ^/(sotrudnichestvo_ru|help-predlozheniya-o-sotrudnichestve)/?$ /manufacturers.html
-RedirectMatch 301 ^/(cooperation_en|cooperation_fr|cooperacion_es)/?$ /en/manufacturers.html
+RedirectMatch 301 ^/o-kompanii/?$ https://panamaster.ru/about.html
+RedirectMatch 301 ^/(kontakty|nashi-kontakty|rekvizity|rekvizity-kompanii)/?$ https://panamaster.ru/contacts.html
+RedirectMatch 301 ^/remont-promyshlennoj-elektroniki/?$ https://panamaster.ru/blocks.html
+RedirectMatch 301 ^/(service-avtomatizatsiya|service/kompleksnye-tekhnicheskie-uslugi)/?$ https://panamaster.ru/services.html
+RedirectMatch 301 ^/(sotrudnichestvo_ru|help-predlozheniya-o-sotrudnichestve)/?$ https://panamaster.ru/manufacturers.html
+RedirectMatch 301 ^/(cooperation_en|cooperation_fr|cooperacion_es)/?$ https://panamaster.ru/en/manufacturers.html
 RedirectMatch 410 ^/(?!(?:assets|bot|services|blocks|cases|en|zh|cgi-bin|\.well-known)(?:/|$))[^.]+$
 RedirectMatch 410 ^/(g|shared|d|t)/
 
