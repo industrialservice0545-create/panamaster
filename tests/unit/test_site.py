@@ -444,7 +444,7 @@ class CatalogPagesTest(unittest.TestCase):
     def test_services_catalog_links_all_services(self):
         s = read('services.html')
         for sp in json.loads(read('bot/content/services.json'))['pages']:
-            if sp.get('kind') != 'about':
+            if not sp.get('kind'):   # страницы с kind (about, career) — не услуги, в каталоге их нет
                 self.assertIn(f'href="/services/{sp["slug"]}.html"', s)
         self.assertIn('href="/blocks.html"', s)
 

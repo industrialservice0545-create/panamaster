@@ -205,7 +205,8 @@ $lines = $isMaker ? array(
     'Контакт: ' . $phone,
     'Страница: ' . ($page !== '' ? $page : '—'),
 ) : array(
-    'Новая заявка с сайта panamaster.ru',
+    // Кандидаты со страницы «Карьера и обучение» — отдельной пометкой, не путать с заявкой на ремонт
+    $page === 'Карьера и обучение' ? '👷 КАНДИДАТ — отклик со страницы «Карьера и обучение»' : 'Новая заявка с сайта panamaster.ru',
     '',
     'Телефон: ' . mb_substr($phone, 0, 40),
     'Страница: ' . ($page !== '' ? $page : '—'),
@@ -233,7 +234,7 @@ $leadId = gmdate('ymd-His', time() + 3 * 3600) . '-' . substr($digits, -4);
 @file_put_contents(dirname(__DIR__) . '/leads.jsonl', json_encode(array(
     'ts' => date('c'), 'type' => 'lead', 'id' => $leadId, 'source' => 'site_form',
     'page' => $page, 'phone' => mb_substr($phone, 0, 40), 'comment' => $comment,
-    'audience' => $isMaker ? 'manufacturer' : 'owner', 'lang' => $lang,
+    'audience' => $isMaker ? 'manufacturer' : ($page === 'Карьера и обучение' ? 'candidate' : 'owner'), 'lang' => $lang,
 ), JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND | LOCK_EX);
 $lines[] = 'Заявка: ' . $leadId;
 

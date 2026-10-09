@@ -462,6 +462,8 @@ def section_html(x, card):
     """Раздел длинной посадочной: label, title, text (абзацы), quote, list, cards, steps, after (абзацы после)."""
     out = [f'            <p class="section-label">{esc(x["label"])}</p>' if x.get('label') else '',
            f'            <h2>{esc(x["title"])}</h2>' if x.get('title') else '']
+    if x.get('image'):   # фото раздела: [src, alt] — 1200×800, в стиле фото кейсов
+        out.append(f'            <figure class="case-photo">\n                <img src="{x["image"][0]}" alt="{esc(x["image"][1])}" width="1200" height="800" loading="lazy" decoding="async">\n            </figure>')
     if x.get('text'):
         out.append('            <div class="case-summary">\n' +
                    '\n'.join(f'                <p>{esc(t)}</p>' for t in x['text']) + '\n            </div>')
@@ -607,7 +609,7 @@ def build_catalog_pages(common):
     """Каталоги /services.html (все услуги) и /industries.html (все отрасли): ссылки на существующие страницы."""
     pages = {}
     on_site = [(sp['name'], sp['desc'], f'/services/{sp["slug"]}.html') for sp in SERVICES['pages']
-               if sp.get('kind') != 'about' and not sp.get('group')]
+               if not sp.get('kind') and not sp.get('group')]
     engineering = [(sp['name'], sp['desc'], f'/services/{sp["slug"]}.html') for sp in SERVICES['pages']
                    if sp.get('group') == 'engineering']
     order = ['emergency', 'cnc-repair', 'commissioning', 'modernization', 'plc-programming']
