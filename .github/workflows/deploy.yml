@@ -48,6 +48,7 @@ jobs:
           python3 bot/build_industry_pages.py
           python3 bot/build_case_pages.py
           python3 bot/build_block_pages.py
+          python3 bot/build_manufacturers.py
           python3 bot/build_sitemap.py
           python3 -m unittest discover -s tests/unit
           echo "report=$(python3 -c 'import json;print(json.dumps(json.load(open("inbox_report.json")),ensure_ascii=False))')" >> "$GITHUB_OUTPUT"
@@ -57,7 +58,7 @@ jobs:
         run: |
           git config user.name "Case Bot"
           git config user.email "bot@panamaster.ru"
-          git add -A assets cases cases.html index.html services blocks blocks.html sitemap.xml llms.txt bot/dictionaries inbox
+          git add -A assets cases cases.html index.html services blocks blocks.html sitemap.xml llms.txt bot/dictionaries inbox manufacturers.html en zh
           SLUGS=$(python3 -c 'import json;print(", ".join(x["slug"] for x in json.load(open("inbox_report.json"))))')
           git commit -m "case: $SLUGS [skip ci]"
           git pull --rebase origin main
@@ -76,8 +77,18 @@ jobs:
           script: |
             set -e
             cd ~/panamaster.ru/www
-            git fetch origin main
-            git reset --hard origin/main
+            # хостинг ограничивает потоки: без pack.threads=1 git fetch падает с «unable to create thread» (07.10.2026)
+            git -c pack.threads=1 -c index.threads=1 -c core.preloadIndex=false fetch origin main
+            git -c core.preloadIndex=false reset --hard origin/main
+            echo "✓ Site: $(git log --oneline -1)"
+            # копия репозитория, из которой работает бот кейсов (cron → bot/case_bot.php): обновляем тем же деплоем
+            cd ~/panamaster-build
+            if git -c pack.threads=1 -c index.threads=1 -c core.preloadIndex=false pull --rebase -q origin main; then
+              echo "✓ Bot: $(git log --oneline -1)"
+            else
+              git rebase --abort 2>/dev/null || true
+              echo "⚠ Bot copy not updated (local changes?) — site deployed"
+            fi
             echo "✓ Deploy finished at $(date)"
 
   notify:
