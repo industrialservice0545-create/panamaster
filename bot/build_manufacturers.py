@@ -167,6 +167,7 @@ def build_foreign(lang, org):
     <meta property="og:url" content="{url(lang)}">
     <meta property="og:locale" content="{p["locale"]}">
     <meta property="og:site_name" content="Panamaster">
+    <meta property="og:image" content="{SITE}/assets/img/cases/persico-c-ms-3520/photo-1.webp">
     <script type="application/ld+json">{ld(lang, org)}</script>
 </head>
 <body>
