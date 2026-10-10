@@ -810,6 +810,8 @@ def render_hub(kind, slug, h, cases, industries, types, parts):
     about = '\n'.join(f'                <p>{esc(p)}</p>' for p in h['about'])
     lines = '\n'.join(f'                <article class="related-card"><h3>{esc(a)}</h3><p>{esc(b)}</p></article>' for a, b in h['lines'])
     elec = '\n'.join(f'                <li>{esc(e)}</li>' for e in h['electronics'])
+    # electronics_links в hubs.json: [[адрес, текст], …] — страницы ремонта блоков, о которых говорит список
+    elec_links = ''.join(f'\n            <p>Подробнее: <a href="{esc(href)}">{esc(text)}</a></p>' for href, text in h.get('electronics_links', []))
     faq = h['faq']
     faq_html = '\n'.join(f"""                <article>
                     <h3>{esc(q)}</h3>
@@ -913,7 +915,7 @@ def render_hub(kind, slug, h, cases, industries, types, parts):
             <h2>{esc(h["electronics_title"])}</h2>
             <ul class="hub-list">
 {elec}
-            </ul>
+            </ul>{elec_links}
         </section>
 {brands_html}{cases_html}
 {page_cta}

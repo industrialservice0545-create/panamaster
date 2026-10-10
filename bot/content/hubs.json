@@ -58,6 +58,16 @@
    "sources": [
     "https://www.cms.it/en/plastic/",
     "https://machinesitalia.org/company/cms-spa"
+   ],
+   "electronics_links": [
+    [
+     "/blocks/drives-servo/b-r.html",
+     "Ремонт сервоприводов B&R"
+    ],
+    [
+     "/blocks/cnc-controls/b-r.html",
+     "Ремонт систем управления B&R"
+    ]
    ]
   },
   "bmb": {

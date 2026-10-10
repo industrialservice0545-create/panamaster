@@ -1,6 +1,6 @@
 """Генерация sitemap.xml и llms.txt по страницам сайта.
 
-sitemap.xml — все индексируемые страницы (meta robots index), lastmod = дата последнего коммита файла.
+sitemap.xml — все индексируемые страницы (meta robots index), lastmod = дата последнего изменения <main> страницы.
 llms.txt   — краткое описание компании и список страниц для AI-поиска (Алиса, Нейро, ChatGPT, Perplexity).
 search.html + assets/search.json — поиск по сайту: индекс тех же страниц (заголовок, описание,
              подзаголовки, текст), ищет assets/js/main.js в браузере. search.html — noindex.
@@ -43,16 +43,31 @@ def url_of(rel):
     return f'{SITE}/' if rel == 'index.html' else f'{SITE}/{rel}'
 
 
+def main_block(text):
+    """Содержимое <main> без формы заявки и пробельных различий: шапка, подвал, <head> и форма на дату не влияют."""
+    m = re.search(r'<main\b.*?</main>', text or '', re.S)
+    body = re.sub(r'<form\b.*?</form>', '', m.group(0) if m else (text or ''), flags=re.S)   # форма заявки — общий шаблон
+    return re.sub(r'\s+', ' ', re.sub(r'>\s+<', '><', body)).strip()
+
+
 def lastmod(rel):
-    """Дата последнего коммита файла; для незакоммиченного файла — сегодня."""
+    """Дата, когда в последний раз менялось основное содержимое страницы (<main>), а не общий шаблон.
+    Правка шапки/подвала на всех страницах не делает их «обновлёнными» для поисковика.
+    Незакоммиченное изменение <main> — сегодня."""
     try:
-        out = subprocess.run(['git', 'log', '-1', '--format=%cs', '--', rel], cwd=ROOT,
-                             capture_output=True, text=True, check=True).stdout.strip()
+        log = subprocess.run(['git', 'log', '--format=%H %cs', '--', rel], cwd=ROOT,
+                             capture_output=True, text=True, check=True).stdout.split('\n')
     except (OSError, subprocess.CalledProcessError):
-        out = ''
-    dirty = subprocess.run(['git', 'status', '--porcelain', '--', rel], cwd=ROOT,
-                           capture_output=True, text=True).stdout.strip()
-    return date.today().isoformat() if (dirty or not out) else out
+        log = []
+    commits = [line.split() for line in log if line.strip()]
+    current = main_block(read(rel))
+    found = None
+    for sha, day in commits:   # от новых к старым
+        old = subprocess.run(['git', 'show', f'{sha}:{rel}'], cwd=ROOT, capture_output=True, text=True).stdout
+        if main_block(old) != current:
+            break
+        found = day   # в этом коммите <main> уже был таким же
+    return found or date.today().isoformat()
 
 
 def priority(rel):

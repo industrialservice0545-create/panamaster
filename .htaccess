@@ -24,8 +24,25 @@ RedirectMatch 301 ^/remont-promyshlennoj-elektroniki/?$ https://panamaster.ru/bl
 RedirectMatch 301 ^/(service-avtomatizatsiya|service/kompleksnye-tekhnicheskie-uslugi)/?$ https://panamaster.ru/services.html
 RedirectMatch 301 ^/(sotrudnichestvo_ru|help-predlozheniya-o-sotrudnichestve)/?$ https://panamaster.ru/manufacturers.html
 RedirectMatch 301 ^/(cooperation_en|cooperation_fr|cooperacion_es)/?$ https://panamaster.ru/en/manufacturers.html
+# Адреса-папки разделов без index.html отдавали 301 на http://…/ и затем 403 (проверено 10.10.2026).
+# Один постоянный редирект сразу на https-страницу раздела; служебные папки (assets, bot) не затрагиваются.
+RedirectMatch 301 ^/(services|cases|blocks|blocks/cnc-controls|blocks/drives-servo|blocks/drives-servo/rexroth)/?$ https://panamaster.ru/$1.html
+RedirectMatch 301 ^/(en|zh)/?$ https://panamaster.ru/$1/manufacturers.html
 RedirectMatch 410 ^/(?!(?:assets|bot|services|blocks|cases|en|zh|cgi-bin|\.well-known)(?:/|$))[^.]+$
 RedirectMatch 410 ^/(g|shared|d|t)/
+
+# Кеш браузера (10.10.2026). Картинки и шрифты меняются редко и при замене обычно получают новое имя — 30 дней.
+# CSS, JS, HTML, sitemap, search.json подключаются без версии в имени — браузер каждый раз сверяет их с сервером
+# (ETag/Last-Modified → 304), поэтому после деплоя посетитель сразу видит новую версию.
+<IfModule mod_headers.c>
+    <FilesMatch "\.(webp|jpe?g|png|gif|svg|ico|woff2?)$">
+        Header set Cache-Control "public, max-age=2592000"
+        Header unset Expires
+    </FilesMatch>
+    <FilesMatch "\.(css|js|html|xml|json|txt)$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+</IfModule>
 
 # test.html пишет бот при тесте деплоя — страница работает, но не индексируется
 <IfModule mod_headers.c>

@@ -237,9 +237,16 @@ def type_body(p):
             if ',' not in name and any(m.lower() in name.lower() for m in b['match']):
                 return f'<a href="/blocks/{p["slug"]}/{b["slug"]}.html">{esc(name)}</a>'
         return esc(name)
+    def brand_models(name):
+        """Ссылки на страницы моделей бренда (например, ECODRIVE DKC у Rexroth): иначе на них ведёт 2–3 ссылки."""
+        for b in p.get('brand_pages', []):
+            if ',' not in name and any(m.lower() in name.lower() for m in b['match']):
+                return ''.join(f'\n                    <p><a href="/blocks/{p["slug"]}/{b["slug"]}/{m["slug"]}.html">{esc(m["h1"])}</a></p>'
+                               for m in b.get('models', []))
+        return ''
     brands = '\n'.join(f'''                <article class="related-card">
                     <h3>{brand_title(k)}</h3>
-                    <p>{esc(v)}</p>
+                    <p>{esc(v)}</p>{brand_models(k)}
                 </article>''' for k, v in p['brands'])
     others = '\n'.join(f'                <a href="/blocks/{o["slug"]}.html">{esc(o["name"])}</a>'
                        for o in CONTENT['pages'] if o is not p)

@@ -514,3 +514,26 @@ class AutoTypeHubTest(unittest.TestCase):
         self.assertTrue(140 <= len(h['desc']) <= 160, h['desc'])
         self.assertIn('любых', h['lead'][0])
         self.assertTrue(h['auto'])
+
+
+class SitemapLastmodTests(unittest.TestCase):
+    """lastmod — дата изменения содержимого страницы (<main> без формы), а не общего шаблона (10.10.2026)."""
+
+    def setUp(self):
+        spec = importlib.util.spec_from_file_location('sm', os.path.join(ROOT, 'bot', 'build_sitemap.py'))
+        self.sm = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.sm)
+
+    def test_template_change_does_not_count(self):
+        a = '<header>A</header><main><p>Текст</p><form>старая форма</form></main><footer>1</footer>'
+        b = '<header>B</header><main>\n  <p>Текст</p><form>новая форма</form></main><footer>2</footer>'
+        self.assertEqual(self.sm.main_block(a), self.sm.main_block(b))
+
+    def test_content_change_counts(self):
+        self.assertNotEqual(self.sm.main_block('<main><p>Текст</p></main>'),
+                            self.sm.main_block('<main><p>Новый текст</p></main>'))
+
+    def test_sitemap_dates_valid(self):
+        days = re.findall(r'<lastmod>(\d{4}-\d{2}-\d{2})</lastmod>', read('sitemap.xml'))
+        self.assertTrue(days)
+        self.assertGreater(len(set(days)), 1, 'у всех страниц одна дата — похоже на дату сборки')
