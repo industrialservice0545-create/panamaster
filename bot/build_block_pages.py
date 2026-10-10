@@ -367,8 +367,26 @@ def hub_body():
             </div>
             <p class="case-cta__sub">{esc(CONTENT['hub']['brands'])}</p>
         </section>
-
+{repaired_html()}
 {steps_html()}'''
+
+
+def repaired_html():
+    """Блоки из опубликованных кейсов (hub.repaired в blocks.json: [блок, оборудование, slug кейса]) — только факты кейсов."""
+    hub = CONTENT['hub']
+    rows = [r for r in hub.get('repaired', []) if os.path.exists(os.path.join(ROOT, 'cases', f'{r[2]}.html'))]
+    if not rows:
+        return ''
+    items = '\n'.join(f'                <li><a href="/cases/{slug}.html">{esc(block)}</a> — {esc(where)}</li>' for block, where, slug in rows)
+    return f'''        <section class="case-block">
+            <p class="section-label">Примеры</p>
+            <h2>{esc(hub['repaired_title'])}</h2>
+            <p>{esc(hub['repaired_intro'])}</p>
+            <ul class="hub-list">
+{items}
+            </ul>
+        </section>
+'''
 
 
 def add_auto_servo_brands():
@@ -788,7 +806,7 @@ def build():
         url=f'{SITE}/blocks.html', title=hub['title'], desc=hub['desc'],
         crumbs=[('Главная', '/'), (HUB_NAME, None)],
         meta='Мастерская · Москва и вся Россия', h1=hub['h1'], lead=hub['lead'], body=hub_body(),
-        faq=hub['faq'] + CONTENT['common_faq'], form_page=HUB_NAME, form_id='blocks-phone', **common)}
+        faq=hub['faq'] + ([] if hub.get('skip_common_faq') else CONTENT['common_faq']), form_page=HUB_NAME, form_id='blocks-phone', **common)}
     for p in CONTENT['pages']:
         own, industries = block_cases(p['slug'])
         pages[f'blocks/{p["slug"]}.html'] = page_html(
