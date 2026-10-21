@@ -316,7 +316,7 @@
     "equipment_type": "schetno-fasovochnaya-mashina-dlya-tabletok-i-kapsul",
     "format": "machine",
     "brand": "Wenzhou",
-    "model": "URBAN YL‑2D,",
+    "model": "URBAN YL‑2D",
     "rack": "URBAN YL‑2D",
     "servo": null,
     "headline": "успешно запустили вращение диска и виброподачу",
@@ -332,13 +332,13 @@
         "file": "photo-1.webp",
         "w": 1200,
         "h": 800,
-        "alt": "Счётно-фасовочная машина для таблеток и капсул Wenzhou URBAN YL‑2D,"
+        "alt": "Счётно-фасовочная машина для таблеток и капсул Wenzhou URBAN YL‑2D"
       },
       {
         "file": "photo-2.webp",
         "w": 1200,
         "h": 800,
-        "alt": "Шкаф управления Wenzhou URBAN YL‑2D, после ремонта"
+        "alt": "Шкаф управления Wenzhou URBAN YL‑2D после ремонта"
       }
     ],
     "request_id": "20261021-133401-1958544230"
