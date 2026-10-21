@@ -2,17 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://panamaster.ru/</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-21</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://panamaster.ru/cases.html</loc>
-    <lastmod>2026-10-07</lastmod>
+    <lastmod>2026-10-21</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://panamaster.ru/cases-machines.html</loc>
-    <lastmod>2026-10-07</lastmod>
+    <lastmod>2026-10-21</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
@@ -32,12 +32,12 @@
   </url>
   <url>
     <loc>https://panamaster.ru/equipment.html</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-21</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://panamaster.ru/brands.html</loc>
-    <lastmod>2026-10-09</lastmod>
+    <lastmod>2026-10-21</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
@@ -57,7 +57,7 @@
   </url>
   <url>
     <loc>https://panamaster.ru/map.html</loc>
-    <lastmod>2026-10-06</lastmod>
+    <lastmod>2026-10-21</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
@@ -201,6 +201,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://panamaster.ru/services/brand-wenzhou.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://panamaster.ru/services/cnc-repair.html</loc>
     <lastmod>2026-10-03</lastmod>
     <priority>0.7</priority>
@@ -247,7 +252,7 @@
   </url>
   <url>
     <loc>https://panamaster.ru/services/industry-food.html</loc>
-    <lastmod>2026-10-05</lastmod>
+    <lastmod>2026-10-21</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
@@ -331,6 +336,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://panamaster.ru/services/type-schetno-fasovochnaya-mashina-dlya-tabletok-i-kapsul.html</loc>
+    <lastmod>2026-10-21</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://panamaster.ru/services/type-thermoformer.html</loc>
     <lastmod>2026-10-06</lastmod>
     <priority>0.7</priority>
@@ -383,6 +393,11 @@
   <url>
     <loc>https://panamaster.ru/cases/scm-me25.html</loc>
     <lastmod>2026-10-03</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/cases/wenzhou-urban-yl2d.html</loc>
+    <lastmod>2026-10-21</lastmod>
     <priority>0.6</priority>
   </url>
 </urlset>

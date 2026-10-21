@@ -308,5 +308,39 @@
       }
     ],
     "request_id": "20261007-233018-1958544230"
+  },
+  {
+    "slug": "wenzhou-urban-yl2d",
+    "date": "2026-10",
+    "industry": "food",
+    "equipment_type": "schetno-fasovochnaya-mashina-dlya-tabletok-i-kapsul",
+    "format": "machine",
+    "brand": "Wenzhou",
+    "model": "URBAN YL‑2D,",
+    "rack": "URBAN YL‑2D",
+    "servo": null,
+    "headline": "успешно запустили вращение диска и виброподачу",
+    "defect": "Не вращается стеклянный диск и не работает виброподача. Два красных выключателя над регуляторами VIBRATION SPEED и ROTATION SPEED не светятся.",
+    "solution": "Восстановление контакта управления релейного включения силовой части.",
+    "result": "Счётно-фасовочная машина для таблеток и капсул работает в штатном режиме.",
+    "repair_days": 1,
+    "area": "Реутов",
+    "lat": 55.760565,
+    "lon": 37.85506,
+    "photos": [
+      {
+        "file": "photo-1.webp",
+        "w": 1200,
+        "h": 800,
+        "alt": "Счётно-фасовочная машина для таблеток и капсул Wenzhou URBAN YL‑2D,"
+      },
+      {
+        "file": "photo-2.webp",
+        "w": 1200,
+        "h": 800,
+        "alt": "Шкаф управления Wenzhou URBAN YL‑2D, после ремонта"
+      }
+    ],
+    "request_id": "20261021-133401-1958544230"
   }
 ]
