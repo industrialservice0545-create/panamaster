@@ -2,17 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://panamaster.ru/</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-11-16</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://panamaster.ru/cases.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-11-16</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://panamaster.ru/cases-machines.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-11-16</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
@@ -32,12 +32,12 @@
   </url>
   <url>
     <loc>https://panamaster.ru/equipment.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-11-16</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://panamaster.ru/brands.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-11-16</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
@@ -57,7 +57,7 @@
   </url>
   <url>
     <loc>https://panamaster.ru/map.html</loc>
-    <lastmod>2026-10-21</lastmod>
+    <lastmod>2026-11-16</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
@@ -166,6 +166,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://panamaster.ru/services/brand-brand.html</loc>
+    <lastmod>2026-11-16</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://panamaster.ru/services/brand-cms.html</loc>
     <lastmod>2026-10-10</lastmod>
     <priority>0.7</priority>
@@ -242,7 +247,7 @@
   </url>
   <url>
     <loc>https://panamaster.ru/services/industry-chemical.html</loc>
-    <lastmod>2026-10-03</lastmod>
+    <lastmod>2026-11-16</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
@@ -303,6 +308,11 @@
   <url>
     <loc>https://panamaster.ru/services/training.html</loc>
     <lastmod>2026-10-07</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/services/type-bottling.html</loc>
+    <lastmod>2026-11-16</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
@@ -383,6 +393,11 @@
   <url>
     <loc>https://panamaster.ru/cases/pultrex-px1000-20t.html</loc>
     <lastmod>2026-10-07</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://panamaster.ru/cases/resurs-partner-rotornaya-liniya-rozliva-model-rp-d-upv.html</loc>
+    <lastmod>2026-11-16</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
