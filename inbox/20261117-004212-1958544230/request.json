@@ -1,0 +1,24 @@
+{
+    "id": "20261117-004212-1958544230",
+    "date": "2026-11",
+    "industry": "chemical",
+    "equipment_type": "bottling",
+    "equipment_type_new": null,
+    "brand": "Ресурс Партнёр",
+    "model": "РОТОРНАЯ ЛИНИЯ РОЗЛИВА МОДЕЛЬ РП-Д-УПВ",
+    "rack": "Zhongda Youkong  MM-40MR-12MT-700-ES-B",
+    "servo": null,
+    "defect": "Часть пневматических клапанов не работало, часть срабатывала не стабильно.",
+    "solution": "Компонентный ремонт панели оператора Zhongda Youkong  MM-40MR-12MT-700-ES-B",
+    "headline": "Восстановили управляющие сигналов",
+    "result": "Линяя работает в штатном режиме",
+    "repair_days": 1,
+    "photos": [
+        "photo-1.jpg",
+        "photo-2.jpg"
+    ],
+    "chat_id": 1958544230,
+    "area": "Домодедово",
+    "lat": 55.437174,
+    "lon": 37.768004
+}
